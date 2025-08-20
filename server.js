@@ -43,7 +43,7 @@ app.use(session({
   secret: 'vahak-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/transh' }),
+  store: MongoStore.create({ mongoUrl: 'mongodb+srv://ktiku5392:XkWzXfeBWDPJeL8E@t2yd.sfyhphm.mongodb.net/?retryWrites=true&w=majority&appName=T2YD' }),
   cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
 }));
 
