@@ -61,7 +61,6 @@
     </nav>
   </header>
   <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
-  <div id="simple-mobile-menu" class="simple-mobile-menu" aria-hidden="true"></div>
 
   <main>
     <%- body %>
@@ -83,98 +82,23 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    // Mobile menu toggle with backdrop and focus trap
+    // Minimal mobile toggle: simple inline menu for small screens
     (function(){
       const toggle = document.getElementById('mobile-menu-toggle');
       const nav = document.getElementById('mobile-nav');
       const backdrop = document.getElementById('nav-backdrop');
-      if (!(toggle && nav && backdrop)) return;
+      if (!toggle || !nav) return;
 
-      let lastFocused = null;
-      const getFocusable = () => nav.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
-      const firstFocusable = () => getFocusable()[0];
-      const lastFocusable = () => getFocusable()[getFocusable().length - 1];
-
-      const closeMenu = () => {
-        document.body.classList.remove('menu-open');
-        nav.classList.remove('active');
-        nav.setAttribute('aria-hidden', 'true');
-        toggle.classList.remove('active');
-        toggle.setAttribute('aria-expanded', 'false');
-        backdrop.classList.remove('show');
-        backdrop.setAttribute('aria-hidden', 'true');
-        // hide close button inside mobile nav
-        const closeBtn = nav.querySelector('.close-mobile'); if (closeBtn) { closeBtn.style.display = 'none'; }
-        try { sessionStorage.removeItem('t2yd_nav_open'); } catch(_) {}
-        if (lastFocused) { lastFocused.focus(); lastFocused = null; }
-      };
-
-      const openMenu = () => {
-        lastFocused = document.activeElement;
-        document.body.classList.add('menu-open');
-        nav.classList.add('active');
-        nav.setAttribute('aria-hidden', 'false');
-        toggle.classList.add('active');
-        toggle.setAttribute('aria-expanded', 'true');
-        backdrop.classList.add('show');
-        backdrop.setAttribute('aria-hidden', 'false');
-  // show close button inside mobile nav
-  const closeBtn = nav.querySelector('.close-mobile'); if (closeBtn) { closeBtn.style.display = 'inline-block'; }
-        try { sessionStorage.setItem('t2yd_nav_open', '1'); } catch(_) {}
-        const f = firstFocusable();
-        if (f) f.focus();
-      };
-
-      toggle.addEventListener('click', function(e){
-        e.stopPropagation();
-        nav.classList.contains('active') ? closeMenu() : openMenu();
+      toggle.addEventListener('click', function(){
+        const open = document.body.classList.toggle('simple-inline-open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
 
-      // Close button inside mobile nav
+      // Close when clicking backdrop or close button or a nav link
+      if (backdrop) backdrop.addEventListener('click', function(){ document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); });
       const closeMobileBtn = nav.querySelector('.close-mobile');
-      if (closeMobileBtn) {
-        closeMobileBtn.style.display = 'none';
-        closeMobileBtn.addEventListener('click', function(e){ e.preventDefault(); closeMenu(); });
-      }
-
-      backdrop.addEventListener('click', closeMenu);
-
-      document.addEventListener('keydown', function(e){
-        if (!nav.classList.contains('active')) return;
-        if (e.key === 'Escape') { e.preventDefault(); closeMenu(); }
-        if (e.key === 'Tab') {
-          const first = firstFocusable();
-          const last = lastFocusable();
-          if (!first || !last) return;
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      });
-
-      // Persist open state across page loads for small screens
-      const smallQuery = window.matchMedia('(max-width: 768px)');
-      try {
-        if (sessionStorage.getItem('t2yd_nav_open') === '1' && smallQuery.matches) {
-          openMenu();
-        }
-      } catch(_) {}
-
-      // If viewport leaves mobile size, ensure menu is closed and state cleared
-      const handleViewportChange = () => {
-        if (!smallQuery.matches && nav.classList.contains('active')) {
-          closeMenu();
-        }
-      };
-      if (smallQuery.addEventListener) {
-        smallQuery.addEventListener('change', handleViewportChange);
-      } else if (smallQuery.addListener) {
-        smallQuery.addListener(handleViewportChange);
-      }
+      if (closeMobileBtn) { closeMobileBtn.style.display = 'inline-block'; closeMobileBtn.addEventListener('click', function(e){ e.preventDefault(); document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); }); }
+      nav.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'A') { document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); } });
     })();
   </script>
   <% if (user) { %>
@@ -409,51 +333,6 @@
     })();
   </script>
   <% } %>
-  <script>
-    // Simple mobile menu fallback: clones visible nav links into a plain full-screen menu
-    (function(){
-      const toggle = document.getElementById('mobile-menu-toggle');
-      const simpleMenu = document.getElementById('simple-mobile-menu');
-      const mobileNav = document.getElementById('mobile-nav');
-      if (!toggle || !simpleMenu || !mobileNav) return;
-
-      function buildSimpleMenu(){
-        simpleMenu.innerHTML = '';
-        const closeWrap = document.createElement('div'); closeWrap.className = 'mobile-close';
-        const closeBtn = document.createElement('button'); closeBtn.innerText = 'Close ✕'; closeBtn.addEventListener('click', hideSimpleMenu);
-        closeWrap.appendChild(closeBtn);
-        simpleMenu.appendChild(closeWrap);
-
-        // clone only anchor-like items from server-rendered nav
-        const anchors = mobileNav.querySelectorAll('a');
-        anchors.forEach(a => {
-          const copy = document.createElement('a');
-          copy.href = a.href;
-          copy.innerHTML = a.innerHTML;
-          copy.className = a.className || '';
-          copy.addEventListener('click', hideSimpleMenu);
-          simpleMenu.appendChild(copy);
-        });
-      }
-
-      function showSimpleMenu(){
-        buildSimpleMenu();
-        simpleMenu.classList.add('show');
-        simpleMenu.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('menu-open');
-      }
-      function hideSimpleMenu(){
-        simpleMenu.classList.remove('show');
-        simpleMenu.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('menu-open');
-      }
-
-      toggle.addEventListener('click', function(e){
-        // if standard nav is active, prefer it; otherwise use simple fallback
-        const usingFallback = !mobileNav.classList.contains('active');
-        if (usingFallback) showSimpleMenu(); else hideSimpleMenu();
-      });
-    })();
-  </script>
+  <!-- leftover mobile fallback scripts removed -->
 </body>
 </html>
