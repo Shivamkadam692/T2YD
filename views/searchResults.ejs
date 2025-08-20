@@ -1,0 +1,37 @@
+<h2 class="section-title">Search Results</h2>
+<a href="/" class="btn btn-outline" style="margin-bottom: 2rem;">Back to Home</a>
+<% if (results && results.length > 0) { %>
+  <div class="card-container">
+    <% results.forEach(item => { %>
+      <div class="card">
+        <div class="card-header">
+          <%= item.truckType || item.goodsType || 'Result' %>
+        </div>
+        <div class="card-body">
+          <div class="card-item">
+            <i class="fas fa-map-pin"></i>
+            <span><strong>Origin:</strong> <%= item.origin || item.pickupLocation %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span><strong>Destination:</strong> <%= item.destination || item.dropLocation %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span><strong>Date:</strong> <%= item.date ? new Date(item.date).toLocaleDateString() : (item.pickupDate || 'Flexible') %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-weight-hanging"></i>
+            <span><strong>Capacity:</strong> <%= item.capacity ? item.capacity + ' tons' : (item.weight ? item.weight + ' kg' : 'N/A') %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-user"></i>
+            <span><strong>Owner:</strong> <%= item.ownerName || item.shipperName %></span>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <p>No results found matching your search.</p>
+<% } %>

@@ -1,0 +1,45 @@
+<div class="container">
+    <h1>Edit Lorry</h1>
+    
+    <form action="/lorries/<%= lorry._id %>?_method=PUT" method="POST" class="form">
+        <div class="form-group">
+            <label for="ownerName">Owner Name:</label>
+            <input type="text" id="ownerName" name="ownerName" value="<%= lorry.ownerName %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="vehicleType">Vehicle Type:</label>
+            <input type="text" id="vehicleType" name="vehicleType" value="<%= lorry.vehicleType %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="<%= lorry.location %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="capacity">Capacity (tons):</label>
+            <input type="number" id="capacity" name="capacity" value="<%= lorry.capacity %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="available" <%= lorry.status === 'available' ? 'selected' : '' %>>Available</option>
+                <option value="busy" <%= lorry.status === 'busy' ? 'selected' : '' %>>Busy</option>
+                <option value="maintenance" <%= lorry.status === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                <option value="offline" <%= lorry.status === 'offline' ? 'selected' : '' %>>Offline</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="3"><%= lorry.description || '' %></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Lorry</button>
+            <a href="/lorries/<%= lorry._id %>" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

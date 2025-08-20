@@ -1,0 +1,228 @@
+<div class="dashboard-header">
+  <h1>Payments for Delivery</h1>
+  <p><strong>Shipper:</strong> <%= request.shipper ? request.shipper.name : 'Unknown' %> | <strong>Transporter:</strong> <%= request.transporter ? request.transporter.name : 'Unknown' %> | <strong>Goods:</strong> <%= request.delivery ? request.delivery.goodsType : 'Unknown Goods' %></p>
+  <p><strong>Total Price:</strong> ₹<%= request.price || 5000 %> | <strong>Status:</strong> <span class="status-badge <%= request.status %>"><%= request.status %></span></p>
+</div>
+
+<% if (request.shipper._id.toString() === user._id.toString()) { %>
+  <section class="dashboard-section">
+    <h2><i class="fas fa-flask"></i>  Payment Options</h2>
+    <div class="demo-payment-container">
+      <div class="demo-payment-card">
+        <h3><i class="fas fa-play-circle"></i> Quick Payments</h3>
+        <p>Create fake payments for demonstration purposes (no real money involved)</p>
+        
+        <div class="demo-buttons">
+          <form action="/payments/demo/advance/<%= request._id %>" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-money-bill-wave"></i> Pay Advance (30%)
+            </button>
+          </form>
+          
+          <form action="/payments/demo/balance/<%= request._id %>" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-credit-card"></i> Pay Balance (70%)
+            </button>
+          </form>
+          
+          <form action="/payments/demo/create-sample/<%= request._id %>" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-warning">
+              <i class="fas fa-magic"></i> Create Both Payments
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+<% } %>
+
+<section class="dashboard-section">
+  <h2><i class="fas fa-receipt"></i> Payment History</h2>
+  <div class="requests-container">
+    <% if (payments.length === 0) { %>
+      <div class="empty-state">
+        <i class="fas fa-credit-card" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+        <p>No payments yet.</p>
+        <% if (request.shipper._id.toString() === user._id.toString()) { %>
+          <p>Use the payment options above to create sample payments.</p>
+        <% } %>
+      </div>
+    <% } else { %>
+      <% payments.forEach(p => { %>
+        <div class="request-card payment-card">
+          <div class="request-header">
+            <h3>
+              <i class="fas fa-<%= p.type === 'advance' ? 'money-bill-wave' : 'credit-card' %>"></i>
+              <%= p.type === 'advance' ? 'Advance' : 'Balance' %> Payment
+            </h3>
+            <span class="status <%= p.status %>">
+              <i class="fas fa-<%= p.status === 'paid' ? 'check-circle' : p.status === 'failed' ? 'times-circle' : 'clock' %>"></i>
+              <%= p.status %>
+            </span>
+          </div>
+          <div class="request-details">
+            <div class="detail-group">
+              <label><i class="fas fa-rupee-sign"></i> Amount:</label>
+              <span class="amount">₹<%= p.amount.toLocaleString() %></span>
+            </div>
+            <div class="detail-group">
+              <label><i class="fas fa-calendar"></i> Created:</label>
+              <span><%= new Date(p.createdAt).toLocaleString() %></span>
+            </div>
+            <% if (p.stripePaymentIntentId && p.stripePaymentIntentId.startsWith('demo_')) { %>
+              <div class="detail-group">
+                <label><i class="fas fa-flask"></i> Payment ID:</label>
+                <span class="demo-badge"><%= p.stripePaymentIntentId %></span>
+              </div>
+            <% } else if (p.stripePaymentIntentId) { %>
+              <div class="detail-group">
+                <label><i class="fas fa-key"></i> Payment Intent:</label>
+                <span><%= p.stripePaymentIntentId %></span>
+              </div>
+            <% } %>
+          </div>
+          <div class="request-actions">
+            <a href="/payments/receipt/<%= p._id %>" class="btn btn-outline">
+              <i class="fas fa-file-invoice"></i> View Receipt
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</section>
+   
+
+
+    
+<style>
+    .demo-payment-container {
+      margin-bottom: 2rem;
+    }
+    
+    .demo-payment-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .demo-payment-card h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+    }
+    
+    .demo-payment-card p {
+      margin: 0 0 1.5rem 0;
+      opacity: 0.9;
+    }
+    
+    .demo-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .demo-buttons .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+    
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+    
+    .btn-warning:hover {
+      background: #e0a800;
+      transform: translateY(-2px);
+    }
+    
+    .payment-card {
+      border-left: 4px solid #007bff;
+    }
+    
+    .payment-card .amount {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #28a745;
+    }
+    
+    .demo-badge {
+      background: #ffc107;
+      color: #212529;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-badge.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-badge.accepted {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    
+    .status-badge.completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+    
+    @media (max-width: 768px) {
+      .demo-buttons {
+        flex-direction: column;
+      }
+      
+      .demo-buttons .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>

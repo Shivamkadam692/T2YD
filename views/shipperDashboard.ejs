@@ -1,0 +1,130 @@
+<div class="dashboard-header">
+    <h1>Shipper Dashboard</h1>
+    <p>Welcome back, <%= user.name %>! Manage your deliveries and review transporter requests.</p>
+</div>
+
+        <!-- My Deliveries Section -->
+<section class="dashboard-section">
+    <div class="section-header">
+        <h2>My Deliveries</h2>
+        <a href="/deliveries/add" class="btn btn-primary">Add New Delivery</a>
+    </div>
+    
+    <div class="card-container">
+        <% if (deliveries.length === 0) { %>
+            <div class="empty-state">
+                <p>No deliveries yet. Create your first delivery to get started!</p>
+            </div>
+        <% } else { %>
+            <% deliveries.forEach(delivery => { %>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="status <%= delivery.status %>"><%= delivery.status %></span>
+                        <h3><%= delivery.goodsType %></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-item">
+                            <strong>From:</strong> <%= delivery.pickupLocation %>
+                        </div>
+                        <div class="card-item">
+                            <strong>To:</strong> <%= delivery.dropLocation %>
+                        </div>
+                        <div class="card-item">
+                            <strong>Weight:</strong> <%= delivery.weight %> kg
+                        </div>
+                        <div class="card-item">
+                            <strong>Created:</strong> <%= new Date(delivery.createdAt).toLocaleDateString() %>
+                        </div>
+                        <div class="card-actions">
+                            <a href="/deliveries/<%= delivery._id %>" class="btn btn-secondary">View Details</a>
+                            <% if (delivery.status === 'pending') { %>
+                                <a href="/deliveries/<%= delivery._id %>/edit" class="btn btn-edit">Edit</a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>
+
+        <!-- Incoming Requests Section -->
+<section class="dashboard-section">
+    <h2>Incoming Requests</h2>
+    
+    <div class="requests-container">
+        <% if (requests.length === 0) { %>
+            <div class="empty-state">
+                <p>No requests yet. Your deliveries will appear here when transporters make offers.</p>
+            </div>
+        <% } else { %>
+            <% requests.forEach(request => { %>
+                <div class="request-card">
+                    <div class="request-header">
+                        <h3>Request for <%= request.delivery ? request.delivery.goodsType : 'Unknown Goods' %></h3>
+                        <span class="status <%= request.status %>"><%= request.status %></span>
+                    </div>
+                    
+                    <div class="request-details">
+                        <div class="detail-group">
+                            <label>Transporter:</label>
+                            <span><%= request.transporter ? request.transporter.name : 'Unknown' %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Vehicle:</label>
+                            <span><%= request.lorry ? `${request.lorry.vehicleNumber} (${request.lorry.vehicleType})` : 'Unknown Vehicle' %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Capacity:</label>
+                            <span><%= request.lorry ? `${request.lorry.capacity} tons` : 'Unknown' %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Price:</label>
+                            <span class="price">₹<%= request.price || 'Not set' %></span>
+                        </div>
+                        <% if (request.message) { %>
+                            <div class="detail-group">
+                                <label>Message:</label>
+                                <span><%= request.message %></span>
+                            </div>
+                        <% } %>
+                        <% if (request.delivery) { %>
+                            <div class="detail-group">
+                                <label>Route:</label>
+                                <span><%= request.delivery.pickupLocation %> → <%= request.delivery.dropLocation %></span>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <% if (request.status === 'pending') { %>
+                        <div class="request-actions">
+                            <form action="/dashboard/accept-request/<%= request._id %>" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-success">Accept</button>
+                            </form>
+                            <form action="/dashboard/reject-request/<%= request._id %>" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-delete">Reject</button>
+                            </form>
+                        </div>
+                    <% } else if (request.status === 'accepted' || request.status === 'completed') { %>
+                        <div class="request-actions">
+                            <% if (request.status === 'accepted') { %>
+                              <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary">Track</a>
+                            <% } %>
+                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
+                            <% if (request.loadedAt && !request.advancePaidAt) { %>
+                              <form action="/payments/create-advance/<%= request._id %>" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-outline">Pay Advance</button>
+                              </form>
+                            <% } %>
+                            <% if (request.status === 'completed' && !request.balancePaidAt) { %>
+                              <form action="/payments/create-balance/<%= request._id %>" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-outline">Pay Balance</button>
+                              </form>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>

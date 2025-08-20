@@ -1,0 +1,176 @@
+<style>
+      .suggest-container { position: relative; }
+      .suggest-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 14px rgba(0,0,0,.08); z-index: 1000; max-height: 260px; overflow: auto; margin-top: 4px; }
+      .suggest-item { padding: 8px 10px; cursor: pointer; }
+      .suggest-item:hover, .suggest-item.active { background: #f0f6ff; }
+      .suggest-primary { font-weight: 600; color: #2c3e50; }
+      .suggest-secondary { font-size: 12px; color: #697386; margin-top: 2px; }
+      
+      /* Mobile Responsive Styles */
+      @media (max-width: 768px) {
+        .container { padding: 1rem; }
+        h1 { font-size: 1.5rem; margin-bottom: 1rem; text-align: center; }
+        
+        .form { max-width: 100%; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+        .form-group input, .form-group textarea, .form-group select { 
+          width: 100%; 
+          padding: 12px; 
+          font-size: 16px; /* Prevents zoom on iOS */
+          border-radius: 8px;
+          border: 2px solid #e1e5e9;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
+          outline: none; 
+          border-color: #3498db; 
+          box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .suggest-list { 
+          max-height: 200px; 
+          font-size: 14px;
+          border-radius: 8px;
+          margin-top: 2px;
+        }
+        .suggest-item { padding: 12px; }
+        .suggest-primary { font-size: 14px; }
+        .suggest-secondary { font-size: 11px; }
+        
+        .form-actions { 
+          flex-direction: column; 
+          gap: 0.8rem; 
+          margin-top: 1.5rem;
+        }
+        .form-actions .btn { 
+          width: 100%; 
+          padding: 14px; 
+          font-size: 16px;
+          border-radius: 8px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .container { padding: 0.8rem; }
+        h1 { font-size: 1.3rem; }
+        .form-group input, .form-group textarea, .form-group select { padding: 14px; }
+        .suggest-item { padding: 14px; }
+      }
+    </style>
+
+<div class="container">
+    <h1>Edit Delivery</h1>
+    
+    <form action="/deliveries/<%= delivery._id %>?_method=PUT" method="POST" class="form">
+        <div class="form-group suggest-container">
+            <label for="pickupLocation">Pickup Location:</label>
+            <input type="text" id="pickupLocation" name="pickupLocation" value="<%= delivery.pickupLocation %>" required>
+            <div id="pickupLocation_suggest" class="suggest-list" style="display:none;"></div>
+        </div>
+        
+        <div class="form-group suggest-container">
+            <label for="dropLocation">Drop Location:</label>
+            <input type="text" id="dropLocation" name="dropLocation" value="<%= delivery.dropLocation %>" required>
+            <div id="dropLocation_suggest" class="suggest-list" style="display:none;"></div>
+        </div>
+        
+        <div class="form-group">
+            <label for="goodsType">Goods Type:</label>
+            <input type="text" id="goodsType" name="goodsType" value="<%= delivery.goodsType %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" name="weight" value="<%= delivery.weight %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="pending" <%= delivery.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="in-transit" <%= delivery.status === 'in-transit' ? 'selected' : '' %>>In Transit</option>
+                <option value="delivered" <%= delivery.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="cancelled" <%= delivery.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="3"><%= delivery.description || '' %></textarea>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Delivery</button>
+            <a href="/deliveries/<%= delivery._id %>" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+      (function(){
+        const inputs = [
+          { id: 'pickupLocation', listId: 'pickupLocation_suggest' },
+          { id: 'dropLocation', listId: 'dropLocation_suggest' }
+        ];
+
+        function debounce(fn, wait){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); }; }
+        function formatSecondary(addr){
+          if (!addr) return '';
+          const parts = [addr.road, addr.neighbourhood || addr.suburb, addr.city || addr.town || addr.village, addr.state];
+          return parts.filter(Boolean).join(', ');
+        }
+        async function searchPlaces(q){
+          const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=${encodeURIComponent(q)}`;
+          const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+          if (!res.ok) return [];
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
+        function attachAutocomplete({ id, listId }){
+          const input = document.getElementById(id);
+          const list = document.getElementById(listId);
+          let activeIndex = -1;
+          function close(){ list.style.display='none'; list.innerHTML=''; activeIndex=-1; }
+          function open(){ list.style.display='block'; }
+          function render(items){
+            if (!items.length){ close(); return; }
+            list.innerHTML = items.map((it, idx)=>{
+              const secondary = formatSecondary(it.address);
+              return `<div class="suggest-item${idx===activeIndex?' active':''}" data-idx="${idx}">
+                        <div class="suggest-primary">${it.display_name}</div>
+                        ${secondary?`<div class=\"suggest-secondary\">${secondary}</div>`:''}
+                      </div>`;
+            }).join('');
+            open();
+          }
+          const doSearch = debounce(async () => {
+            const q = input.value.trim();
+            if (q.length < 3){ close(); return; }
+            try {
+              const results = await searchPlaces(q);
+              render(results);
+            } catch {}
+          }, 300);
+          input.addEventListener('input', doSearch);
+          input.addEventListener('focus', doSearch);
+          input.addEventListener('blur', () => setTimeout(close, 150));
+          list.addEventListener('mousedown', (e)=>{
+            const item = e.target.closest('.suggest-item');
+            if (!item) return;
+            const idx = Number(item.getAttribute('data-idx'));
+            const nodes = Array.from(list.querySelectorAll('.suggest-item'));
+            const chosen = nodes[idx];
+            input.value = chosen.querySelector('.suggest-primary').textContent;
+            close();
+          });
+          input.addEventListener('keydown', (e)=>{
+            const items = Array.from(list.querySelectorAll('.suggest-item'));
+            if (!items.length) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex+1, items.length-1); render(items.map((_,i)=>({}))); }
+            if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex-1, 0); render(items.map((_,i)=>({}))); }
+            if (e.key === 'Enter') { e.preventDefault(); if (activeIndex>=0 && items[activeIndex]){ input.value = items[activeIndex].querySelector('.suggest-primary').textContent; close(); } }
+            if (e.key === 'Escape') { close(); }
+          });
+        }
+        inputs.forEach(attachAutocomplete);
+      })();
+    </script>

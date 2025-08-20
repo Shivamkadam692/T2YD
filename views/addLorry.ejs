@@ -1,0 +1,41 @@
+<div class="dashboard-header">
+  <h1>Add New Lorry</h1>
+  <p>Register your lorry to start receiving delivery requests.</p>
+</div>
+
+<form action="/lorries/add" method="post" class="form">
+  <div class="form-group">
+    <label for="vehicleNumber">Vehicle Number:</label>
+    <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., MH12AB1234" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="vehicleType">Vehicle Type:</label>
+    <input type="text" id="vehicleType" name="vehicleType" placeholder="e.g., Truck, Mini Truck, Container" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="capacity">Capacity (tons):</label>
+    <input type="number" id="capacity" name="capacity" placeholder="Enter capacity in tons" required min="1">
+  </div>
+  
+  <div class="form-group">
+    <label for="location">Current Location:</label>
+    <input type="text" id="location" name="location" placeholder="e.g., Mumbai, Maharashtra" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="contact">Contact Number:</label>
+    <input type="tel" id="contact" name="contact" placeholder="Your contact number" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="description">Description (Optional):</label>
+    <textarea id="description" name="description" rows="3" placeholder="Additional details about the vehicle or special features..."></textarea>
+  </div>
+  
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Register Lorry</button>
+    <a href="/dashboard/transporter" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>

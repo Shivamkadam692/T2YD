@@ -1,0 +1,83 @@
+<section class="hero">
+  <h1>Transport Goods to Your Destination With Our Network</h1>
+  <p>Connect with transporters(Drivers) and shippers across the country</p>
+</section>
+
+<section class="search-container">
+  <form action="/search" method="get" class="search-form">
+    <input type="text" name="query" placeholder="Search by location, vehicle type, or goods..." required>
+    <button type="submit">Search <i class="fas fa-search"></i></button>
+  </form>
+</section>
+
+<section>
+  <h2 class="section-title">Available Lorries</h2>
+  <div class="card-container">
+    <% lorries.forEach(lorry => { %>
+      <div class="card">
+        <div class="card-header">
+          <%= lorry.vehicleType || 'Lorry' %> - <%= lorry.vehicleNumber %>
+        </div>
+        <div class="card-body">
+          <div class="card-item">
+            <i class="fas fa-user"></i>
+            <span><strong>Owner:</strong> <%= lorry.ownerName %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span><strong>Location:</strong> <%= lorry.location %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-truck"></i>
+            <span><strong>Capacity:</strong> <%= lorry.capacity || 'N/A' %> tons</span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-rupee-sign"></i>
+            <span><strong>Rate:</strong> ₹<%= lorry.rate || 'Negotiable' %> per km</span>
+          </div>
+          <a href="/lorries/<%= lorry._id %>" class="btn" style="margin-top: 1rem; display: block; text-align: center;">
+            View Details
+          </a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<section>
+  <h2 class="section-title">Available Deliveries</h2>
+  <div class="card-container">
+    <% deliveries.forEach(delivery => { %>
+      <div class="card">
+        <div class="card-header">
+          <%= delivery.goodsType %>
+        </div>
+        <div class="card-body">
+          <div class="card-item">
+            <i class="fas fa-box"></i>
+            <span><strong>Goods:</strong> <%= delivery.goodsType %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-weight-hanging"></i>
+            <span><strong>Weight:</strong> <%= delivery.weight || 'N/A' %> kg</span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-map-pin"></i>
+            <span><strong>From:</strong> <%= delivery.pickupLocation %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span><strong>To:</strong> <%= delivery.dropLocation %></span>
+          </div>
+          <div class="card-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span><strong>Date:</strong> <%= delivery.pickupDate || 'Flexible' %></span>
+          </div>
+          <a href="/deliveries/<%= delivery._id %>" class="btn" style="margin-top: 1rem; display: block; text-align: center;">
+            View Details
+          </a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</section>

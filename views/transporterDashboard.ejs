@@ -1,0 +1,216 @@
+<div class="dashboard-header">
+    <h1>Transporter Dashboard</h1>
+    <p>Welcome back, <%= user.name %>! Manage your lorries and find delivery opportunities.</p>
+</div>
+
+        <!-- My Lorries Section -->
+<section class="dashboard-section">
+    <div class="section-header">
+        <h2>My Lorries</h2>
+        <a href="/lorries/add" class="btn btn-primary">Add New Lorry</a>
+    </div>
+    
+    <div class="card-container">
+        <% if (lorries.length === 0) { %>
+            <div class="empty-state">
+                <p>No lorries yet. Add your first lorry to start getting delivery requests!</p>
+            </div>
+        <% } else { %>
+            <% lorries.forEach(lorry => { %>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="status <%= lorry.status %>"><%= lorry.status %></span>
+                        <h3><%= lorry.vehicleType %></h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-item">
+                            <strong>Vehicle:</strong> <%= lorry.vehicleNumber %>
+                        </div>
+                        <div class="card-item">
+                            <strong>Capacity:</strong> <%= lorry.capacity %> tons
+                        </div>
+                        <div class="card-item">
+                            <strong>Location:</strong> <%= lorry.location %>
+                        </div>
+                        <div class="card-item">
+                            <strong>Created:</strong> <%= new Date(lorry.createdAt).toLocaleDateString() %>
+                        </div>
+                        <div class="card-actions">
+                            <a href="/lorries/<%= lorry._id %>" class="btn btn-secondary">View Details</a>
+                            <% if (lorry.status === 'available') { %>
+                                <a href="/lorries/<%= lorry._id %>/edit" class="btn btn-edit">Edit</a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>
+
+        <!-- Available Deliveries Section -->
+<section class="dashboard-section">
+    <h2>Available Deliveries</h2>
+    
+    <div class="deliveries-container">
+        <% if (availableDeliveries.length === 0) { %>
+            <div class="empty-state">
+                <p>No available deliveries at the moment. Check back later for new opportunities!</p>
+            </div>
+        <% } else { %>
+            <% availableDeliveries.forEach(delivery => { %>
+                <div class="delivery-card">
+                    <div class="delivery-header">
+                        <h3><%= delivery.goodsType %></h3>
+                        <span class="status <%= delivery.status %>"><%= delivery.status %></span>
+                    </div>
+                    
+                    <div class="delivery-details">
+                        <div class="detail-group">
+                            <label>Shipper:</label>
+                            <span><%= delivery.shipper.name %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Weight:</label>
+                            <span><%= delivery.weight %> kg</span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Route:</label>
+                            <span><%= delivery.pickupLocation %> → <%= delivery.dropLocation %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Posted:</label>
+                            <span><%= new Date(delivery.createdAt).toLocaleDateString() %></span>
+                        </div>
+                    </div>
+                    
+                    <div class="delivery-actions">
+                        <button class="btn btn-primary" onclick="showBidForm('<%= delivery._id %>')">Send Bid</button>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>
+
+        <!-- My Requests Section -->
+<section class="dashboard-section">
+    <h2>My Requests</h2>
+    
+    <div class="requests-container">
+        <% if (requests.length === 0) { %>
+            <div class="empty-state">
+                <p>No requests sent yet. Start bidding on deliveries to see your requests here.</p>
+            </div>
+        <% } else { %>
+            <% requests.forEach(request => { %>
+                <div class="request-card">
+                    <div class="request-header">
+                        <h3>Request for <%= request.delivery ? request.delivery.goodsType : 'Unknown Goods' %></h3>
+                        <span class="status <%= request.status %>"><%= request.status %></span>
+                    </div>
+                    
+                    <div class="request-details">
+                        <div class="detail-group">
+                            <label>Shipper:</label>
+                            <span><%= request.shipper ? request.shipper.name : 'Unknown' %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Vehicle:</label>
+                            <span><%= request.lorry ? `${request.lorry.vehicleNumber} (${request.lorry.vehicleType})` : 'Unknown Vehicle' %></span>
+                        </div>
+                        <div class="detail-group">
+                            <label>Price:</label>
+                            <span class="price">₹<%= request.price || 'Not set' %></span>
+                        </div>
+                        <% if (request.delivery) { %>
+                            <div class="detail-group">
+                                <label>Route:</label>
+                                <span><%= request.delivery.pickupLocation %> → <%= request.delivery.dropLocation %></span>
+                            </div>
+                        <% } %>
+                        <div class="detail-group">
+                            <label>Sent:</label>
+                            <span><%= new Date(request.createdAt).toLocaleDateString() %></span>
+                        </div>
+                    </div>
+                    
+                    <% if (request.status === 'accepted') { %>
+                        <div class="request-actions">
+                            <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary">Track</a>
+                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
+                            <form action="/dashboard/mark-loaded/<%= request._id %>" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-outline">Mark Loaded</button>
+                            </form>
+                            <form action="/dashboard/complete-delivery/<%= request._id %>" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-success">Mark as Delivered</button>
+                            </form>
+                        </div>
+                    <% } else if (request.status === 'completed') { %>
+                        <div class="request-actions">
+                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
+                        </div>
+                    <% } %>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>
+
+<!-- Bid Modal -->
+<div id="bidModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Send Bid</h2>
+        <form action="/dashboard/send-request" method="POST" class="form">
+            <input type="hidden" id="deliveryId" name="deliveryId">
+            
+            <div class="form-group">
+                <label for="lorryId">Select Lorry:</label>
+                <select id="lorryId" name="lorryId" required>
+                    <option value="">Choose a lorry...</option>
+                    <% lorries.forEach(lorry => { %>
+                        <% if (lorry.status === 'available') { %>
+                            <option value="<%= lorry._id %>"><%= lorry.vehicleNumber %> (<%= lorry.vehicleType %>) - <%= lorry.capacity %> tons</option>
+                        <% } %>
+                    <% }) %>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Bid Price (₹):</label>
+                <input type="number" id="price" name="price" required min="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message (Optional):</label>
+                <textarea id="message" name="message" rows="3" placeholder="Add a message to the shipper..."></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send Bid</button>
+                <button type="button" class="btn btn-secondary" onclick="closeBidModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+        function showBidForm(deliveryId) {
+            document.getElementById('deliveryId').value = deliveryId;
+            document.getElementById('bidModal').style.display = 'block';
+        }
+
+        function closeBidModal() {
+            document.getElementById('bidModal').style.display = 'none';
+        }
+
+        // Close modal when clicking on X or outside the modal
+        document.querySelector('.close').onclick = closeBidModal;
+        window.onclick = function(event) {
+            const modal = document.getElementById('bidModal');
+            if (event.target === modal) {
+                closeBidModal();
+            }
+        }
+    </script>

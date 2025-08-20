@@ -1,0 +1,258 @@
+<div class="dashboard-header">
+  <h1><i class="fas fa-file-invoice"></i> Payment Receipt</h1>
+  <p><strong>Request ID:</strong> <%= payment.request._id %> | <strong>Goods:</strong> <%= payment.request.delivery ? payment.request.delivery.goodsType : 'Unknown Goods' %></p>
+</div>
+
+<section class="dashboard-section">
+  <div class="receipt-card">
+    <div class="receipt-header">
+      <h2><i class="fas fa-<%= payment.type === 'advance' ? 'money-bill-wave' : 'credit-card' %>"></i> <%= payment.type === 'advance' ? 'Advance' : 'Balance' %> Payment Receipt</h2>
+      <% if (payment.stripePaymentIntentId && payment.stripePaymentIntentId.startsWith('demo_')) { %>
+        <div class="demo-banner">
+          <i class="fas fa-flask"></i> DEMO PAYMENT
+        </div>
+      <% } %>
+    </div>
+    
+    <div class="receipt-details">
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-tag"></i> Payment Type:</div>
+        <div class="receipt-value"><%= payment.type.charAt(0).toUpperCase() + payment.type.slice(1) %></div>
+      </div>
+      
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-check-circle"></i> Status:</div>
+        <div class="receipt-value">
+          <span class="status-badge <%= payment.status %>">
+            <i class="fas fa-<%= payment.status === 'paid' ? 'check-circle' : payment.status === 'failed' ? 'times-circle' : 'clock' %>"></i>
+            <%= payment.status.toUpperCase() %>
+          </span>
+        </div>
+      </div>
+      
+      <div class="receipt-row amount-row">
+        <div class="receipt-label"><i class="fas fa-rupee-sign"></i> Amount:</div>
+        <div class="receipt-value amount">₹<%= payment.amount.toLocaleString() %></div>
+      </div>
+      
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-globe"></i> Currency:</div>
+        <div class="receipt-value"><%= payment.currency.toUpperCase() %></div>
+      </div>
+      
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-user"></i> Shipper:</div>
+        <div class="receipt-value"><%= payment.request.shipper.name %></div>
+      </div>
+      
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-truck"></i> Transporter:</div>
+        <div class="receipt-value"><%= payment.request.transporter.name %></div>
+      </div>
+      
+      <div class="receipt-row">
+        <div class="receipt-label"><i class="fas fa-calendar"></i> Created:</div>
+        <div class="receipt-value"><%= new Date(payment.createdAt).toLocaleString() %></div>
+      </div>
+      
+      <% if (payment.stripePaymentIntentId) { %>
+        <div class="receipt-row">
+          <div class="receipt-label">
+            <i class="fas fa-<%= payment.stripePaymentIntentId.startsWith('demo_') ? 'flask' : 'key' %>"></i> 
+            <%= payment.stripePaymentIntentId.startsWith('demo_') ? 'Demo ID' : 'Payment Intent' %>:
+          </div>
+          <div class="receipt-value">
+            <% if (payment.stripePaymentIntentId.startsWith('demo_')) { %>
+              <span class="demo-badge"><%= payment.stripePaymentIntentId %></span>
+            <% } else { %>
+              <%= payment.stripePaymentIntentId %>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    
+    <div class="receipt-actions">
+      <a href="/payments/request/<%= payment.request._id %>" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Payments
+      </a>
+      <button onclick="window.print()" class="btn btn-primary">
+        <i class="fas fa-print"></i> Print Receipt
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+    .receipt-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .receipt-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .receipt-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    
+    .demo-banner {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .receipt-details {
+      padding: 2rem;
+    }
+    
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .receipt-row:last-child {
+      border-bottom: none;
+    }
+    
+    .receipt-label {
+      font-weight: 600;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .receipt-value {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .amount-row {
+      background: #f8f9fa;
+      margin: 1rem -2rem;
+      padding: 1rem 2rem;
+      border-top: 2px solid #e9ecef;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .amount {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #28a745;
+    }
+    
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .status-badge.paid {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .status-badge.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .status-badge.created {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .demo-badge {
+      background: #ffc107;
+      color: #212529;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .receipt-actions {
+      padding: 2rem;
+      background: #f8f9fa;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    
+    .receipt-actions .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    @media print {
+      .receipt-actions {
+        display: none;
+      }
+      
+      .receipt-card {
+        box-shadow: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .receipt-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .receipt-actions {
+        flex-direction: column;
+      }
+    }
+  </style>

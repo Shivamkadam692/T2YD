@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>T2YD | Goods Transport Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --light-color: #ecf0f1;
+      --dark-color: #2c3e50;
+      --success-color: #27ae60;
+      --danger-color: #e74c3c;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1002;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+      z-index: 1001;
+      transition: transform 0.3s ease;
+    }
+    
+    .logo:hover {
+      transform: scale(1.05);
+    }
+    
+    .logo span {
+      color: var(--secondary-color);
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links li {
+      margin-left: 1.5rem;
+    }
+    
+    .nav-links a {
+      color: rgb(255, 220, 220);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      color: var(--secondary-color);
+    }
+    
+    .user-greeting {
+      color: white;
+      margin-right: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .user-greeting span {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: #2980b9;
+      transform: translateY(-1px);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--secondary-color);
+      color: var(--secondary-color);
+    }
+    
+    .btn-outline:hover {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
+    .btn-danger {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c0392b;
+      transform: translateY(-1px);
+    }
+    
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      z-index: 1001;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      outline: none;
+      min-width: 35px;
+      min-height: 35px;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .mobile-menu-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+    }
+    
+    .mobile-menu-toggle span {
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      margin: 3px 0;
+      transition: 0.3s ease;
+      border-radius: 2px;
+      display: block;
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(1) {
+      transform: rotate(-45deg) translate(-5px, 6px);
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .mobile-menu-toggle.active span:nth-child(3) {
+      transform: rotate(45deg) translate(-5px, -6px);
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      min-height: calc(100vh - 200px);
+    }
+    
+    footer {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 1rem 0;
+    }
+    
+    .footer-links li {
+      margin: 0 1rem;
+    }
+    
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+    }
+    
+    .copyright {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* Focus styles for accessibility */
+    a:focus, button:focus {
+      outline: 2px solid var(--secondary-color);
+      outline-offset: 2px;
+    }
+
+    /* Notification Styles */
+    .notification-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .notification-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .notification-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: var(--accent-color);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .notification-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 350px;
+      max-height: 400px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: none;
+      overflow: hidden;
+    }
+
+    .notification-dropdown.show {
+      display: block;
+    }
+
+    .notification-header {
+      padding: 1rem;
+      border-bottom: 1px solid #e1e5e9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notification-header h3 {
+      margin: 0;
+      color: var(--dark-color);
+      font-size: 1rem;
+    }
+
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: var(--secondary-color);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-decoration: underline;
+    }
+
+    .mark-all-read:hover {
+      color: #2980b9;
+    }
+
+    .notification-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .notification-item {
+      padding: 1rem;
+      border-bottom: 1px solid #292222;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .notification-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .notification-item.unread {
+      background-color: #e3f2fd;
+    }
+
+    .notification-item.unread:hover {
+      background-color: #bbdefb;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    .notification-message {
+      color: #666;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .notification-time {
+      color: #999;
+      font-size: 0.7rem;
+    }
+
+    .notification-priority {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 0.5rem;
+    }
+
+    .notification-priority.urgent {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .notification-priority.high {
+      background-color: #fff3e0;
+      color: #ef6c00;
+    }
+
+    .notification-priority.medium {
+      background-color: #e8f5e8;
+      color: #ffffff;
+    }
+
+    .notification-priority.low {
+      background-color: #bb22d3;
+      color: #7b1fa2;
+    }
+
+    .notification-footer {
+      padding: 1rem;
+      border-top: 1px solid #000000;
+      text-align: center;
+    }
+
+    .view-all {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .view-all:hover {
+      text-decoration: underline;
+      background-color: #ffffff;
+    }
+
+    .loading {
+      padding: 2rem;
+      text-align: center;
+      color: #666;
+    }
+
+    .empty-notifications {
+      padding: 2rem;
+      text-align: center;
+      color: #666;
+    }
+
+    .empty-notifications i {
+      font-size: 2rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    /* Mobile nav backdrop */
+    .nav-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      z-index: 999;
+      display: none;
+    }
+    .nav-backdrop.show { display: block; }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      body.menu-open {
+        overflow: hidden;
+      }
+      
+      header {
+        padding: 1rem;
+      }
+      
+      nav {
+        position: relative;
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .mobile-menu-toggle {
+        display: flex;
+      }
+      
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 85%;
+        max-width: 360px;
+        background-color: var(--primary-color);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        margin: 0;
+        padding: 80px 1rem 1rem;
+        overflow-y: auto;
+        will-change: transform;
+        box-shadow: -2px 0 12px rgba(0,0,0,0.2);
+      }
+      
+      .nav-links.active {
+        transform: translateX(0);
+      }
+      
+      .nav-links li {
+        margin: 0.5rem 0;
+        text-align: center;
+        width: 100%;
+        max-width: none;
+      }
+      
+      .nav-links a {
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 1rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: 1px solid rgba(255,255,255,0.08);
+        background-color: rgba(255, 255, 255, 0.06);
+      }
+      
+      .nav-links a:hover,
+      .nav-links a:active {
+        background-color: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.24);
+        transform: translateY(-1px);
+      }
+      
+      .user-greeting {
+        margin: 1rem 0;
+        text-align: center;
+        font-size: 1rem;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .user-greeting span {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 1.1rem;
+      }
+      
+      .btn {
+        padding: 0.9rem 1.2rem;
+        font-size: 1rem;
+        width: 100%;
+        text-align: center;
+        margin: 0.3rem 0;
+        border-radius: 8px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+      
+      .btn-outline {
+        border: 2px solid var(--secondary-color);
+        background-color: transparent;
+        color: var(--secondary-color);
+      }
+      
+      .btn-outline:hover {
+        background-color: var(--secondary-color);
+        color: white;
+        border-color: var(--secondary-color);
+      }
+
+      /* Mobile Notification Styles */
+      .notification-dropdown {
+        position: fixed;
+        top: 80px;
+        left: 1rem;
+        right: 1rem;
+        width: auto;
+        max-height: 60vh;
+      }
+
+      .notification-btn {
+        font-size: 1.1rem;
+        padding: 0.4rem;
+      }
+
+      .notification-badge {
+        width: 18px;
+        height: 18px;
+        font-size: 0.6rem;
+      }
+      
+      main { padding: 0 1rem; margin: 1rem auto; }
+      
+      .footer-links {
+        flex-direction: column;
+      }
+      
+      .footer-links li {
+        margin: 0.5rem 0;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      header {
+        padding: 0.8rem;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+      }
+      
+      nav {
+        gap: 0.8rem;
+      }
+      
+      .nav-links {
+        padding-top: 0.8rem;
+      }
+      
+      .nav-links li {
+        margin: 0.4rem 0;
+      }
+      
+      .nav-links a {
+        font-size: 0.95rem;
+        padding: 0.9rem 0.8rem;
+        border-radius: 6px;
+      }
+      
+      .user-greeting {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+        margin: 0.8rem 0;
+      }
+      
+      .user-greeting span {
+        font-size: 1rem;
+      }
+      
+      .btn {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        border-radius: 6px;
+      }
+      
+      main {
+        padding: 0 0.8rem;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      header {
+        padding: 0.6rem;
+      }
+      
+      .logo {
+        font-size: 1.3rem;
+      }
+      
+      nav {
+        gap: 0.6rem;
+      }
+      
+      .nav-links {
+        padding-top: 0.6rem;
+      }
+      
+      .nav-links li {
+        margin: 0.3rem 0;
+      }
+      
+      .nav-links a {
+        font-size: 0.9rem;
+        padding: 0.8rem 0.6rem;
+        border-radius: 5px;
+      }
+      
+      .user-greeting {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+        margin: 0.7rem 0;
+      }
+      
+      .btn {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+        border-radius: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="/" class="logo">T2<span>YD</span></a>
+      <ul class="nav-links" id="mobile-nav" tabindex="-1" aria-hidden="true" role="navigation" aria-label="Primary">
+        <li><a href="/">Home</a></li>
+        <% if (user) { %>
+          <% if (user.role === 'transporter') { %>
+            <li><a href="/dashboard/transporter">Dashboard</a></li>
+            <li><a href="/lorries/add">Add Lorry</a></li>
+          <% } else if (user.role === 'shipper') { %>
+            <li><a href="/dashboard/shipper">Dashboard</a></li>
+            <li><a href="/deliveries/add">Add Delivery</a></li>
+          <% } %>
+        <% } %>
+        <% if (!user) { %>
+          <li><a href="/auth/login" class="btn btn-outline">Login</a></li>
+          <li><a href="/auth/signup" class="btn">Signup</a></li>
+        <% } else { %>
+          <li class="user-greeting">Welcome, <span><%= user.name %></span> (<%= user.role%>) </li>
+          <li>
+            <div class="notification-container">
+              <button class="notification-btn" id="notificationBtn" aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+              </button>
+              <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-header">
+                  <h3>Notifications</h3>
+                  <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                </div>
+                <div class="notification-list" id="notificationList">
+                  <div class="loading">Loading notifications...</div>
+                </div>
+                <div class="notification-footer">
+                  <a href="/notifications/view" class="view-all">View all notifications</a>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li><a href="/auth/logout" class="btn btn-outline">Logout</a></li>
+        <% } %>
+      </ul>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+  </header>
+  <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
+
+  <main>
+    <%- body %>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <ul class="footer-links">
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+      <div class="copyright">
+        <p>&copy; 2025 T2YD. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Mobile menu toggle with backdrop and focus trap
+    (function(){
+      const toggle = document.getElementById('mobile-menu-toggle');
+      const nav = document.getElementById('mobile-nav');
+      const backdrop = document.getElementById('nav-backdrop');
+      if (!(toggle && nav && backdrop)) return;
+
+      let lastFocused = null;
+      const getFocusable = () => nav.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+      const firstFocusable = () => getFocusable()[0];
+      const lastFocusable = () => getFocusable()[getFocusable().length - 1];
+
+      const closeMenu = () => {
+        document.body.classList.remove('menu-open');
+        nav.classList.remove('active');
+        nav.setAttribute('aria-hidden', 'true');
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        backdrop.classList.remove('show');
+        backdrop.setAttribute('aria-hidden', 'true');
+        try { sessionStorage.removeItem('t2yd_nav_open'); } catch(_) {}
+        if (lastFocused) { lastFocused.focus(); lastFocused = null; }
+      };
+
+      const openMenu = () => {
+        lastFocused = document.activeElement;
+        document.body.classList.add('menu-open');
+        nav.classList.add('active');
+        nav.setAttribute('aria-hidden', 'false');
+        toggle.classList.add('active');
+        toggle.setAttribute('aria-expanded', 'true');
+        backdrop.classList.add('show');
+        backdrop.setAttribute('aria-hidden', 'false');
+        try { sessionStorage.setItem('t2yd_nav_open', '1'); } catch(_) {}
+        const f = firstFocusable();
+        if (f) f.focus();
+      };
+
+      toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        nav.classList.contains('active') ? closeMenu() : openMenu();
+      });
+
+      backdrop.addEventListener('click', closeMenu);
+
+      document.addEventListener('keydown', function(e){
+        if (!nav.classList.contains('active')) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeMenu(); }
+        if (e.key === 'Tab') {
+          const first = firstFocusable();
+          const last = lastFocusable();
+          if (!first || !last) return;
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+      // Persist open state across page loads for small screens
+      const smallQuery = window.matchMedia('(max-width: 768px)');
+      try {
+        if (sessionStorage.getItem('t2yd_nav_open') === '1' && smallQuery.matches) {
+          openMenu();
+        }
+      } catch(_) {}
+
+      // If viewport leaves mobile size, ensure menu is closed and state cleared
+      const handleViewportChange = () => {
+        if (!smallQuery.matches && nav.classList.contains('active')) {
+          closeMenu();
+        }
+      };
+      if (smallQuery.addEventListener) {
+        smallQuery.addEventListener('change', handleViewportChange);
+      } else if (smallQuery.addListener) {
+        smallQuery.addListener(handleViewportChange);
+      }
+    })();
+  </script>
+  <% if (user) { %>
+  <script>
+    (function() {
+      const currentUserId = '<%= user._id %>';
+      const socket = io();
+      const notificationBtn = document.getElementById('notificationBtn');
+      const notificationDropdown = document.getElementById('notificationDropdown');
+      const notificationBadge = document.getElementById('notificationBadge');
+      const notificationList = document.getElementById('notificationList');
+      const markAllReadBtn = document.getElementById('markAllRead');
+      
+      let notifications = [];
+      let unreadCount = 0;
+
+      // Join user's notification room
+      socket.emit('joinUser', currentUserId);
+
+      // Load notifications on page load
+      loadNotifications();
+
+      // Toggle notification dropdown
+      notificationBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('show');
+        if (notificationDropdown.classList.contains('show')) {
+          loadNotifications();
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+          notificationDropdown.classList.remove('show');
+        }
+      });
+
+      // Mark all notifications as read
+      markAllReadBtn.addEventListener('click', function() {
+        markAllAsRead();
+      });
+
+      // Listen for new notifications
+      socket.on('newNotification', function(notification) {
+        console.log('Received new notification:', notification);
+        addNotificationToList(notification);
+        updateBadge();
+        showToast(notification.title, notification.message);
+      });
+
+      // Load notifications from server
+      async function loadNotifications() {
+        try {
+          const response = await fetch('/notifications?limit=10');
+          const data = await response.json();
+          
+          notifications = data.notifications;
+          unreadCount = data.unreadCount;
+          
+          renderNotifications();
+          updateBadge();
+        } catch (error) {
+          console.error('Error loading notifications:', error);
+          notificationList.innerHTML = '<div class="loading">Error loading notifications</div>';
+        }
+      }
+
+      // Render notifications in the list
+      function renderNotifications() {
+        if (notifications.length === 0) {
+          notificationList.innerHTML = `
+            <div class="empty-notifications">
+              <i class="fas fa-bell-slash"></i>
+              <p>No notifications yet</p>
+            </div>
+          `;
+          return;
+        }
+
+        notificationList.innerHTML = notifications.map(notification => `
+          <div class="notification-item ${notification.isRead ? '' : 'unread'}" 
+               data-id="${notification._id}" onclick="markAsRead('${notification._id}')">
+            <div class="notification-title">
+              ${notification.title}
+              <span class="notification-priority ${notification.priority}">${notification.priority}</span>
+            </div>
+            <div class="notification-message">${notification.message}</div>
+            <div class="notification-time">${formatTime(notification.createdAt)}</div>
+          </div>
+        `).join('');
+      }
+
+      // Add new notification to list
+      function addNotificationToList(notification) {
+        const notificationItem = document.createElement('div');
+        notificationItem.className = 'notification-item unread';
+        notificationItem.setAttribute('data-id', notification.id);
+        notificationItem.onclick = () => markAsRead(notification.id);
+        
+        notificationItem.innerHTML = `
+          <div class="notification-title">
+            ${notification.title}
+            <span class="notification-priority ${notification.priority}">${notification.priority}</span>
+          </div>
+          <div class="notification-message">${notification.message}</div>
+          <div class="notification-time">Just now</div>
+        `;
+
+        notificationList.insertBefore(notificationItem, notificationList.firstChild);
+        
+        // Remove empty state if it exists
+        const emptyState = notificationList.querySelector('.empty-notifications');
+        if (emptyState) {
+          emptyState.remove();
+        }
+      }
+
+      // Mark notification as read
+      async function markAsRead(notificationId) {
+        try {
+          await fetch(`/notifications/${notificationId}/read`, {
+            method: 'PUT'
+          });
+          
+          const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+          if (notificationItem) {
+            notificationItem.classList.remove('unread');
+          }
+          
+          unreadCount = Math.max(0, unreadCount - 1);
+          updateBadge();
+        } catch (error) {
+          console.error('Error marking notification as read:', error);
+        }
+      }
+
+      // Mark all notifications as read
+      async function markAllAsRead() {
+        try {
+          await fetch('/notifications/mark-all-read', {
+            method: 'PUT'
+          });
+          
+          const unreadItems = notificationList.querySelectorAll('.notification-item.unread');
+          unreadItems.forEach(item => item.classList.remove('unread'));
+          
+          unreadCount = 0;
+          updateBadge();
+        } catch (error) {
+          console.error('Error marking all notifications as read:', error);
+        }
+      }
+
+      // Update notification badge
+      function updateBadge() {
+        if (unreadCount > 0) {
+          notificationBadge.style.display = 'flex';
+          notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+        } else {
+          notificationBadge.style.display = 'none';
+        }
+      }
+
+      // Format time
+      function formatTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+        
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 7) return `${days}d ago`;
+        
+        return date.toLocaleDateString();
+      }
+
+      // Show toast notification
+      function showToast(title, message) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: white;
+          border-left: 4px solid var(--secondary-color);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          padding: 1rem;
+          border-radius: 4px;
+          z-index: 10000;
+          max-width: 300px;
+          animation: slideIn 0.3s ease;
+        `;
+        
+        toast.innerHTML = `
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">${title}</div>
+          <div style="font-size: 0.9rem; color: #666;">${message}</div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // Remove toast after 5 seconds
+        setTimeout(() => {
+          toast.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 300);
+        }, 5000);
+      }
+
+      // Add CSS animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+          from { transform: translateX(0); opacity: 1; }
+          to { transform: translateX(100%); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    })();
+  </script>
+  <% } %>
+</body>
+</html>

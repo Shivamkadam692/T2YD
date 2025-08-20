@@ -1,0 +1,51 @@
+<div class="container">
+    <h1>Lorry Details</h1>
+    
+    <div class="lorry-card">
+        <h2>Lorry #<%= lorry._id.toString().slice(-6) %></h2>
+        
+        <div class="lorry-info">
+            <div class="info-group">
+                <label>Owner Name:</label>
+                <span><%= lorry.ownerName %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Vehicle Type:</label>
+                <span><%= lorry.vehicleType %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Location:</label>
+                <span><%= lorry.location %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Capacity:</label>
+                <span><%= lorry.capacity %> tons</span>
+            </div>
+            
+            <div class="info-group">
+                <label>Status:</label>
+                <span class="status <%= lorry.status %>"><%= lorry.status %></span>
+            </div>
+            
+            <% if (lorry.description) { %>
+            <div class="info-group">
+                <label>Description:</label>
+                <span><%= lorry.description %></span>
+            </div>
+            <% } %>
+        </div>
+        
+        <div class="actions">
+            <% if (user && user.role === 'transporter') { %>
+                <a href="/lorries/<%= lorry._id %>/edit" class="btn btn-edit">Edit Lorry</a>
+                <form action="/lorries/<%= lorry._id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this lorry?')">Delete Lorry</button>
+                </form>
+            <% } %>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>

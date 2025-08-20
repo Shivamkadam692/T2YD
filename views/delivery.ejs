@@ -1,0 +1,51 @@
+<div class="container">
+    <h1>Delivery Details</h1>
+    
+    <div class="delivery-card">
+        <h2>Delivery #<%= delivery._id.toString().slice(-6) %></h2>
+        
+        <div class="delivery-info">
+            <div class="info-group">
+                <label>Pickup Location:</label>
+                <span><%= delivery.pickupLocation %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Drop Location:</label>
+                <span><%= delivery.dropLocation %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Goods Type:</label>
+                <span><%= delivery.goodsType %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Weight:</label>
+                <span><%= delivery.weight %> kg</span>
+            </div>
+            
+            <div class="info-group">
+                <label>Status:</label>
+                <span class="status <%= delivery.status %>"><%= delivery.status %></span>
+            </div>
+            
+            <% if (delivery.description) { %>
+            <div class="info-group">
+                <label>Description:</label>
+                <span><%= delivery.description %></span>
+            </div>
+            <% } %>
+        </div>
+        
+        <div class="actions">
+            <% if (user && user.role === 'shipper') { %>
+                <a href="/deliveries/<%= delivery._id %>/edit" class="btn btn-edit">Edit Delivery</a>
+                <form action="/deliveries/<%= delivery._id %>?_method=DELETE" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this delivery?')">Delete Delivery</button>
+                </form>
+            <% } %>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>

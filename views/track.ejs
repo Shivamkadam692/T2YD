@@ -1,0 +1,306 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<style>
+  #map {
+    height: 70vh;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .track-panel {
+    background: white;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .distance-box {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
+  }
+</style>
+
+<% // Ensure safe local bindings to avoid template errors %>
+<% const _request = typeof request !== 'undefined' && request ? request : {}; %>
+<% const _user = typeof user !== 'undefined' && user ? user : {}; %>
+<% const accepted = !!(_request.acceptedAt); %>
+<% const loaded = !!(_request.loadedAt); %>
+<% const completed = (_request.status === 'completed') || !!(_request.completedAt); %>
+
+<div class="dashboard-header">
+  <h1>Live Tracking</h1>
+  <p>Delivery: <strong><%= _request.delivery ? _request.delivery.goodsType : 'Unknown Goods' %></strong>
+    | Shipper: <%= _request.shipper ? _request.shipper.name : 'Unknown' %>
+    | Transporter: <%= _request.transporter ? _request.transporter.name : 'Unknown' %>
+  </p>
+  <div class="phase-badges">
+    <span class="badge <%= accepted && !loaded ? 'active' : (accepted ? 'done' : 'pending') %>">Accepted</span>
+    <span class="badge <%= loaded && !completed ? 'active' : (loaded ? 'done' : 'pending') %>">Loading</span>
+    <span class="badge <%= (accepted && loaded && !completed) ? 'active' : ((accepted && !completed) ? 'done' : 'pending') %>">En route</span>
+    <span class="badge <%= completed ? 'done' : 'pending' %>">Delivered</span>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<div class="track-panel">
+  <div class="form-actions">
+    <button id="startBtn" class="btn btn-primary">Start Sharing My Location</button>
+    <button id="stopBtn" class="btn btn-secondary">Stop Sharing</button>
+    <% // Safe back-to-dashboard link decision %>
+    <% const backTo = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? '/dashboard/shipper' : '/dashboard/transporter'; %>
+    <a href="<%= backTo %>" class="btn btn-outline">Back to Dashboard</a>
+  </div>
+  <p style="margin-top: .5rem; color:#666;">Both sides will see each other's live movement on the map while the request is active.</p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+<!-- Server-provided data as raw JSON to avoid EJS tags inside JS source -->
+<script id="track-data" type="application/json"><%- JSON.stringify({
+  requestId: _request._id ? String(_request._id) : '',
+  role: (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? 'shipper' : 'transporter',
+  pickupText: _request.delivery && _request.delivery.pickupLocation ? _request.delivery.pickupLocation : '',
+  dropText: _request.delivery && _request.delivery.dropLocation ? _request.delivery.dropLocation : '',
+  shipperLocation: (_request && _request.shipperLocation && _request.shipperLocation.lat != null) ? { lat: _request.shipperLocation.lat, lng: _request.shipperLocation.lng } : null,
+  transporterLocation: (_request && _request.transporterLocation && _request.transporterLocation.lat != null) ? { lat: _request.transporterLocation.lat, lng: _request.transporterLocation.lng } : null
+}) %></script>
+
+<script>
+  // Parse server-provided JSON data
+  let serverData = {};
+  try {
+    serverData = JSON.parse(document.getElementById('track-data').textContent || '{}');
+  } catch (e) {
+    console.error('Failed to parse server track data', e);
+  }
+
+  const requestId = serverData.requestId || '';
+  const role = serverData.role || 'transporter';
+  const pickupText = serverData.pickupText || '';
+  const dropText = serverData.dropText || '';
+
+  // Initialize map with reasonable zoom
+  const map = L.map('map').setView([20.5937, 78.9629], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+  // Explicit icons so markers are always visible
+  const defaultIconUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
+  const defaultIcon2xUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png';
+  const defaultShadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
+  const shipperIcon = L.icon({ iconUrl: defaultIconUrl, iconRetinaUrl: defaultIcon2xUrl, shadowUrl: defaultShadowUrl, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41] });
+  const transporterIcon = L.icon({ iconUrl: defaultIconUrl, iconRetinaUrl: defaultIcon2xUrl, shadowUrl: defaultShadowUrl, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41] });
+
+  let shipperMarker = null, transporterMarker = null;
+  let pickupMarker = null, dropMarker = null, distanceControl = null;
+  let routeToPickupMain = null, routeToPickupAlts = [];
+  let routePickupDropMain = null, routePickupDropAlts = [];
+
+  function geocode(query) {
+    if (!query) return Promise.resolve(null);
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+    return fetch(url, { headers: { 'Accept': 'application/json' } })
+      .then(r => r.json())
+      .then(arr => (arr && arr[0]) ? { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) } : null)
+      .catch(() => null);
+  }
+
+  function haversineKm(a, b) {
+    const R = 6371;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  }
+
+  function updateDistanceControl(km) {
+    if (role !== 'transporter') return;
+    const text = `Pickup \u2194 Drop: ${km.toFixed(1)} km`;
+    if (!distanceControl) {
+      distanceControl = L.control({ position: 'topright' });
+      distanceControl.onAdd = function () {
+        const div = L.DomUtil.create('div', 'distance-box');
+        div.innerHTML = text;
+        return div;
+      };
+      distanceControl.addTo(map);
+    } else {
+      const div = distanceControl.getContainer();
+      if (div) div.innerHTML = text;
+    }
+  }
+
+  function fitAllBounds() {
+    let bounds = null;
+    const add = (ll) => {
+      if (!ll) return;
+      if (!bounds) bounds = L.latLngBounds([ll]); else bounds.extend(ll);
+    };
+    if (shipperMarker) add(shipperMarker.getLatLng());
+    if (transporterMarker) add(transporterMarker.getLatLng());
+    if (pickupMarker) add(pickupMarker.getLatLng());
+    if (dropMarker) add(dropMarker.getLatLng());
+    if (routeToPickupMain) bounds = bounds ? bounds.extend(routeToPickupMain.getBounds()) : routeToPickupMain.getBounds();
+    if (routePickupDropMain) bounds = bounds ? bounds.extend(routePickupDropMain.getBounds()) : routePickupDropMain.getBounds();
+    if (bounds) map.fitBounds(bounds, { padding: [50, 50] });
+  }
+
+  async function fetchRoute(from, to, includeAlternatives = true) {
+    const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson${includeAlternatives ? '&alternatives=true' : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Routing failed');
+    const data = await res.json();
+    if (!data.routes || !data.routes.length) throw new Error('No routes');
+    return data.routes;
+  }
+
+  function clearRouteLayers(isToPickup) {
+    if (isToPickup) {
+      if (routeToPickupMain) { map.removeLayer(routeToPickupMain); routeToPickupMain = null; }
+      routeToPickupAlts.forEach(l => map.removeLayer(l));
+      routeToPickupAlts = [];
+    } else {
+      if (routePickupDropMain) { map.removeLayer(routePickupDropMain); routePickupDropMain = null; }
+      routePickupDropAlts.forEach(l => map.removeLayer(l));
+      routePickupDropAlts = [];
+    }
+  }
+
+  async function drawRoute(fromLL, toLL, isToPickup) {
+    try {
+      const routes = await fetchRoute({ lat: fromLL.lat, lng: fromLL.lng }, { lat: toLL.lat, lng: toLL.lng }, true);
+      clearRouteLayers(isToPickup);
+      routes.forEach((r, idx) => {
+        const coords = r.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+        const isMain = idx === 0;
+        const style = isMain
+          ? { color: isToPickup ? '#e67e22' : '#2ecc71', weight: 5 }
+          : { color: isToPickup ? '#e67e22' : '#2ecc71', weight: 3, dashArray: '4,6', opacity: 0.7 };
+        const poly = L.polyline(coords, style).addTo(map);
+        if (isToPickup) {
+          if (isMain) routeToPickupMain = poly; else routeToPickupAlts.push(poly);
+        } else {
+          if (isMain) routePickupDropMain = poly; else routePickupDropAlts.push(poly);
+        }
+      });
+      fitAllBounds();
+    } catch (e) {
+      // ignore routing errors
+    }
+  }
+
+  // debounce helper to limit routing frequency
+  function debounce(fn, wait) {
+    let t;
+    return function (...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
+  const debouncedRouteToPickup = debounce(() => {
+    if (role === 'transporter' && transporterMarker && pickupMarker) {
+      drawRoute(transporterMarker.getLatLng(), pickupMarker.getLatLng(), true);
+    }
+  }, 2000);
+
+  function setMarker(isShipper, lat, lng) {
+    const pos = [lat, lng];
+    if (isShipper) {
+      if (!shipperMarker) {
+        shipperMarker = L.marker(pos, { title: 'Shipper', icon: shipperIcon }).addTo(map).bindPopup('Shipper');
+      } else {
+        shipperMarker.setLatLng(pos);
+      }
+    } else {
+      if (!transporterMarker) {
+        transporterMarker = L.marker(pos, { title: 'Transporter', icon: transporterIcon }).addTo(map).bindPopup('Transporter');
+      } else {
+        transporterMarker.setLatLng(pos);
+      }
+    }
+    fitAllBounds();
+  }
+
+  // Seed existing last known locations (if present)
+  if (serverData.shipperLocation) {
+    setMarker(true, serverData.shipperLocation.lat, serverData.shipperLocation.lng);
+  }
+  if (serverData.transporterLocation) {
+    setMarker(false, serverData.transporterLocation.lat, serverData.transporterLocation.lng);
+  }
+
+  // Plot pickup and drop and compute straight-line distance for transporter
+  Promise.all([geocode(pickupText), geocode(dropText)]).then(([p, d]) => {
+    if (p && !pickupMarker) {
+      pickupMarker = L.marker([p.lat, p.lng], { title: 'Pickup' }).addTo(map).bindPopup(`Pickup: ${pickupText}`);
+    }
+    if (d && !dropMarker) {
+      dropMarker = L.marker([d.lat, d.lng], { title: 'Drop' }).addTo(map).bindPopup(`Drop: ${dropText}`);
+    }
+    if (pickupMarker && dropMarker) {
+      const km = haversineKm(pickupMarker.getLatLng(), dropMarker.getLatLng());
+      updateDistanceControl(km);
+      fitAllBounds();
+      // Draw driving route pickup -> drop
+      drawRoute(pickupMarker.getLatLng(), dropMarker.getLatLng(), false);
+    }
+  }).catch(()=>{});
+
+  const socket = (typeof io !== 'undefined') ? io() : null;
+  if (socket) {
+    socket.on('connect', () => {
+      if (requestId) socket.emit('join', { requestId });
+    });
+
+    socket.on('locationUpdate', ({ role: r, lat, lng }) => {
+      setMarker(r === 'shipper', lat, lng);
+      if (r !== 'shipper') {
+        // transporter moved; refresh route to pickup
+        debouncedRouteToPickup();
+      }
+    });
+  }
+
+  let intervalId = null;
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  function startSharing() {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    if (intervalId !== null) return; // already tracking
+    const options = { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 };
+    const sendOnce = () => {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude, longitude } = pos.coords;
+        if (socket) socket.emit('locationUpdate', { requestId, role, lat: latitude, lng: longitude });
+      }, err => {
+        console.error(err);
+      }, options);
+    };
+    sendOnce();
+    intervalId = setInterval(sendOnce, 5000);
+  }
+
+  function stopSharing() {
+    if (intervalId !== null) {
+      clearInterval(intervalId);
+      intervalId = null;
+      if (socket) socket.emit('stopTracking', { requestId, role });
+    }
+  }
+
+  if (startBtn) startBtn.addEventListener('click', startSharing);
+  if (stopBtn) stopBtn.addEventListener('click', stopSharing);
+
+  window.addEventListener('beforeunload', stopSharing);
+</script>
