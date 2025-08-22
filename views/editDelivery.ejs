@@ -75,6 +75,16 @@
         </div>
         
         <div class="form-group">
+            <label for="pickupDateTime">Pickup Date and Time:</label>
+            <input type="datetime-local" id="pickupDateTime" name="pickupDateTime" value="<%= delivery.pickupDateTime ? delivery.pickupDateTime.toISOString().slice(0, 16) : '' %>" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="expectedDeliveryDate">Expected Delivery Date:</label>
+            <input type="date" id="expectedDeliveryDate" name="expectedDeliveryDate" value="<%= delivery.expectedDeliveryDate ? delivery.expectedDeliveryDate.toISOString().slice(0, 10) : '' %>" required>
+        </div>
+        
+        <div class="form-group">
             <label for="goodsType">Goods Type:</label>
             <input type="text" id="goodsType" name="goodsType" value="<%= delivery.goodsType %>" required>
         </div>

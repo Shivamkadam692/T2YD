@@ -1,0 +1,21 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Set New Password</h2>
+      <p>Enter a new password for your account</p>
+    </div>
+    <form method="post" action="/auth/reset/<%= token %>" class="form">
+      <div class="form-group">
+        <label for="password">New Password</label>
+        <input id="password" type="password" name="password" required autocomplete="new-password" />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" onclick="window.location='/auth/login'">Cancel</button>
+        <button type="submit" class="btn btn-primary">Set password</button>
+      </div>
+    </form>
+    <div class="auth-footer">
+      <a href="/auth/login">Back to login</a>
+    </div>
+  </div>
+</div>

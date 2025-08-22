@@ -8,6 +8,8 @@ const deliverySchema = new mongoose.Schema({
   weight: Number,
   pickupLocation: String,
   dropLocation: String,
+  pickupDateTime: { type: Date, required: true },
+  expectedDeliveryDate: { type: Date, required: true },
   status: { type: String, enum: ['pending', 'in-transit', 'delivered', 'cancelled'], default: 'pending' },
   description: String,
   requests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Request' }],

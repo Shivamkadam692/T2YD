@@ -61,9 +61,12 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <!-- Server-provided data as raw JSON to avoid EJS tags inside JS source -->
+<% const roleComputed = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? 'shipper' : 'transporter'; %>
 <script id="track-data" type="application/json"><%- JSON.stringify({
   requestId: _request._id ? String(_request._id) : '',
-  role: (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? 'shipper' : 'transporter',
+  role: roleComputed,
+  userId: _user && _user._id ? String(_user._id) : null,
+  requestStatus: _request && _request.status ? _request.status : null,
   pickupText: _request.delivery && _request.delivery.pickupLocation ? _request.delivery.pickupLocation : '',
   dropText: _request.delivery && _request.delivery.dropLocation ? _request.delivery.dropLocation : '',
   shipperLocation: (_request && _request.shipperLocation && _request.shipperLocation.lat != null) ? { lat: _request.shipperLocation.lat, lng: _request.shipperLocation.lng } : null,
@@ -303,4 +306,110 @@
   if (stopBtn) stopBtn.addEventListener('click', stopSharing);
 
   window.addEventListener('beforeunload', stopSharing);
+</script>
+
+<!-- Chat panel -->
+<div class="track-panel" id="chatPanel" style="margin-top:1rem;">
+  <h3>Messages</h3>
+  <div id="messages" style="max-height:300px; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px; background:#fff;"></div>
+  <form id="msgForm" style="margin-top:.5rem; display:flex; gap:.5rem;">
+    <input id="msgInput" type="text" placeholder="Type a message" style="flex:1; padding:.5rem; border-radius:6px; border:1px solid #ddd;" />
+    <button id="sendBtn" class="btn btn-primary" type="submit">Send</button>
+  </form>
+  <p id="chatNote" style="color:#666; margin-top:.5rem; font-size:.9rem;"></p>
+</div>
+
+<script>
+  // Chat client logic
+  (function(){
+    const serverDataEl = document.getElementById('track-data');
+    let sdata = {};
+    try { sdata = JSON.parse(serverDataEl.textContent || '{}'); } catch (e) { }
+    const requestId = sdata.requestId;
+    const userId = sdata.userId;
+    const requestStatus = sdata.requestStatus;
+    const allowedStatuses = ['pending','accepted','in-transit'];
+
+    const messagesEl = document.getElementById('messages');
+    const msgForm = document.getElementById('msgForm');
+    const msgInput = document.getElementById('msgInput');
+    const chatNote = document.getElementById('chatNote');
+
+    function appendMessage(msg) {
+      const div = document.createElement('div');
+      div.style.padding = '.4rem .6rem';
+      div.style.borderRadius = '6px';
+      div.style.marginBottom = '.4rem';
+      div.style.background = (msg.sender && String(msg.sender) === String(userId)) ? '#e6f7ff' : '#f6f6f6';
+      div.innerHTML = `<strong>${msg.senderName ? msg.senderName : (msg.sender === userId ? 'You' : 'User')}</strong> <span style="float:right;color:#666;font-size:.8rem">${new Date(msg.createdAt).toLocaleTimeString()}</span><div style="margin-top:.25rem">${escapeHtml(msg.text)}</div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    async function loadMessages(){
+      if (!requestId) return;
+      try {
+        const res = await fetch(`/dashboard/requests/${requestId}/messages`);
+        if (!res.ok) return;
+        const data = await res.json();
+        messagesEl.innerHTML = '';
+        data.messages.forEach(m => {
+          // normalize sender name
+          m.senderName = m.sender && m.sender.name ? m.sender.name : (m.sender ? m.sender : 'User');
+          appendMessage(m);
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function sendMessage(text){
+      if (!requestId) return;
+      try {
+        const res = await fetch(`/dashboard/requests/${requestId}/messages`, {
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ text })
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(()=>({}));
+          console.error('Send failed', err);
+          return;
+        }
+        msgInput.value = '';
+      } catch (e) { console.error(e); }
+    }
+
+    // Disable messaging if status not allowed
+    if (!allowedStatuses.includes(requestStatus)){
+      msgInput.disabled = true;
+      document.getElementById('sendBtn').disabled = true;
+      chatNote.textContent = 'Messaging is available only after bid acceptance and until delivery completion.';
+    } else {
+      chatNote.textContent = '';
+    }
+
+    msgForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const txt = msgInput.value && msgInput.value.trim();
+      if (!txt) return;
+      sendMessage(txt);
+    });
+
+    // Socket listener for newMessage
+    if (typeof io !== 'undefined'){
+      const sock = io();
+      sock.on('connect', ()=>{
+        if (requestId) sock.emit('join', { requestId });
+      });
+      sock.on('newMessage', (payload)=>{
+        if (!payload || !payload.requestId || String(payload.requestId) !== String(requestId)) return;
+        // payload may not include senderName; append directly
+        const msg = { sender: payload.sender, text: payload.text || payload.text, createdAt: payload.createdAt || new Date() };
+        msg.senderName = (payload.sender === userId) ? 'You' : undefined;
+        appendMessage(msg);
+      });
+    }
+
+    // initial load
+    loadMessages();
+  })();
 </script>

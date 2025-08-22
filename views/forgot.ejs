@@ -1,0 +1,21 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Reset Password</h2>
+      <p>Enter your account email to receive a reset link</p>
+    </div>
+    <form method="post" action="/auth/forgot" class="form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" required autocomplete="email" />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" onclick="window.location='/auth/login'">Cancel</button>
+        <button type="submit" class="btn btn-primary">Send reset link</button>
+      </div>
+    </form>
+    <div class="auth-footer">
+      <a href="/auth/login">Back to login</a>
+    </div>
+  </div>
+</div>

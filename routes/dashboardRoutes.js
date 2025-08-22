@@ -6,6 +6,7 @@ const Lorry = require('../models/Lorry');
 const Request = require('../models/Request');
 const User = require('../models/User');
 const NotificationService = require('../services/notificationService');
+const mongoose = require('mongoose');
 
 // Shipper Dashboard
 router.get('/shipper', requireLogin, requireRole('shipper'), async (req, res) => {
@@ -106,6 +107,14 @@ router.post('/send-request', requireLogin, requireRole('transporter'), async (re
     if (!delivery) {
       return res.status(404).json({ error: 'Delivery not found' });
     }
+    if (delivery.status !== 'pending') {
+      return res.status(400).json({ error: 'Delivery is not available for bidding' });
+    }
+  // Validate lorry ownership and availability
+  const lorry = await Lorry.findById(lorryId);
+  if (!lorry) return res.status(404).json({ error: 'Lorry not found' });
+  if (lorry.transporter.toString() !== req.session.userId) return res.status(403).json({ error: 'You do not own this lorry' });
+  if (lorry.status !== 'available') return res.status(400).json({ error: 'Lorry is not available' });
     
     const request = new Request({
       shipper: delivery.shipper,
@@ -247,5 +256,62 @@ router.post('/complete-delivery/:requestId', requireLogin, requireRole('transpor
     res.status(500).render('error', { message: 'Error completing delivery' });
   }
 });
+
+  // Get messages for a request
+  router.get('/requests/:requestId/messages', requireLogin, async (req, res) => {
+    try {
+      const request = await Request.findById(req.params.requestId).populate('messages.sender', 'name');
+      if (!request) return res.status(404).json({ error: 'Request not found' });
+
+      const userId = req.session.userId;
+      if (request.shipper.toString() !== userId && request.transporter.toString() !== userId) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
+      res.json({ messages: request.messages });
+    } catch (e) {
+      res.status(500).json({ error: 'Error fetching messages' });
+    }
+  });
+
+  // Post a message to a request (only between shipper and transporter)
+  router.post('/requests/:requestId/messages', requireLogin, async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text) return res.status(400).json({ error: 'Message text required' });
+
+      const request = await Request.findById(req.params.requestId);
+      if (!request) return res.status(404).json({ error: 'Request not found' });
+
+      const userId = req.session.userId;
+      if (request.shipper.toString() !== userId && request.transporter.toString() !== userId) {
+        return res.status(403).json({ error: 'Unauthorized' });
+      }
+
+      // Only allow messaging from acceptance until delivery completed/payment completed
+      if (request.status !== 'accepted' && request.status !== 'in-transit' && request.status !== 'pending') {
+        return res.status(400).json({ error: 'Messaging not allowed for this request status' });
+      }
+
+    const message = { sender: new mongoose.Types.ObjectId(userId), text };
+      request.messages.push(message);
+      await request.save();
+
+      // Emit via Socket.IO to both parties in request room
+      if (global.io) {
+        global.io.to(request._id.toString()).emit('newMessage', {
+          requestId: request._id,
+          sender: userId,
+          text,
+          createdAt: new Date()
+        });
+      }
+
+      res.json({ success: true });
+    } catch (e) {
+      console.error('Error posting message:', e);
+      res.status(500).json({ error: 'Error posting message' });
+    }
+  });
 
 module.exports = router;

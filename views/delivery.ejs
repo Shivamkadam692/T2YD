@@ -16,6 +16,16 @@
             </div>
             
             <div class="info-group">
+                <label>Pickup Date & Time:</label>
+                <span><%= delivery.pickupDateTime ? new Date(delivery.pickupDateTime).toLocaleString() : 'Not specified' %></span>
+            </div>
+            
+            <div class="info-group">
+                <label>Expected Delivery Date:</label>
+                <span><%= delivery.expectedDeliveryDate ? new Date(delivery.expectedDeliveryDate).toLocaleDateString() : 'Not specified' %></span>
+            </div>
+            
+            <div class="info-group">
                 <label>Goods Type:</label>
                 <span><%= delivery.goodsType %></span>
             </div>
@@ -44,6 +54,8 @@
                 <form action="/deliveries/<%= delivery._id %>?_method=DELETE" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this delivery?')">Delete Delivery</button>
                 </form>
+            <% } else if (user && user.role === 'transporter' && delivery.status === 'pending') { %>
+                <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Book Delivery</a>
             <% } %>
             <a href="/" class="btn btn-secondary">Back to Home</a>
         </div>

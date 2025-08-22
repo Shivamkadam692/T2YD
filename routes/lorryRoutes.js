@@ -24,9 +24,18 @@ router.get('/:id', async (req, res) => {
     if (!lorry) {
       return res.status(404).render('error', { message: 'Lorry not found' });
     }
-    res.render('lorry', { lorry });
+    
+    // Find nearby deliveries based on lorry location
+    const Delivery = require('../models/Delivery');
+    const nearbyDeliveries = await Delivery.find({
+      status: 'pending',
+      pickupLocation: { $regex: new RegExp(lorry.location.split(',')[0], 'i') } // Match city/area part of the location
+    }).populate('shipper', 'name').limit(5);
+    
+    res.render('lorry', { lorry, nearbyDeliveries });
   } catch (error) {
-    res.status(500).render('error', { message: 'Error finding lorry' });
+    console.error(error);
+    res.status(500).render('error', { message: 'Error finding lorry or nearby deliveries' });
   }
 });
 

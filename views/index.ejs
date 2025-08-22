@@ -38,6 +38,12 @@
           <a href="/lorries/<%= lorry._id %>" class="btn" style="margin-top: 1rem; display: block; text-align: center;">
             View Details
           </a>
+          <!-- Assign lorry button: redirects guests to login -->
+          <% if (!locals.user) { %>
+            <a href="/auth/login" class="btn btn-outline" style="margin-top: .5rem; display:block; text-align:center;">Assign Lorry</a>
+          <% } else { %>
+            <a href="/lorries/<%= lorry._id %>" class="btn btn-outline" style="margin-top: .5rem; display:block; text-align:center;">Assign Lorry</a>
+          <% } %>
         </div>
       </div>
     <% }) %>
@@ -76,6 +82,12 @@
           <a href="/deliveries/<%= delivery._id %>" class="btn" style="margin-top: 1rem; display: block; text-align: center;">
             View Details
           </a>
+          <!-- Book delivery button: guests -> login; authenticated -> go to bid page -->
+          <% if (!locals.user) { %>
+            <a href="/auth/login" class="btn btn-primary" style="margin-top: .5rem; display:block; text-align:center;">Book Delivery</a>
+          <% } else if (locals.user.role === 'transporter' && delivery.status === 'pending') { %>
+            <a href="/bid/<%= delivery._id %>" class="btn btn-primary" style="margin-top: .5rem; display:block; text-align:center;">Book Delivery</a>
+          <% } %>
         </div>
       </div>
     <% }) %>

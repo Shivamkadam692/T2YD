@@ -14,6 +14,13 @@ const requestSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'completed'], default: 'pending' },
   price: Number,
   message: String,
+  messages: [
+    {
+      sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      text: String,
+      createdAt: { type: Date, default: Date.now }
+    }
+  ],
   shipperLocation: coordinateSchema,
   transporterLocation: coordinateSchema,
   trackingActiveShipper: { type: Boolean, default: false },

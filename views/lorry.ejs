@@ -48,4 +48,34 @@
             <a href="/" class="btn btn-secondary">Back to Home</a>
         </div>
     </div>
+    
+    <% if (typeof nearbyDeliveries !== 'undefined' && nearbyDeliveries.length > 0 && user && user.role === 'transporter' && lorry.status === 'available') { %>
+    <div class="nearby-deliveries">
+        <h2>Available Deliveries Near This Lorry</h2>
+        <div class="delivery-list">
+            <% nearbyDeliveries.forEach(delivery => { %>
+                <div class="delivery-item">
+                    <div class="delivery-info">
+                        <h3>Delivery #<%= delivery._id.toString().slice(-6) %></h3>
+                        <div class="delivery-details">
+                            <p><strong>Pickup:</strong> <%= delivery.pickupLocation %></p>
+                            <p><strong>Drop:</strong> <%= delivery.dropLocation %></p>
+                            <p><strong>Goods:</strong> <%= delivery.goodsType %> (<%= delivery.weight %> kg)</p>
+                            <p><strong>Pickup Date:</strong> <%= new Date(delivery.pickupDateTime).toLocaleString() %></p>
+                        </div>
+                    </div>
+                    <div class="delivery-actions">
+                        <a href="/deliveries/<%= delivery._id %>" class="btn btn-secondary">View Details</a>
+                        <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Book Delivery</a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <% } else if (user && user.role === 'transporter' && lorry.status === 'available') { %>
+    <div class="nearby-deliveries">
+        <h2>Available Deliveries Near This Lorry</h2>
+        <p class="no-deliveries">No available deliveries found near this lorry's location.</p>
+    </div>
+    <% } %>
 </div>
