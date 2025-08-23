@@ -10,11 +10,19 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 🌐 **Multilingual Support**: English, Hindi, and Marathi language options
 - 📍 **Real-time Tracking**: Live location tracking with Socket.IO
 - 🔐 **Authentication**: Session-based authentication with role-based access control
+- 👤 **User Profiles**: Comprehensive profile management with booking history
 - 📱 **Responsive Design**: Mobile-first design that works on all devices
 - 💳 **Payment Integration**: Stripe payment processing
 - 🔄 **Real-time Updates**: Live updates for transport status and location
 
 ## 🆕 Recent Updates
+
+### v2.1.0 - Profile Management
+- **👤 User Profile System**: Complete profile management with account settings
+- **📊 Booking History**: Role-specific booking history for transporters and shippers
+- **🔐 Account Security**: Password change and account deletion functionality
+- **🔔 Flash Notifications**: Improved user feedback with flash messages
+- **🎨 Enhanced UI**: Responsive profile design with modern styling
 
 ### v2.0.0 - Major Feature Release
 - **🌐 Multilingual Support**: Added English, Hindi, and Marathi language options
@@ -74,12 +82,14 @@ T2YD/
 │   ├── deliveryRoutes.js  # Delivery management
 │   ├── lorryRoutes.js     # Lorry management
 │   ├── notificationRoutes.js # Notification system
-│   └── paymentRoutes.js   # Payment processing
+│   ├── paymentRoutes.js   # Payment processing
+│   └── profileRoutes.js   # User profile management
 ├── services/               # Business logic
 │   └── notificationService.js # Notification creation and management
 ├── views/                  # EJS templates
 │   ├── index.ejs          # Home page
 │   ├── layout.ejs         # Main layout with navigation
+│   ├── profile.ejs        # User profile page
 │   ├── dashboard/         # Dashboard views
 │   ├── auth/              # Authentication views
 │   └── ...                # Other page templates

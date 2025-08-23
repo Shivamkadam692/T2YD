@@ -7,15 +7,23 @@ router.get('/add', requireLogin, requireRole('shipper'), (req, res) => {
   res.render('addDelivery');
 });
 
-router.post('/add', requireLogin, requireRole('shipper'), async (req, res) => {
-  const deliveryData = {
-    ...req.body,
-    shipper: req.session.userId,
-    shipperName: req.body.shipperName || res.locals.user.name
-  };
-  await Delivery.create(deliveryData);
-  res.redirect('/dashboard/shipper');
-});
+router.post('/add', 
+  requireLogin, 
+  requireRole('shipper'), 
+  async (req, res, next) => {
+    try {
+      const deliveryData = {
+        ...req.body,
+        shipper: req.session.userId,
+        shipperName: req.body.shipperName || res.locals.user.name
+      };
+      await Delivery.create(deliveryData);
+      res.redirect('/dashboard/shipper');
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 // My Deliveries page
 router.get('/my', requireLogin, requireRole('shipper'), async (req, res) => {
@@ -55,22 +63,54 @@ router.get('/:id/edit', requireLogin, requireRole('shipper'), async (req, res) =
 });
 
 // Update delivery
-router.put('/:id', requireLogin, requireRole('shipper'), async (req, res) => {
-  try {
-    await Delivery.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect(`/deliveries/${req.params.id}`);
-  } catch (error) {
-    res.status(500).render('error', { message: 'Error updating delivery' });
+router.put('/:id', 
+  requireLogin, 
+  requireRole('shipper'), 
+  async (req, res, next) => {
+    try {
+      // Check if delivery exists and belongs to the user
+      const delivery = await Delivery.findById(req.params.id);
+      if (!delivery) {
+        const error = new Error('Delivery not found');
+        error.statusCode = 404;
+        return next(error);
+      }
+      
+      if (delivery.shipper.toString() !== req.session.userId) {
+        const error = new Error('Unauthorized - You can only edit your own deliveries');
+        error.statusCode = 403;
+        return next(error);
+      }
+      
+      await Delivery.findByIdAndUpdate(req.params.id, req.body);
+      res.redirect(`/deliveries/${req.params.id}`);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // Delete delivery
-router.delete('/:id', requireLogin, requireRole('shipper'), async (req, res) => {
+router.delete('/:id', requireLogin, requireRole('shipper'), async (req, res, next) => {
   try {
+    // Check if delivery exists and belongs to the user
+    const delivery = await Delivery.findById(req.params.id);
+    if (!delivery) {
+      const error = new Error('Delivery not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+    
+    if (delivery.shipper.toString() !== req.session.userId) {
+      const error = new Error('Unauthorized - You can only delete your own deliveries');
+      error.statusCode = 403;
+      return next(error);
+    }
+    
     await Delivery.findByIdAndDelete(req.params.id);
     res.redirect('/');
   } catch (error) {
-    res.status(500).render('error', { message: 'Error deleting delivery' });
+    next(error);
   }
 });
 

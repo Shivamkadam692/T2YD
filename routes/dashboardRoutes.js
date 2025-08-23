@@ -104,10 +104,26 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
 });
 
 // Send request (transporter to shipper or shipper to transporter)
-router.post('/send-request', requireLogin, async (req, res) => {
+router.post('/send-request', requireLogin, async (req, res, next) => {
   try {
     const { deliveryId, lorryId, price, message } = req.body;
     const userRole = req.user.role;
+    
+    // Validate required fields
+    if (!lorryId) {
+      const error = new Error('Lorry selection is required');
+      error.statusCode = 400;
+      return next(error);
+    }
+    
+    // For transporter bids, validate price
+    if (userRole === 'transporter' && deliveryId) {
+      if (!price || isNaN(price) || price <= 0) {
+        const error = new Error('Valid price is required');
+        error.statusCode = 400;
+        return next(error);
+      }
+    }
     
     if (userRole !== 'transporter' && userRole !== 'shipper') {
       return res.status(403).render('error', { message: 'Unauthorized role' });
@@ -202,7 +218,7 @@ router.post('/send-request', requireLogin, async (req, res) => {
 
     res.redirect('/dashboard/transporter');
   } catch (error) {
-    res.status(500).render('error', { message: 'Error sending request' });
+    next(error);
   }
 });
 

@@ -1,0 +1,605 @@
+<link rel="stylesheet" href="/profile.css">
+
+<div class="container profile-container">
+  <% if (typeof success !== 'undefined' && success.length > 0) { %>
+    <div class="alert alert-success">
+      <%= success %>
+    </div>
+  <% } %>
+  <% if (typeof error !== 'undefined' && error.length > 0) { %>
+    <div class="alert alert-danger">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <div class="profile-header">
+    <h1>My Profile</h1>
+    <p>Manage your account settings and view your activity</p>
+  </div>
+
+  <div class="profile-content">
+    <div class="profile-sidebar">
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <h2><%= user.name %></h2>
+        <p class="role-badge <%= user.role %>"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></p>
+        <p class="email"><%= user.email %></p>
+        <p class="member-since">Member since <%= new Date(user.createdAt).toLocaleDateString() %></p>
+      </div>
+      
+      <div class="profile-nav">
+        <a href="#account" class="active" data-section="account">Account Settings</a>
+        <a href="#history" data-section="history">Booking History</a>
+        <% if (user.role === 'transporter') { %>
+          <a href="/lorries/my">My Lorries</a>
+        <% } else if (user.role === 'shipper') { %>
+          <a href="/deliveries/my">My Deliveries</a>
+        <% } %>
+        <a href="/notifications/view">Notifications</a>
+      </div>
+    </div>
+
+    <div class="profile-main">
+      <!-- Account Settings Section -->
+      <div class="profile-section active" id="account">
+        <h3>Account Settings</h3>
+        
+        <form action="/profile/update" method="POST" class="profile-form">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" value="<%= user.name %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>">
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </div>
+        </form>
+        
+        <div class="password-section">
+          <h4>Change Password</h4>
+          <form action="/profile/password" method="POST" class="profile-form">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <input type="password" id="currentPassword" name="currentPassword" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Change Password</button>
+            </div>
+          </form>
+        </div>
+        
+        <div class="danger-zone">
+          <h4>Danger Zone</h4>
+          <p>Once you delete your account, there is no going back. Please be certain.</p>
+          <form action="/profile/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+            <button type="submit" class="btn btn-danger">Delete Account</button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Booking History Section -->
+      <div class="profile-section" id="history">
+        <h3>Booking History</h3>
+        
+        <% if (user.role === 'transporter') { %>
+          <!-- Transporter Booking History -->
+          <% if (bookings && bookings.length > 0) { %>
+            <div class="booking-list">
+              <% bookings.forEach(booking => { %>
+                <div class="booking-card">
+                  <div class="booking-header">
+                    <h4>Delivery #<%= booking._id.toString().slice(-6) %></h4>
+                    <span class="status-badge <%= booking.status %>"><%= booking.status %></span>
+                  </div>
+                  
+                  <div class="booking-details">
+                    <div class="booking-route">
+                      <div class="location pickup">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                          <span class="label">Pickup</span>
+                          <span class="value"><%= booking.pickupLocation %></span>
+                        </div>
+                      </div>
+                      
+                      <div class="route-line">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </div>
+                      
+                      <div class="location dropoff">
+                        <i class="fas fa-flag-checkered"></i>
+                        <div>
+                          <span class="label">Dropoff</span>
+                          <span class="value"><%= booking.dropLocation %></span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="booking-info">
+                      <div class="info-item">
+                        <span class="label">Shipper</span>
+                        <span class="value"><%= booking.shipper.name %></span>
+                      </div>
+                      
+                      <div class="info-item">
+                        <span class="label">Date</span>
+                        <span class="value"><%= new Date(booking.pickupDate).toLocaleDateString() %></span>
+                      </div>
+                      
+                      <div class="info-item">
+                        <span class="label">Amount</span>
+                        <span class="value">₹<%= booking.amount %></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="booking-actions">
+                    <a href="/deliveries/<%= booking._id %>" class="btn btn-outline">View Details</a>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <i class="fas fa-truck"></i>
+              <p>You haven't completed any deliveries yet.</p>
+            </div>
+          <% } %>
+        <% } else if (user.role === 'shipper') { %>
+          <!-- Shipper Booking History -->
+          <% if (bookings && bookings.length > 0) { %>
+            <div class="booking-list">
+              <% bookings.forEach(booking => { %>
+                <div class="booking-card">
+                  <div class="booking-header">
+                    <h4>Delivery #<%= booking._id.toString().slice(-6) %></h4>
+                    <span class="status-badge <%= booking.status %>"><%= booking.status %></span>
+                  </div>
+                  
+                  <div class="booking-details">
+                    <div class="booking-route">
+                      <div class="location pickup">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                          <span class="label">Pickup</span>
+                          <span class="value"><%= booking.pickupLocation %></span>
+                        </div>
+                      </div>
+                      
+                      <div class="route-line">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </div>
+                      
+                      <div class="location dropoff">
+                        <i class="fas fa-flag-checkered"></i>
+                        <div>
+                          <span class="label">Dropoff</span>
+                          <span class="value"><%= booking.dropLocation %></span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="booking-info">
+                      <div class="info-item">
+                        <span class="label">Transporter</span>
+                        <span class="value"><%= booking.transporter ? booking.transporter.name : 'Not assigned' %></span>
+                      </div>
+                      
+                      <div class="info-item">
+                        <span class="label">Date</span>
+                        <span class="value"><%= new Date(booking.pickupDate).toLocaleDateString() %></span>
+                      </div>
+                      
+                      <div class="info-item">
+                        <span class="label">Amount</span>
+                        <span class="value">₹<%= booking.amount %></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="booking-actions">
+                    <a href="/deliveries/<%= booking._id %>" class="btn btn-outline">View Details</a>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="empty-state">
+              <i class="fas fa-box"></i>
+              <p>You haven't booked any deliveries yet.</p>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab navigation
+    const navLinks = document.querySelectorAll('.profile-nav a[data-section]');
+    const sections = document.querySelectorAll('.profile-section');
+    
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetSection = this.getAttribute('data-section');
+        
+        // Update active nav link
+        navLinks.forEach(navLink => navLink.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Show target section, hide others
+        sections.forEach(section => {
+          if (section.id === targetSection) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .profile-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-content {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  
+  .profile-sidebar {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+  }
+  
+  .profile-main {
+    flex: 3;
+    min-width: 300px;
+  }
+  
+  .profile-info {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-avatar {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+  
+  .profile-info h2 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .role-badge.transporter {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  .role-badge.shipper {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+  
+  .profile-info .email {
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-info .member-since {
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .profile-nav {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .profile-nav a {
+    display: block;
+    padding: 1rem 1.5rem;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+  }
+  
+  .profile-nav a:last-child {
+    border-bottom: none;
+  }
+  
+  .profile-nav a:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .profile-nav a.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+  }
+  
+  .profile-section {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: none;
+  }
+  
+  .profile-section.active {
+    display: block;
+  }
+  
+  .profile-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  .profile-form .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .profile-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .form-actions {
+    margin-top: 1.5rem;
+  }
+  
+  .password-section {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .password-section h4 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .danger-zone {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    border: 1px solid #ffcdd2;
+    border-radius: 8px;
+    background-color: #ffebee;
+  }
+  
+  .danger-zone h4 {
+    color: #d32f2f;
+    margin-bottom: 1rem;
+  }
+  
+  .danger-zone p {
+    margin-bottom: 1.5rem;
+    color: #555;
+  }
+  
+  .btn-danger {
+    background-color: #d32f2f;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #b71c1c;
+  }
+  
+  .booking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .booking-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .booking-header h4 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  
+  .status-badge.pending {
+    background-color: #fff8e1;
+    color: #ff8f00;
+  }
+  
+  .status-badge.confirmed {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+  
+  .status-badge.in-transit {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+  
+  .status-badge.delivered {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+  
+  .status-badge.cancelled {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+  
+  .booking-details {
+    padding: 1.5rem;
+  }
+  
+  .booking-route {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .location {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .location i {
+    color: var(--primary-color);
+    margin-top: 0.25rem;
+  }
+  
+  .location .label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+  
+  .location .value {
+    font-weight: 600;
+  }
+  
+  .route-line {
+    margin-left: 0.75rem;
+    color: #ccc;
+  }
+  
+  .booking-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .info-item {
+    min-width: 120px;
+  }
+  
+  .info-item .label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-item .value {
+    font-weight: 600;
+  }
+  
+  .booking-actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    background-color: #f9f9f9;
+    text-align: right;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #888;
+  }
+  
+  .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ccc;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-content {
+      flex-direction: column;
+    }
+    
+    .profile-sidebar {
+      max-width: 100%;
+    }
+  }
+</style>

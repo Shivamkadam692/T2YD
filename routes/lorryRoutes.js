@@ -51,35 +51,75 @@ router.get('/:id', async (req, res) => {
 });
 
 // Edit lorry form
-router.get('/:id/edit', requireLogin, requireRole('transporter'), async (req, res) => {
+router.get('/:id/edit', requireLogin, requireRole('transporter'), async (req, res, next) => {
   try {
     const lorry = await Lorry.findById(req.params.id);
     if (!lorry) {
-      return res.status(404).render('error', { message: 'Lorry not found' });
+      const error = new Error('Lorry not found');
+      error.statusCode = 404;
+      return next(error);
     }
+    
+    // Check if the logged-in transporter is the owner of the lorry
+    if (lorry.transporter.toString() !== req.session.userId) {
+      const error = new Error('You are not authorized to edit this lorry');
+      error.statusCode = 403;
+      return next(error);
+    }
+    
     res.render('editLorry', { lorry });
   } catch (error) {
-    res.status(500).render('error', { message: 'Error finding lorry' });
+    next(error);
   }
 });
 
 // Update lorry
-router.put('/:id', requireLogin, requireRole('transporter'), async (req, res) => {
+router.put('/:id', requireLogin, requireRole('transporter'), async (req, res, next) => {
   try {
+    // Find the lorry first to check ownership
+    const lorry = await Lorry.findById(req.params.id);
+    if (!lorry) {
+      const error = new Error('Lorry not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+    
+    // Check if the logged-in transporter is the owner of the lorry
+    if (lorry.transporter.toString() !== req.session.userId) {
+      const error = new Error('You are not authorized to update this lorry');
+      error.statusCode = 403;
+      return next(error);
+    }
+    
     await Lorry.findByIdAndUpdate(req.params.id, req.body);
     res.redirect(`/lorries/${req.params.id}`);
   } catch (error) {
-    res.status(500).render('error', { message: 'Error updating lorry' });
+    next(error);
   }
 });
 
 // Delete lorry
-router.delete('/:id', requireLogin, requireRole('transporter'), async (req, res) => {
+router.delete('/:id', requireLogin, requireRole('transporter'), async (req, res, next) => {
   try {
+    // Find the lorry first to check ownership
+    const lorry = await Lorry.findById(req.params.id);
+    if (!lorry) {
+      const error = new Error('Lorry not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+    
+    // Check if the logged-in transporter is the owner of the lorry
+    if (lorry.transporter.toString() !== req.session.userId) {
+      const error = new Error('You are not authorized to delete this lorry');
+      error.statusCode = 403;
+      return next(error);
+    }
+    
     await Lorry.findByIdAndDelete(req.params.id);
-    res.redirect('/');
+    res.redirect('/lorries/my');
   } catch (error) {
-    res.status(500).render('error', { message: 'Error deleting lorry' });
+    next(error);
   }
 });
 

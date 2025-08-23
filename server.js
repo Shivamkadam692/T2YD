@@ -9,6 +9,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
 const expressLayouts = require('express-ejs-layouts');
+const flash = require('connect-flash');
 
 const lorryRoutes = require('./routes/lorryRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
@@ -17,7 +18,9 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const bidRoutes = require('./routes/bidRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const { requireLogin } = require('./middleware/auth');
+const errorHandler = require('./middleware/errorHandler');
 
 const Lorry = require('./models/Lorry');
 const Delivery = require('./models/Delivery');
@@ -48,17 +51,22 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: customEnv.MONGODB_URI || process.env.MONGODB_URI || '' }),
   cookie: { 
-    // Session will persist until user logs out or browser is closed
-    // No maxAge means the session will last until the browser session ends
+    // Session will persist until user explicitly logs out
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
     httpOnly: true, // Prevents XSS attacks
     secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
     sameSite: 'lax' // Protects against CSRF attacks
   }
 }));
 
-// Pass user to all views
+// Flash messages middleware
+app.use(flash());
+
+// Pass user and flash messages to all views
 app.use(async (req, res, next) => {
   res.locals.user = null;
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
   if (req.session.userId) {
     const User = require('./models/User');
     res.locals.user = await User.findById(req.session.userId);
@@ -68,20 +76,38 @@ app.use(async (req, res, next) => {
 
 // Routes
 app.get('/', async (req, res) => {
-  const lorries = await Lorry.find();
+  let lorries;
+  
+  // If user is a transporter, only show their own lorries
+  if (req.session.userId && req.session.userRole === 'transporter') {
+    lorries = await Lorry.find({ transporter: req.session.userId });
+  } else {
+    // For non-transporters (shippers or guests), show all lorries
+    lorries = await Lorry.find();
+  }
+  
   const deliveries = await Delivery.find();
   res.render('index', { lorries, deliveries });
 });
 
 app.get('/search', async (req, res) => {
   const query = req.query.query;
-  const lorryResults = await Lorry.find({
+  
+  // Base search criteria
+  const searchCriteria = {
     $or: [
       { location: { $regex: query, $options: 'i' } },
       { vehicleType: { $regex: query, $options: 'i' } },
       { ownerName: { $regex: query, $options: 'i' } }
     ]
-  });
+  };
+  
+  // If user is a transporter, only show their own lorries
+  if (req.session.userId && req.session.userRole === 'transporter') {
+    searchCriteria.transporter = req.session.userId;
+  }
+  
+  const lorryResults = await Lorry.find(searchCriteria);
   const deliveryResults = await Delivery.find({
     $or: [
       { pickupLocation: { $regex: query, $options: 'i' } },
@@ -100,6 +126,7 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/bid', bidRoutes);
+app.use('/profile', profileRoutes);
 
 // Public static pages used by the footer
 app.get('/about', (req, res) => res.render('about'));
@@ -111,6 +138,16 @@ app.get('/contact', (req, res) => res.render('contact'));
 app.get('/notifications', requireLogin, (req, res) => {
   res.render('notifications');
 });
+
+// 404 handler for undefined routes
+app.use((req, res, next) => {
+  const err = new Error('Not Found');
+  err.statusCode = 404;
+  next(err);
+});
+
+// Global error handler
+app.use(errorHandler);
 
 // Socket.IO real-time tracking and notifications
 io.on('connection', (socket) => {

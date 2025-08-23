@@ -7,7 +7,7 @@ const Delivery = require('../models/Delivery');
 const Lorry = require('../models/Lorry');
 
 // Test notification endpoint
-router.post('/test', requireLogin, async (req, res) => {
+router.post('/test', requireLogin, async (req, res, next) => {
   try {
     const testNotification = await NotificationService.createNotification({
       recipient: req.session.userId,
@@ -22,16 +22,21 @@ router.post('/test', requireLogin, async (req, res) => {
       notification: testNotification 
     });
   } catch (error) {
-    console.error('Error creating test notification:', error);
-    res.status(500).json({ message: 'Error creating test notification' });
+    next(error);
   }
 });
 
 // Get user notifications (JSON API)
-router.get('/', requireLogin, async (req, res) => {
+router.get('/', requireLogin, async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    // Validate pagination parameters
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 20;
+    
+    // Ensure valid pagination values
+    if (page < 1) page = 1;
+    if (limit < 1 || limit > 100) limit = 20;
+    
     const skip = (page - 1) * limit;
 
     const notifications = await NotificationService.getUserNotifications(

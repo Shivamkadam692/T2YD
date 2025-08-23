@@ -4,11 +4,27 @@ const { requireLogin, requireRole } = require('../middleware/auth');
 const Delivery = require('../models/Delivery');
 
 // Show bid page for a delivery (transporters only)
-router.get('/:deliveryId', requireLogin, requireRole('transporter'), async (req, res) => {
+router.get('/:deliveryId', requireLogin, requireRole('transporter'), async (req, res, next) => {
   try {
+    // Validate delivery ID format
+    if (!req.params.deliveryId || !req.params.deliveryId.match(/^[0-9a-fA-F]{24}$/)) {
+      const error = new Error('Invalid delivery ID format');
+      error.statusCode = 400;
+      return next(error);
+    }
+    
     const delivery = await Delivery.findById(req.params.deliveryId).populate('shipper', 'name');
-    if (!delivery) return res.status(404).render('error', { message: 'Delivery not found' });
-    if (delivery.status !== 'pending') return res.status(400).render('error', { message: 'This delivery is not available for bidding' });
+    if (!delivery) {
+      const error = new Error('Delivery not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+    
+    if (delivery.status !== 'pending') {
+      const error = new Error('This delivery is not available for bidding');
+      error.statusCode = 400;
+      return next(error);
+    }
     
     // Fetch transporter's available lorries
     const Lorry = require('../models/Lorry');
@@ -23,7 +39,7 @@ router.get('/:deliveryId', requireLogin, requireRole('transporter'), async (req,
     
     res.render('bid', { delivery, lorries, previousBids });
   } catch (e) {
-    res.status(500).render('error', { message: 'Error loading bid page' });
+    next(e);
   }
 });
 

@@ -152,6 +152,8 @@ body {
   font-weight: 400;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Modern Typography */
@@ -1834,8 +1836,23 @@ a:focus, button:focus {
 
 /* Enhanced Mobile Responsive Styles */
 @media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    max-width: 100vw;
+  }
+  
   body.menu-open {
     overflow: hidden;
+  }
+  
+  main {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
   }
   
   .nav-links {
@@ -2026,8 +2043,20 @@ a:focus, button:focus {
   }
 
   /* ensure header and nav don't add extra right spacing */
-  header { padding-right: 0 !important; }
-  nav { max-width: 100% !important; padding-right: 0 !important; }
+  header { 
+    padding-right: 0 !important; 
+    padding-left: var(--space-4) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  nav { 
+    max-width: 100% !important; 
+    padding-right: 0 !important; 
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
 
   /* hide the toggle when nav is open to avoid overlap */
   .nav-links.active + .mobile-menu-toggle { display: none !important; }
