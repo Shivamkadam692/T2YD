@@ -17,6 +17,17 @@ router.post('/add', requireLogin, requireRole('transporter'), async (req, res) =
   res.redirect('/dashboard/transporter');
 });
 
+// My Lorries page
+router.get('/my', requireLogin, requireRole('transporter'), async (req, res) => {
+  try {
+    const lorries = await Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 });
+    res.render('myLorries', { lorries });
+  } catch (error) {
+    console.error('Error fetching my lorries:', error);
+    res.status(500).render('error', { message: 'Error loading your lorries' });
+  }
+});
+
 // View individual lorry
 router.get('/:id', async (req, res) => {
   try {

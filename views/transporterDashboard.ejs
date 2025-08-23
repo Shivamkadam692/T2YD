@@ -85,7 +85,21 @@
                     </div>
                     
                     <div class="delivery-actions">
-                        <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Send Bid</a>
+                        <% if (delivery.bidStatus) { %>
+                            <% if (delivery.bidStatus.status === 'pending') { %>
+                                <span class="bid-status pending">Bid Sent (₹<%= delivery.bidStatus.price %>)</span>
+                                <small class="bid-date">Sent on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
+                            <% } else if (delivery.bidStatus.status === 'rejected') { %>
+                                <span class="bid-status rejected">Bid Rejected (₹<%= delivery.bidStatus.price %>)</span>
+                                <small class="bid-date">Rejected on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
+                                <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Send New Bid</a>
+                            <% } else if (delivery.bidStatus.status === 'accepted') { %>
+                                <span class="bid-status accepted">Bid Accepted (₹<%= delivery.bidStatus.price %>)</span>
+                                <small class="bid-date">Accepted on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Send Bid</a>
+                        <% } %>
                     </div>
                 </div>
             <% }) %>
@@ -150,6 +164,11 @@
                         <div class="request-actions">
                             <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
                         </div>
+                    <% } else if (request.status === 'rejected' && request.delivery) { %>
+                        <div class="request-actions">
+                            <a href="/bid/<%= request.delivery._id %>" class="btn btn-primary">Send New Bid</a>
+                            <span class="rejection-note">Your bid was rejected. You can send a new bid with different terms.</span>
+                        </div>
                     <% } %>
                 </div>
             <% }) %>
@@ -158,3 +177,49 @@
 </section>
 
 <!-- Old inline bid modal removed; use standalone /bid/:id page -->
+
+<style>
+  .rejection-note {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #e74c3c;
+    font-style: italic;
+  }
+  
+  .status.rejected {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .bid-status {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .bid-status.pending {
+    background-color: #f39c12;
+    color: white;
+  }
+  
+  .bid-status.rejected {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .bid-status.accepted {
+    background-color: #27ae60;
+    color: white;
+  }
+  
+  .bid-date {
+    display: block;
+    font-size: 0.7rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+</style>

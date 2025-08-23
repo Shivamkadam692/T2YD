@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { requireLogin, requireRole } = require('../middleware/auth');
+const Request = require('../models/Request');
 const Delivery = require('../models/Delivery');
 const Lorry = require('../models/Lorry');
-const Request = require('../models/Request');
 const User = require('../models/User');
 const NotificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
@@ -45,7 +45,24 @@ router.get('/transporter', requireLogin, requireRole('transporter'), async (req,
       .populate('shipper', 'name')
       .sort({ createdAt: -1 });
     
-    res.render('transporterDashboard', { lorries, requests, availableDeliveries });
+    // Add bid status information for each delivery
+    const deliveriesWithBidStatus = await Promise.all(availableDeliveries.map(async (delivery) => {
+      const existingBid = await Request.findOne({
+        delivery: delivery._id,
+        transporter: req.session.userId
+      }).select('status price createdAt');
+      
+      return {
+        ...delivery.toObject(),
+        bidStatus: existingBid ? {
+          status: existingBid.status,
+          price: existingBid.price,
+          createdAt: existingBid.createdAt
+        } : null
+      };
+    }));
+    
+    res.render('transporterDashboard', { lorries, requests, availableDeliveries: deliveriesWithBidStatus });
   } catch (error) {
     res.status(500).render('error', { message: 'Error loading dashboard' });
   }
@@ -86,16 +103,54 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
   }
 });
 
-// Send request (transporter to shipper)
-router.post('/send-request', requireLogin, requireRole('transporter'), async (req, res) => {
+// Send request (transporter to shipper or shipper to transporter)
+router.post('/send-request', requireLogin, async (req, res) => {
   try {
     const { deliveryId, lorryId, price, message } = req.body;
+    const userRole = req.user.role;
     
-    // Check if request already exists
+    if (userRole !== 'transporter' && userRole !== 'shipper') {
+      return res.status(403).render('error', { message: 'Unauthorized role' });
+    }
+
+    // For shipper-initiated requests from lorry page
+    if (userRole === 'shipper' && lorryId && !deliveryId) {
+      const lorry = await Lorry.findById(lorryId).populate('transporter');
+      if (!lorry) return res.status(404).render('error', { message: 'Lorry not found' });
+      if (lorry.status !== 'available') return res.status(400).render('error', { message: 'Lorry is not available' });
+      
+      const request = new Request({
+        shipper: req.session.userId,
+        transporter: lorry.transporter._id,
+        lorry: lorryId,
+        status: 'pending'
+      });
+      
+      await request.save();
+      await Lorry.findByIdAndUpdate(lorryId, { $push: { requests: request._id } });
+      
+      try {
+        await NotificationService.createNotification({
+          recipient: lorry.transporter._id,
+          sender: req.session.userId,
+          type: 'bid_request',
+          title: 'New Bid Request',
+          message: 'A shipper has requested a bid for their delivery.',
+          relatedRequest: request._id,
+          priority: 'high'
+        });
+      } catch {}
+      
+      return res.redirect('/dashboard/shipper');
+    }
+    
+    // For transporter-initiated requests
+    // Check if an active request already exists (only consider pending requests)
     const existingRequest = await Request.findOne({
       delivery: deliveryId,
       lorry: lorryId,
-      transporter: req.session.userId
+      transporter: req.session.userId,
+      status: 'pending'
     });
     
     if (existingRequest) {
@@ -171,6 +226,18 @@ router.post('/accept-request/:requestId', requireLogin, requireRole('shipper'), 
       { status: 'rejected' }
     );
     
+    // Delete the delivery request notification from shipper's notification panel
+    try {
+      const Notification = require('../models/Notification');
+      await Notification.deleteMany({
+        recipient: req.session.userId,
+        type: 'delivery_request',
+        relatedRequest: req.params.requestId
+      });
+    } catch (error) {
+      console.error('Error deleting delivery request notification:', error);
+    }
+    
     // Notify transporter that request was accepted
     try {
       const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
@@ -189,6 +256,57 @@ router.post('/accept-request/:requestId', requireLogin, requireRole('shipper'), 
     res.redirect('/dashboard/shipper');
   } catch (error) {
     res.status(500).render('error', { message: 'Error accepting request' });
+  }
+});
+
+// Reject request (shipper)
+router.post('/reject-request/:requestId', requireLogin, requireRole('shipper'), async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.requestId);
+    if (!request) {
+      return res.status(404).render('error', { message: 'Request not found' });
+    }
+    
+    if (request.shipper.toString() !== req.session.userId) {
+      return res.status(403).render('error', { message: 'Unauthorized' });
+    }
+    
+    if (request.status !== 'pending') {
+      return res.status(400).render('error', { message: 'Request is no longer pending' });
+    }
+    
+    await Request.findByIdAndUpdate(req.params.requestId, { status: 'rejected', rejectedAt: new Date() });
+    
+    // Delete the delivery request notification from shipper's notification panel
+    try {
+      const Notification = require('../models/Notification');
+      await Notification.deleteMany({
+        recipient: req.session.userId,
+        type: 'delivery_request',
+        relatedRequest: req.params.requestId
+      });
+    } catch (error) {
+      console.error('Error deleting delivery request notification:', error);
+    }
+    
+    // Notify transporter that request was rejected
+    try {
+      const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
+      await NotificationService.createNotification({
+        recipient: populated.transporter._id,
+        sender: populated.shipper._id,
+        type: 'request_rejected',
+        title: 'Your Request Was Rejected',
+        message: `Your request for ${populated.delivery.goodsType} was rejected. Please find another delivery.`,
+        relatedRequest: populated._id,
+        relatedDelivery: populated.delivery._id,
+        priority: 'medium'
+      });
+    } catch {}
+
+    res.redirect('/dashboard/shipper');
+  } catch (error) {
+    res.status(500).render('error', { message: 'Error rejecting request' });
   }
 });
 

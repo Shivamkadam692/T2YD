@@ -13,10 +13,10 @@ const expressLayouts = require('express-ejs-layouts');
 const lorryRoutes = require('./routes/lorryRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
 const authRoutes = require('./routes/authRoutes');
-const bidRoutes = require('./routes/bidRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const bidRoutes = require('./routes/bidRoutes');
 const { requireLogin } = require('./middleware/auth');
 
 const Lorry = require('./models/Lorry');
@@ -47,7 +47,13 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: customEnv.MONGODB_URI || process.env.MONGODB_URI || '' }),
-  cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
+  cookie: { 
+    // Session will persist until user logs out or browser is closed
+    // No maxAge means the session will last until the browser session ends
+    httpOnly: true, // Prevents XSS attacks
+    secure: process.env.NODE_ENV === 'production', // Only use secure cookies in production
+    sameSite: 'lax' // Protects against CSRF attacks
+  }
 }));
 
 // Pass user to all views
@@ -62,43 +68,9 @@ app.use(async (req, res, next) => {
 
 // Routes
 app.get('/', async (req, res) => {
-  try {
-    const userId = req.session.userId;
-    const userRole = req.session.role;
-
-    // Show lorries depending on user role
-    let lorryQuery;
-    if (userRole === 'transporter') {
-      // Transporters should see only the lorries they added
-      lorryQuery = { transporter: userId };
-    } else if (userId) {
-      // Logged-in non-transporters: show available lorries and any they own
-      lorryQuery = { $or: [ { status: 'available' }, { transporter: userId } ] };
-    } else {
-      // Guests: show only available lorries
-      lorryQuery = { status: 'available' };
-    }
-
-    // For transporters we only show deliveries that are available for bidding (pending)
-    let deliveryQuery;
-    if (userRole === 'transporter') {
-      deliveryQuery = { status: 'pending' };
-    } else if (userId) {
-      // Logged-in non-transporters: show non-delivered deliveries and their own deliveries (including completed)
-      deliveryQuery = { $or: [ { status: { $ne: 'delivered' } }, { shipper: userId } ] };
-    } else {
-      // Guests: show deliveries that are not delivered
-      deliveryQuery = { status: { $ne: 'delivered' } };
-    }
-
-    const lorries = await Lorry.find(lorryQuery);
-    const deliveries = await Delivery.find(deliveryQuery);
-
-    res.render('index', { lorries, deliveries });
-  } catch (e) {
-    console.error('Error loading home:', e);
-    res.status(500).render('error', { message: 'Error loading home' });
-  }
+  const lorries = await Lorry.find();
+  const deliveries = await Delivery.find();
+  res.render('index', { lorries, deliveries });
 });
 
 app.get('/search', async (req, res) => {
@@ -125,9 +97,9 @@ app.use('/lorries', lorryRoutes);
 app.use('/deliveries', deliveryRoutes);
 app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
-app.use('/bid', bidRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/notifications', notificationRoutes);
+app.use('/bid', bidRoutes);
 
 // Public static pages used by the footer
 app.get('/about', (req, res) => res.render('about'));

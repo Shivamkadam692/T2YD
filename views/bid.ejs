@@ -1,5 +1,25 @@
 <div class="page-container">
   <h2>Place a Bid for <%= delivery.goodsType %></h2>
+  
+  <% if (previousBids && previousBids.length > 0) { %>
+    <div class="alert alert-info">
+      <h4>Previous Bids</h4>
+      <% previousBids.forEach(bid => { %>
+        <div class="previous-bid">
+          <span class="bid-status <%= bid.status %>"><%= bid.status.toUpperCase() %></span>
+          <span class="bid-price">₹<%= bid.price %></span>
+          <span class="bid-date"><%= new Date(bid.createdAt).toLocaleDateString() %></span>
+          <% if (bid.message) { %>
+            <div class="bid-message">"<%= bid.message %>"</div>
+          <% } %>
+        </div>
+      <% }) %>
+      <% if (previousBids.some(bid => bid.status === 'rejected')) { %>
+        <p class="rejection-tip"><strong>Tip:</strong> Your previous bid was rejected. Consider adjusting your price or offering different terms.</p>
+      <% } %>
+    </div>
+  <% } %>
+  
   <div class="card">
     <div class="card-body">
       <p><strong>From:</strong> <%= delivery.pickupLocation %></p>
@@ -34,3 +54,76 @@
     </div>
   </form>
 </div>
+
+<style>
+  .alert {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+  }
+  
+  .alert-info {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    color: #1565c0;
+  }
+  
+  .previous-bid {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .bid-status {
+    display: inline-block;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  
+  .bid-status.pending {
+    background-color: #f39c12;
+    color: white;
+  }
+  
+  .bid-status.rejected {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .bid-status.accepted {
+    background-color: #27ae60;
+    color: white;
+  }
+  
+  .bid-price {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 0.5rem;
+  }
+  
+  .bid-date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+  
+  .bid-message {
+    margin-top: 0.5rem;
+    font-style: italic;
+    color: #34495e;
+  }
+  
+  .rejection-tip {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    color: #856404;
+  }
+</style>

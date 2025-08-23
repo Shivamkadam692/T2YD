@@ -11,6 +11,19 @@
   <header>
     <nav>
       <a href="/" class="logo">T2<span>YD</span></a>
+      
+      <!-- Language Selector -->
+      <div class="language-selector">
+        <button class="language-btn" id="languageBtn" aria-label="Select Language">
+          <i class="fas fa-globe"></i>
+          <span id="currentLanguage">English</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="language-dropdown" id="languageDropdown">
+          <!-- Language options will be generated dynamically -->
+        </div>
+      </div>
+      
       <ul class="nav-links" id="mobile-nav" tabindex="-1" aria-hidden="true" role="navigation" aria-label="Primary">
         <li class="mobile-menu-header" style="display:none">
           <button class="close-mobile btn btn-outline" aria-label="Close menu" style="display:none">Close ✕</button>
@@ -20,9 +33,11 @@
           <% if (user.role === 'transporter') { %>
             <li><a href="/dashboard/transporter">Dashboard</a></li>
             <li><a href="/lorries/add">Add Lorry</a></li>
+            <li><a href="/lorries/my">My Lorries</a></li>
           <% } else if (user.role === 'shipper') { %>
             <li><a href="/dashboard/shipper">Dashboard</a></li>
             <li><a href="/deliveries/add">Add Delivery</a></li>
+            <li><a href="/deliveries/my">My Deliveries</a></li>
           <% } %>
         <% } %>
         <% if (!user) { %>
@@ -81,6 +96,244 @@
   </footer>
 
   <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- Language Files -->
+  <script src="/languages/en.js"></script>
+  <script src="/languages/hi.js"></script>
+  <script src="/languages/mr.js"></script>
+  
+  <!-- Language Switching Script -->
+  <script>
+    // Language switching functionality
+    (function() {
+      const languageBtn = document.getElementById('languageBtn');
+      const languageDropdown = document.getElementById('languageDropdown');
+      const currentLanguageSpan = document.getElementById('currentLanguage');
+      
+      // Get saved language from localStorage or default to English
+      let currentLanguage = localStorage.getItem('selectedLanguage') || 'en';
+      
+      // Initialize language
+      function initLanguage() {
+        setLanguage(currentLanguage);
+        updateLanguageButton();
+      }
+      
+      // Set language and update all text
+      function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('selectedLanguage', lang);
+        
+        const translations = window.translations[lang];
+        if (!translations) return;
+        
+        // Update navigation
+        updateNavigationText(translations);
+        
+        // Update footer
+        updateFooterText(translations);
+        
+        // Update home page content if on home page
+        if (window.location.pathname === '/') {
+          updateHomePageText(translations);
+        }
+        
+        // Update language button
+        updateLanguageButton();
+      }
+      
+      // Update navigation text
+      function updateNavigationText(translations) {
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href === '/') {
+            link.textContent = translations.home;
+          } else if (href.includes('/dashboard/transporter')) {
+            link.textContent = translations.dashboard;
+          } else if (href.includes('/dashboard/shipper')) {
+            link.textContent = translations.dashboard;
+          } else if (href.includes('/lorries/add')) {
+            link.textContent = translations.addLorry;
+          } else if (href.includes('/lorries/my')) {
+            link.textContent = translations.myLorries;
+          } else if (href.includes('/deliveries/add')) {
+            link.textContent = translations.addDelivery;
+          } else if (href.includes('/deliveries/my')) {
+            link.textContent = translations.myDeliveries;
+          } else if (href.includes('/auth/login')) {
+            link.textContent = translations.login;
+          } else if (href.includes('/auth/signup')) {
+            link.textContent = translations.signup;
+          } else if (href.includes('/auth/logout')) {
+            link.textContent = translations.logout;
+          }
+        });
+        
+        // Update user greeting
+        const userGreeting = document.querySelector('.user-greeting');
+        if (userGreeting) {
+          const userName = userGreeting.querySelector('span').textContent;
+          const userRole = userGreeting.textContent.match(/\(([^)]+)\)/)[1];
+          userGreeting.innerHTML = `${translations.welcome}, <span style="color:#071124">${userName}</span> (${userRole})`;
+        }
+      }
+      
+      // Update footer text
+      function updateFooterText(translations) {
+        const footerLinks = document.querySelectorAll('.footer-links a');
+        footerLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href === '/about') {
+            link.textContent = translations.aboutUs;
+          } else if (href === '/terms') {
+            link.textContent = translations.termsOfService;
+          } else if (href === '/privacy') {
+            link.textContent = translations.privacyPolicy;
+          } else if (href === '/contact') {
+            link.textContent = translations.contact;
+          }
+        });
+        
+        const copyright = document.querySelector('.copyright p');
+        if (copyright) {
+          copyright.textContent = translations.copyright;
+        }
+      }
+      
+      // Update home page text
+      function updateHomePageText(translations) {
+        // Update all elements with data-translate attribute
+        const translateElements = document.querySelectorAll('[data-translate]');
+        translateElements.forEach(element => {
+          const key = element.getAttribute('data-translate');
+          if (translations[key]) {
+            element.textContent = translations[key];
+          }
+        });
+        
+        // Update placeholders
+        const translatePlaceholders = document.querySelectorAll('[data-translate-placeholder]');
+        translatePlaceholders.forEach(element => {
+          const key = element.getAttribute('data-translate-placeholder');
+          if (translations[key]) {
+            element.placeholder = translations[key];
+          }
+        });
+        
+        // Update specific text patterns
+        updateTextPatterns(translations);
+      }
+      
+      // Update text patterns like "per km", "Negotiable", "Flexible"
+      function updateTextPatterns(translations) {
+        // Update per km text
+        const perKmElements = document.querySelectorAll('[data-translate="perKm"]');
+        perKmElements.forEach(element => {
+          element.textContent = translations.perKm;
+        });
+        
+        // Update other text patterns
+        const negotiableElements = document.querySelectorAll('.card-item span');
+        negotiableElements.forEach(span => {
+          if (span.textContent.includes('Negotiable')) {
+            span.innerHTML = span.innerHTML.replace('Negotiable', translations.negotiable);
+          }
+          if (span.textContent.includes('Flexible')) {
+            span.innerHTML = span.innerHTML.replace('Flexible', translations.flexible);
+          }
+        });
+      }
+      
+      // Update language button text
+      function updateLanguageButton() {
+        const translations = window.translations[currentLanguage];
+        if (translations) {
+          const currentLanguageName = translations[currentLanguage] || 'English';
+          currentLanguageSpan.textContent = currentLanguageName;
+          
+          // Add a small animation to indicate language change
+          currentLanguageSpan.style.transform = 'scale(1.1)';
+          setTimeout(() => {
+            currentLanguageSpan.style.transform = 'scale(1)';
+          }, 200);
+        }
+        
+        // Reorder language options to show selected language first
+        reorderLanguageOptions();
+      }
+      
+      // Reorder language options to show selected language first
+      function reorderLanguageOptions() {
+        const languageDropdown = document.getElementById('languageDropdown');
+        const languageOptions = languageDropdown.querySelectorAll('.language-option');
+        
+        // Create array of language data
+        const languages = [
+          { code: 'en', name: 'English', flag: '🇺🇸' },
+          { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
+          { code: 'mr', name: 'मराठी', flag: '🇮🇳' }
+        ];
+        
+        // Reorder languages to show selected language first
+        const reorderedLanguages = languages.sort((a, b) => {
+          if (a.code === currentLanguage) return -1;
+          if (b.code === currentLanguage) return 1;
+          return 0;
+        });
+        
+        // Clear and rebuild language options
+        languageDropdown.innerHTML = '';
+        
+        reorderedLanguages.forEach(lang => {
+          const option = document.createElement('div');
+          option.className = 'language-option';
+          option.setAttribute('data-lang', lang.code);
+          
+          // Add selected indicator
+          const isSelected = lang.code === currentLanguage;
+          if (isSelected) {
+            option.classList.add('selected');
+          }
+          
+          option.innerHTML = `
+            <span class="flag">${lang.flag}</span>
+            <span>${lang.name}</span>
+            ${isSelected ? '<span class="selected-indicator">✓</span>' : ''}
+          `;
+          
+          // Add click event listener
+          option.addEventListener('click', function() {
+            const langCode = this.getAttribute('data-lang');
+            setLanguage(langCode);
+            languageDropdown.classList.remove('show');
+          });
+          
+          languageDropdown.appendChild(option);
+        });
+      }
+      
+      // Toggle language dropdown
+      languageBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        languageDropdown.classList.toggle('show');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!languageBtn.contains(e.target) && !languageDropdown.contains(e.target)) {
+          languageDropdown.classList.remove('show');
+        }
+      });
+      
+      // Handle language selection
+      // Language options are now handled dynamically in reorderLanguageOptions()
+      
+      // Initialize language on page load
+      initLanguage();
+    })();
+  </script>
+  
   <script>
     // Minimal mobile toggle: simple inline menu for small screens
     (function(){
@@ -188,6 +441,15 @@
             </div>
             <div class="notification-message">${notification.message}</div>
             <div class="notification-time">${formatTime(notification.createdAt)}</div>
+                         ${notification.type === 'delivery_request' && notification.relatedRequest ? 
+               `<button class="accept-btn-small" onclick="event.stopPropagation(); acceptRequestFromDropdown('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Accept</button>` : 
+               ''
+             }
+             ${notification.type === 'bid_sent' && notification.relatedRequest ? 
+               `<button class="accept-btn-small" onclick="event.stopPropagation(); acceptBidFromDropdown('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Accept Bid</button>
+                <button class="reject-btn-small" onclick="event.stopPropagation(); rejectBidFromDropdown('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Reject Bid</button>` : 
+               ''
+             }
           </div>
         `).join('');
       }
@@ -317,7 +579,7 @@
         }, 5000);
       }
 
-      // Add CSS animations
+      // Add CSS animations and accept button styles
       const style = document.createElement('style');
       style.textContent = `
         @keyframes slideIn {
@@ -328,8 +590,115 @@
           from { transform: translateX(0); opacity: 1; }
           to { transform: translateX(100%); opacity: 0; }
         }
+        .accept-btn-small {
+          background: #27ae60;
+          color: white;
+          border: none;
+          padding: 0.3rem 0.6rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          cursor: pointer;
+          margin-top: 0.5rem;
+          transition: background 0.3s ease;
+        }
+                 .accept-btn-small:hover {
+           background: #229954;
+         }
+         .reject-btn-small {
+           background: #e74c3c;
+           color: white;
+           border: none;
+           padding: 0.3rem 0.6rem;
+           border-radius: 4px;
+           font-size: 0.8rem;
+           cursor: pointer;
+           margin-top: 0.5rem;
+           margin-left: 0.5rem;
+           transition: background 0.3s ease;
+         }
+         .reject-btn-small:hover {
+           background: #c0392b;
+         }
       `;
       document.head.appendChild(style);
+
+      // Function to accept request from dropdown
+      window.acceptRequestFromDropdown = async function(requestId) {
+        if (!confirm('Are you sure you want to accept this delivery request?')) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/notifications/accept-request/${requestId}`, {
+            method: 'POST'
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            alert('Request accepted successfully!');
+            // Reload notifications to update the UI
+            loadNotifications();
+          } else {
+            alert(data.message || 'Error accepting request');
+          }
+        } catch (error) {
+          console.error('Error accepting request:', error);
+          alert('Error accepting request. Please try again.');
+        }
+      };
+
+             // Function to accept bid from dropdown
+       window.acceptBidFromDropdown = async function(requestId) {
+         if (!confirm('Are you sure you want to accept this bid?')) {
+           return;
+         }
+         
+         try {
+           const response = await fetch(`/notifications/accept-bid/${requestId}`, {
+             method: 'POST'
+           });
+           
+           const data = await response.json();
+           
+           if (response.ok) {
+             alert('Bid accepted successfully!');
+             // Reload notifications to update the UI
+             loadNotifications();
+           } else {
+             alert(data.message || 'Error accepting bid');
+           }
+         } catch (error) {
+           console.error('Error accepting bid:', error);
+           alert('Error accepting bid. Please try again.');
+         }
+       };
+
+       // Function to reject bid from dropdown
+       window.rejectBidFromDropdown = async function(requestId) {
+         if (!confirm('Are you sure you want to reject this bid?')) {
+           return;
+         }
+         
+         try {
+           const response = await fetch(`/notifications/reject-bid/${requestId}`, {
+             method: 'POST'
+           });
+           
+           const data = await response.json();
+           
+           if (response.ok) {
+             alert('Bid rejected successfully!');
+             // Reload notifications to update the UI
+             loadNotifications();
+           } else {
+             alert(data.message || 'Error rejecting bid');
+           }
+         } catch (error) {
+           console.error('Error rejecting bid:', error);
+           alert('Error rejecting bid. Please try again.');
+         }
+       };
     })();
   </script>
   <% } %>

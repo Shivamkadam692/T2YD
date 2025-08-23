@@ -17,6 +17,17 @@ router.post('/add', requireLogin, requireRole('shipper'), async (req, res) => {
   res.redirect('/dashboard/shipper');
 });
 
+// My Deliveries page
+router.get('/my', requireLogin, requireRole('shipper'), async (req, res) => {
+  try {
+    const deliveries = await Delivery.find({ shipper: req.session.userId }).sort({ createdAt: -1 });
+    res.render('myDeliveries', { deliveries });
+  } catch (error) {
+    console.error('Error fetching my deliveries:', error);
+    res.status(500).render('error', { message: 'Error loading your deliveries' });
+  }
+});
+
 // View individual delivery
 router.get('/:id', async (req, res) => {
   try {

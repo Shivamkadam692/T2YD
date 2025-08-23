@@ -13,6 +13,7 @@
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="unread">Unread</button>
       <button class="filter-btn" data-filter="delivery_request">Delivery Requests</button>
+      <button class="filter-btn" data-filter="bid_sent">Bids</button>
       <button class="filter-btn" data-filter="system">System</button>
     </div>
 
@@ -179,6 +180,24 @@
     background: #c0392b;
   }
 
+  .accept-btn {
+    background: var(--success-color);
+    color: white;
+  }
+
+     .accept-btn:hover {
+     background: #229954;
+   }
+
+   .reject-btn {
+     background: #e74c3c;
+     color: white;
+   }
+
+   .reject-btn:hover {
+     background: #c0392b;
+   }
+
   .empty-notifications {
     padding: 3rem;
     text-align: center;
@@ -309,6 +328,15 @@
         <div class="notification-meta">
           <span class="notification-priority ${notification.priority}">${notification.priority}</span>
           <div class="notification-actions">
+            ${notification.type === 'delivery_request' && notification.relatedRequest ? 
+              `<button class="accept-btn" onclick="acceptRequest('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Accept Request</button>` : 
+              ''
+            }
+                         ${notification.type === 'bid_sent' && notification.relatedRequest ? 
+               `<button class="accept-btn" onclick="acceptBid('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Accept Bid</button>
+                <button class="reject-btn" onclick="rejectBid('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Reject Bid</button>` : 
+               ''
+             }
             ${!notification.isRead ? 
               `<button class="mark-read-btn" onclick="markAsRead('${notification._id}')">Mark Read</button>` : 
               ''
@@ -326,6 +354,8 @@
         return notifications.filter(n => !n.isRead);
       case 'delivery_request':
         return notifications.filter(n => n.type === 'delivery_request');
+      case 'bid_sent':
+        return notifications.filter(n => n.type === 'bid_sent');
       case 'system':
         return notifications.filter(n => n.type === 'system');
       default:
@@ -443,6 +473,81 @@
      } catch (error) {
        console.error('Error creating test notification:', error);
        alert('Error creating test notification');
+     }
+   }
+
+   async function acceptRequest(requestId) {
+     if (!confirm('Are you sure you want to accept this delivery request?')) {
+       return;
+     }
+     
+     try {
+       const response = await fetch(`/notifications/accept-request/${requestId}`, {
+         method: 'POST'
+       });
+       
+       const data = await response.json();
+       
+       if (response.ok) {
+         alert('Request accepted successfully!');
+         // Reload notifications to update the UI
+         loadNotifications();
+       } else {
+         alert(data.message || 'Error accepting request');
+       }
+     } catch (error) {
+       console.error('Error accepting request:', error);
+       alert('Error accepting request. Please try again.');
+     }
+   }
+
+   async function acceptBid(requestId) {
+     if (!confirm('Are you sure you want to accept this bid?')) {
+       return;
+     }
+     
+     try {
+       const response = await fetch(`/notifications/accept-bid/${requestId}`, {
+         method: 'POST'
+       });
+       
+       const data = await response.json();
+       
+       if (response.ok) {
+         alert('Bid accepted successfully!');
+         // Reload notifications to update the UI
+         loadNotifications();
+       } else {
+         alert(data.message || 'Error accepting bid');
+       }
+     } catch (error) {
+       console.error('Error accepting bid:', error);
+       alert('Error accepting bid. Please try again.');
+     }
+   }
+
+   async function rejectBid(requestId) {
+     if (!confirm('Are you sure you want to reject this bid?')) {
+       return;
+     }
+     
+     try {
+       const response = await fetch(`/notifications/reject-bid/${requestId}`, {
+         method: 'POST'
+       });
+       
+       const data = await response.json();
+       
+       if (response.ok) {
+         alert('Bid rejected successfully!');
+         // Reload notifications to update the UI
+         loadNotifications();
+       } else {
+         alert(data.message || 'Error rejecting bid');
+       }
+     } catch (error) {
+       console.error('Error rejecting bid:', error);
+       alert('Error rejecting bid. Please try again.');
      }
    }
 </script>

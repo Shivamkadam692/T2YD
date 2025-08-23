@@ -9,7 +9,7 @@ const coordinateSchema = new mongoose.Schema({
 const requestSchema = new mongoose.Schema({
   shipper: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   transporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  delivery: { type: mongoose.Schema.Types.ObjectId, ref: 'Delivery', required: true },
+  delivery: { type: mongoose.Schema.Types.ObjectId, ref: 'Delivery' },
   lorry: { type: mongoose.Schema.Types.ObjectId, ref: 'Lorry', required: true },
   status: { type: String, enum: ['pending', 'accepted', 'rejected', 'completed'], default: 'pending' },
   price: Number,
@@ -26,6 +26,7 @@ const requestSchema = new mongoose.Schema({
   trackingActiveShipper: { type: Boolean, default: false },
   trackingActiveTransporter: { type: Boolean, default: false },
   acceptedAt: Date,
+  rejectedAt: Date,
   loadedAt: Date,
   completedAt: Date,
   createdAt: { type: Date, default: Date.now },
