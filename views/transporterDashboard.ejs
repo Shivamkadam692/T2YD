@@ -1,13 +1,13 @@
 <div class="dashboard-header">
-    <h1>Transporter Dashboard</h1>
-    <p>Welcome back, <%= user.name %>! Manage your lorries and find delivery opportunities.</p>
+    <h1><i class="fas fa-tachometer-alt"></i> Transporter Dashboard</h1>
+    <p><i class="fas fa-hand-wave"></i> Welcome back, <%= user.name %>! Manage your lorries and find delivery opportunities.</p>
 </div>
 
         <!-- My Lorries Section -->
 <section class="dashboard-section">
     <div class="section-header">
-        <h2>My Lorries</h2>
-        <a href="/lorries/add" class="btn btn-primary">Add New Lorry</a>
+        <h2><i class="fas fa-truck"></i> My Lorries</h2>
+        <a href="/lorries/add" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New Lorry</a>
     </div>
     
     <div class="card-container">
@@ -36,9 +36,9 @@
                             <strong>Created:</strong> <%= new Date(lorry.createdAt).toLocaleDateString() %>
                         </div>
                         <div class="card-actions">
-                            <a href="/lorries/<%= lorry._id %>" class="btn btn-secondary">View Details</a>
+                            <a href="/lorries/<%= lorry._id %>" class="btn btn-secondary"><i class="fas fa-eye"></i> View Details</a>
                             <% if (lorry.status === 'available') { %>
-                                <a href="/lorries/<%= lorry._id %>/edit" class="btn btn-edit">Edit</a>
+                                <a href="/lorries/<%= lorry._id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
                             <% } %>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
 
         <!-- Available Deliveries Section -->
 <section class="dashboard-section">
-    <h2>Available Deliveries</h2>
+    <h2><i class="fas fa-box-open"></i> Available Deliveries</h2>
     
     <div class="deliveries-container">
         <% if (availableDeliveries.length === 0) { %>

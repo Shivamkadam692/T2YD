@@ -28,23 +28,23 @@
         <li class="mobile-menu-header" style="display:none">
           <button class="close-mobile btn btn-outline" aria-label="Close menu" style="display:none">Close ✕</button>
         </li>
-        <li><a href="/">Home</a></li>
+        <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
         <% if (user) { %>
           <% if (user.role === 'transporter') { %>
-            <li><a href="/dashboard/transporter">Dashboard</a></li>
-            <li><a href="/lorries/add">Add Lorry</a></li>
-            <li><a href="/lorries/my">My Lorries</a></li>
+            <li><a href="/dashboard/transporter"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="/lorries/add"><i class="fas fa-plus-circle"></i> Add Lorry</a></li>
+            <li><a href="/lorries/my"><i class="fas fa-truck"></i> My Lorries</a></li>
           <% } else if (user.role === 'shipper') { %>
-            <li><a href="/dashboard/shipper">Dashboard</a></li>
-            <li><a href="/deliveries/add">Add Delivery</a></li>
-            <li><a href="/deliveries/my">My Deliveries</a></li>
+            <li><a href="/dashboard/shipper"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="/deliveries/add"><i class="fas fa-plus-circle"></i> Add Delivery</a></li>
+            <li><a href="/deliveries/my"><i class="fas fa-box"></i> My Deliveries</a></li>
           <% } %>
         <% } %>
         <% if (!user) { %>
-          <li><a href="/auth/login" class="btn btn-outline">Login</a></li>
-          <li><a href="/auth/signup" class="btn">Signup</a></li>
+          <li><a href="/auth/login" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+          <li><a href="/auth/signup" class="btn"><i class="fas fa-user-plus"></i> Signup</a></li>
         <% } else { %>
-          <li class="user-greeting" style="color:#071124;font-weight:600">Welcome, <span style="color:#071124"><%= user.name %></span> (<%= user.role%>) </li>
+          <li class="user-greeting" style="color:#071124;font-weight:600"><i class="fas fa-hand-wave"></i> Welcome, <span style="color:#071124"><%= user.name %></span> (<%= user.role%>) </li>
           <li>
             <div class="notification-container">
               <button class="notification-btn" id="notificationBtn" aria-label="Notifications">
@@ -53,20 +53,20 @@
               </button>
               <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-header">
-                  <h3>Notifications</h3>
-                  <button class="mark-all-read" id="markAllRead">Mark all read</button>
+                  <h3><i class="fas fa-bell"></i> Notifications</h3>
+                  <button class="mark-all-read" id="markAllRead"><i class="fas fa-check-double"></i> Mark all read</button>
                 </div>
                 <div class="notification-list" id="notificationList">
-                  <div class="loading">Loading notifications...</div>
+                  <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading notifications...</div>
                 </div>
                 <div class="notification-footer">
-                  <a href="/notifications/view" class="view-all">View all notifications</a>
+                  <a href="/notifications/view" class="view-all"><i class="fas fa-external-link-alt"></i> View all notifications</a>
                 </div>
               </div>
             </div>
           </li>
           <li><a href="/profile"><i class="fas fa-user"></i> My Profile</a></li>
-          <li><a href="/auth/logout" class="btn btn-outline">Logout</a></li>
+          <li><a href="/auth/logout" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         <% } %>
       </ul>
       <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
@@ -85,10 +85,10 @@
   <footer>
     <div class="footer-content">
       <ul class="footer-links">
-        <li><a href="/about">About Us</a></li>
-        <li><a href="/terms">Terms of Service</a></li>
-        <li><a href="/privacy">Privacy Policy</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <li><a href="/about"><i class="fas fa-info-circle"></i> About Us</a></li>
+        <li><a href="/terms"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+        <li><a href="/privacy"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+        <li><a href="/contact"><i class="fas fa-envelope"></i> Contact</a></li>
       </ul>
       <div class="copyright">
         <p>&copy; 2025 T2YD. All rights reserved.</p>

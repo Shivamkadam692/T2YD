@@ -5,13 +5,16 @@
 
 <section class="search-container">
   <form action="/search" method="get" class="search-form">
-    <input type="text" name="query" data-translate-placeholder="searchPlaceholder" placeholder="Search by location, vehicle type, or goods..." required>
-    <button type="submit" data-translate="searchButton">Search <i class="fas fa-search"></i></button>
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" name="query" data-translate-placeholder="searchPlaceholder" placeholder="Search by location, vehicle type, or goods..." required>
+    </div>
+    <button type="submit" data-translate="searchButton"><i class="fas fa-search"></i> Search</button>
   </form>
 </section>
 
 <section>
-  <h2 class="section-title" data-translate="availableLorries">Available Lorries</h2>
+  <h2 class="section-title" data-translate="availableLorries"><i class="fas fa-truck"></i> Available Lorries</h2>
   <div class="card-container">
     <% lorries.forEach(lorry => { %>
       <div class="card">
@@ -51,7 +54,7 @@
 </section>
 
 <section>
-  <h2 class="section-title" data-translate="availableDeliveries">Available Deliveries</h2>
+  <h2 class="section-title" data-translate="availableDeliveries"><i class="fas fa-box-open"></i> Available Deliveries</h2>
   <div class="card-container">
     <% deliveries.forEach(delivery => { %>
       <div class="card">

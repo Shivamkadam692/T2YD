@@ -1,38 +1,38 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
-      <h2>Create your account</h2>
+      <h2><i class="fas fa-user-plus"></i> Create your account</h2>
       <p>Join T2YD to start managing deliveries and lorries.</p>
     </div>
     <form method="post" class="form">
       <div class="form-group">
-        <label for="name">Full name</label>
+        <label for="name"><i class="fas fa-user"></i> Full name</label>
         <input id="name" name="name" placeholder="Your full name" required />
       </div>
       <div class="form-group">
-        <label for="email">Email address</label>
+        <label for="email"><i class="fas fa-envelope"></i> Email address</label>
         <input id="email" type="email" name="email" placeholder="you@example.com" required />
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password"><i class="fas fa-lock"></i> Password</label>
         <input id="password" type="password" name="password" placeholder="Choose a secure password" required />
       </div>
       <div class="form-group">
-        <label for="role">Account type</label>
+        <label for="role"><i class="fas fa-users"></i> Account type</label>
         <select id="role" name="role" required>
-          <option value="transporter">Driver</option>
-          <option value="shipper">Transport Owner</option>
+          <option value="transporter"><i class="fas fa-truck"></i> Driver</option>
+          <option value="shipper"><i class="fas fa-box"></i> Transport Owner</option>
         </select>
       </div>
 
       <div class="form-actions">
-        <button type="reset" class="btn btn-outline">Clear</button>
-        <button type="submit" class="btn btn-primary">Signup</button>
+        <button type="reset" class="btn btn-outline"><i class="fas fa-undo"></i> Clear</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Signup</button>
       </div>
     </form>
 
     <div class="auth-footer">
-      <p>Already have an account? <a href="/auth/login">Log in</a></p>
+      <p>Already have an account? <a href="/auth/login"><i class="fas fa-sign-in-alt"></i> Log in</a></p>
     </div>
   </div>
 </div>

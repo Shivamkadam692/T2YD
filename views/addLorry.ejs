@@ -1,44 +1,44 @@
 <div class="dashboard-header">
-  <h1>Add New Lorry</h1>
+  <h1><i class="fas fa-plus-circle"></i> Add New Lorry</h1>
   <p>Register your lorry to start receiving delivery requests.</p>
 </div>
 
 <form action="/lorries/add" method="post" class="form">
   <div class="form-group">
-    <label for="vehicleNumber">Vehicle Number:</label>
+    <label for="vehicleNumber"><i class="fas fa-hashtag"></i> Vehicle Number:</label>
     <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., MH12AB1234" required>
   </div>
   
   <div class="form-group">
-    <label for="vehicleType">Vehicle Type:</label>
+    <label for="vehicleType"><i class="fas fa-truck"></i> Vehicle Type:</label>
     <select id="vehicleType" name="vehicleType" required>
-      <option value="Truck">Truck</option>
-      <option value="Container">Container</option>
+      <option value="Truck"><i class="fas fa-truck"></i> Truck</option>
+      <option value="Container"><i class="fas fa-box"></i> Container</option>
     </select>
   </div>
   
   <div class="form-group">
-    <label for="capacity">Capacity (tons):</label>
+    <label for="capacity"><i class="fas fa-weight-hanging"></i> Capacity (tons):</label>
     <input type="number" id="capacity" name="capacity" placeholder="Enter capacity in tons" required min="1">
   </div>
   
   <div class="form-group">
-    <label for="location">Current Location:</label>
+    <label for="location"><i class="fas fa-map-marker-alt"></i> Current Location:</label>
     <input type="text" id="location" name="location" placeholder="e.g., Mumbai, Maharashtra" required>
   </div>
   
   <div class="form-group">
-    <label for="contact">Contact Number:</label>
+    <label for="contact"><i class="fas fa-phone"></i> Contact Number:</label>
     <input type="tel" id="contact" name="contact" placeholder="Your contact number" required>
   </div>
   
   <div class="form-group">
-    <label for="description">Description (Optional):</label>
+    <label for="description"><i class="fas fa-align-left"></i> Description (Optional):</label>
     <textarea id="description" name="description" rows="3" placeholder="Additional details about the vehicle or special features..."></textarea>
   </div>
   
   <div class="form-actions">
-    <button type="submit" class="btn btn-primary">Register Lorry</button>
-    <a href="/dashboard/transporter" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Register Lorry</button>
+    <a href="/dashboard/transporter" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
   </div>
 </form>

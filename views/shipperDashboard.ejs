@@ -1,13 +1,13 @@
 <div class="dashboard-header">
-    <h1>Shipper Dashboard</h1>
-    <p>Welcome back, <%= user.name %>! Manage your deliveries and review transporter requests.</p>
+    <h1><i class="fas fa-tachometer-alt"></i> Shipper Dashboard</h1>
+    <p><i class="fas fa-hand-wave"></i> Welcome back, <%= user.name %>! Manage your deliveries and review transporter requests.</p>
 </div>
 
         <!-- My Deliveries Section -->
 <section class="dashboard-section">
     <div class="section-header">
-        <h2>My Deliveries</h2>
-        <a href="/deliveries/add" class="btn btn-primary">Add New Delivery</a>
+        <h2><i class="fas fa-box"></i> My Deliveries</h2>
+        <a href="/deliveries/add" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New Delivery</a>
     </div>
     
     <div class="card-container">
@@ -36,9 +36,9 @@
                             <strong>Created:</strong> <%= new Date(delivery.createdAt).toLocaleDateString() %>
                         </div>
                         <div class="card-actions">
-                            <a href="/deliveries/<%= delivery._id %>" class="btn btn-secondary">View Details</a>
+                            <a href="/deliveries/<%= delivery._id %>" class="btn btn-secondary"><i class="fas fa-eye"></i> View Details</a>
                             <% if (delivery.status === 'pending') { %>
-                                <a href="/deliveries/<%= delivery._id %>/edit" class="btn btn-edit">Edit</a>
+                                <a href="/deliveries/<%= delivery._id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
                             <% } %>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
 
         <!-- Incoming Requests Section -->
 <section class="dashboard-section">
-    <h2>Incoming Requests</h2>
+    <h2><i class="fas fa-inbox"></i> Incoming Requests</h2>
     
     <div class="requests-container">
         <% if (requests.length === 0) { %>

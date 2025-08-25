@@ -61,40 +61,40 @@
   </style>
 
 <div class="dashboard-header">
-  <h1>Add New Delivery</h1>
+  <h1><i class="fas fa-plus-circle"></i> Add New Delivery</h1>
   <p>Create a new delivery request for transporters to bid on.</p>
 </div>
 
 <form action="/deliveries/add" method="post" class="form">
   <div class="form-group">
-    <label for="goodsType">Goods Type:</label>
+    <label for="goodsType"><i class="fas fa-box"></i> Goods Type:</label>
     <input type="text" id="goodsType" name="goodsType" placeholder="e.g., Electronics, Furniture, Food" required>
   </div>
   
   <div class="form-group">
-    <label for="weight">Weight (kg):</label>
+    <label for="weight"><i class="fas fa-weight-hanging"></i> Weight (kg):</label>
     <input type="number" id="weight" name="weight" placeholder="Enter weight in kg" required min="1">
   </div>
   
   <div class="form-group suggest-container">
-    <label for="pickupLocation">Pickup Location:</label>
+    <label for="pickupLocation"><i class="fas fa-map-pin"></i> Pickup Location:</label>
     <input type="text" id="pickupLocation" name="pickupLocation" placeholder="e.g., Mumbai, Maharashtra" required>
     <div id="pickupLocation_suggest" class="suggest-list" style="display:none;"></div>
   </div>
   
   <div class="form-group suggest-container">
-    <label for="dropLocation">Drop Location:</label>
+    <label for="dropLocation"><i class="fas fa-map-marker-alt"></i> Drop Location:</label>
     <input type="text" id="dropLocation" name="dropLocation" placeholder="e.g., Delhi, Delhi" required>
     <div id="dropLocation_suggest" class="suggest-list" style="display:none;"></div>
   </div>
   
   <div class="form-group">
-    <label for="pickupDateTime">Pickup Date and Time:</label>
+    <label for="pickupDateTime"><i class="fas fa-calendar-alt"></i> Pickup Date and Time:</label>
     <input type="datetime-local" id="pickupDateTime" name="pickupDateTime" required>
   </div>
   
   <div class="form-group">
-    <label for="expectedDeliveryDate">Expected Delivery Date:</label>
+    <label for="expectedDeliveryDate"><i class="fas fa-clock"></i> Expected Delivery Date:</label>
     <input type="date" id="expectedDeliveryDate" name="expectedDeliveryDate" required>
   </div>
   
