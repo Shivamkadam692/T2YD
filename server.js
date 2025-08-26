@@ -133,13 +133,11 @@ app.get('/about', (req, res) => res.render('about'));
 app.get('/terms', (req, res) => res.render('terms'));
 app.get('/privacy', (req, res) => res.render('privacy'));
 app.get('/contact', (req, res) => res.render('contact'));
-
-// Notifications page route
-app.get('/notifications', requireLogin, (req, res) => {
-  res.render('notifications');
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+// Ignore Chrome DevTools probe requests
+app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+  res.status(204).end(); // No Content
 });
-
-
 
 // 404 handler for undefined routes
 app.use((req, res, next) => {
