@@ -6,43 +6,43 @@
         
         <div class="delivery-info">
             <div class="info-group">
-                <label>Pickup Location:</label>
+                <label><i class="fas fa-map-pin"></i> Pickup Location:</label>
                 <span><%= delivery.pickupLocation %></span>
             </div>
             
             <div class="info-group">
-                <label>Drop Location:</label>
+                <label><i class="fas fa-map-marker-alt"></i> Drop Location:</label>
                 <span><%= delivery.dropLocation %></span>
             </div>
             
             <div class="info-group">
-                <label>Pickup Date & Time:</label>
+                <label><i class="fas fa-calendar-alt"></i> Pickup Date & Time:</label>
                 <span><%= delivery.pickupDateTime ? new Date(delivery.pickupDateTime).toLocaleString() : 'Not specified' %></span>
             </div>
             
             <div class="info-group">
-                <label>Expected Delivery Date:</label>
+                <label><i class="fas fa-clock"></i> Expected Delivery Date:</label>
                 <span><%= delivery.expectedDeliveryDate ? new Date(delivery.expectedDeliveryDate).toLocaleDateString() : 'Not specified' %></span>
             </div>
             
             <div class="info-group">
-                <label>Goods Type:</label>
+                <label><i class="fas fa-box"></i> Goods Type:</label>
                 <span><%= delivery.goodsType %></span>
             </div>
             
             <div class="info-group">
-                <label>Weight:</label>
+                <label><i class="fas fa-weight-hanging"></i> Weight:</label>
                 <span><%= delivery.weight %> kg</span>
             </div>
             
             <div class="info-group">
-                <label>Status:</label>
+                <label><i class="fas fa-info-circle"></i> Status:</label>
                 <span class="status <%= delivery.status %>"><%= delivery.status %></span>
             </div>
             
             <% if (delivery.description) { %>
             <div class="info-group">
-                <label>Description:</label>
+                <label><i class="fas fa-align-left"></i> Description:</label>
                 <span><%= delivery.description %></span>
             </div>
             <% } %>

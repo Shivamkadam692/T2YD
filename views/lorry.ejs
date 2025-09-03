@@ -6,33 +6,33 @@
         
         <div class="lorry-info">
             <div class="info-group">
-                <label>Owner Name:</label>
+                <label><i class="fas fa-user"></i> Owner Name:</label>
                 <span><%= lorry.ownerName %></span>
             </div>
             
             <div class="info-group">
-                <label>Vehicle Type:</label>
+                <label><i class="fas fa-truck"></i> Vehicle Type:</label>
                 <span><%= lorry.vehicleType %></span>
             </div>
             
             <div class="info-group">
-                <label>Location:</label>
+                <label><i class="fas fa-map-marker-alt"></i> Location:</label>
                 <span><%= lorry.location %></span>
             </div>
             
             <div class="info-group">
-                <label>Capacity:</label>
+                <label><i class="fas fa-weight"></i> Capacity:</label>
                 <span><%= lorry.capacity %> tons</span>
             </div>
             
             <div class="info-group">
-                <label>Status:</label>
+                <label><i class="fas fa-info-circle"></i> Status:</label>
                 <span class="status <%= lorry.status %>"><%= lorry.status %></span>
             </div>
             
             <% if (lorry.description) { %>
             <div class="info-group">
-                <label>Description:</label>
+                <label><i class="fas fa-align-left"></i> Description:</label>
                 <span><%= lorry.description %></span>
             </div>
             <% } %>

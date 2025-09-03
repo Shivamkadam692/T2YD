@@ -18,6 +18,22 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 
 ## 🆕 Recent Updates
 
+### v2.3.0 - Card Styles & Loading Animations
+- **🎴 Modern Card Styles**: Added glassmorphism effect with blur backdrop filter for detail pages
+- **🔄 Loading Animations**: Implemented full-screen loading animation for page transitions
+- **✨ Enhanced Detail Pages**: Improved delivery and lorry detail pages with modern styling
+- **📱 Responsive Cards**: Ensured card styles work seamlessly across all device sizes
+- **🎨 Status Badges**: Added color-coded status badges for different delivery/lorry statuses
+- **🚀 Transition Effects**: Smooth animations for cards and page loading
+- **🔍 Visual Feedback**: Better user feedback during navigation and data loading
+- **📊 Consistent Information Display**: Standardized information display with icons
+
+#### Using the New Features
+- **Card Styles**: Applied automatically to delivery and lorry detail pages
+- **Loading Animation**: Appears during page transitions and AJAX requests
+- **Status Badges**: Color-coded by status (pending, in-transit, delivered, available, unavailable)
+- **Icons**: Added to all information fields for better visual hierarchy
+
 ### v2.2.0 - Enhanced User Interface & Icons
 - **🎨 Comprehensive Icon Integration**: Added Font Awesome icons throughout the application for improved user experience
 - **🔍 Enhanced Search Interface**: Improved search input with embedded search icon and better visual design
@@ -67,9 +83,17 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - **EJS** templates with embedded JavaScript
 - **Socket.IO Client** for real-time features
 - **Responsive CSS** with modern design system
+- **Glassmorphism UI** with card styles and loading animations
 - **Font Awesome Icons** for enhanced user experience
 - **Language switching** with dynamic content updates
 - **Real-time notifications** with action buttons
+
+### UI Components
+- **Card Styles**: Modern glassmorphism effect with blur backdrop filter
+- **Loading Animation**: Full-screen loading spinner with fade transitions
+- **Status Badges**: Color-coded status indicators for different states
+- **Responsive Design**: Mobile-first approach with flexible layouts
+- **Icon Integration**: Contextual icons for improved information hierarchy
 
 ## 📁 Project Structure
 
@@ -106,8 +130,10 @@ T2YD/
 │   ├── auth/              # Authentication views
 │   └── ...                # Other page templates
 ├── public/                 # Static files
-│   ├── style.css          # Base styles
+│   ├── css/               # CSS stylesheets
+│   │   └── card-styles.css # Modern card and loading styles
 │   ├── style-modern.css   # Modern design system with icon styles
+│   ├── profile.css        # Profile page styles
 │   └── languages/         # Language files
 │       ├── en.js          # English translations
 │       ├── hi.js          # Hindi translations
