@@ -18,6 +18,13 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 
 ## 🆕 Recent Updates
 
+### v2.4.0 - Dependency Updates & Deprecation Fixes
+- **🔧 Node.js Compatibility**: Fixed Node.js deprecation warnings for better compatibility with Node.js v22+
+- **⚙️ Dependency Updates**: Updated dependencies to latest versions for improved security and performance
+- **🐛 Bug Fixes**: Resolved 404 error when accessing delivery details from search results
+- **🔐 Authentication Improvements**: Enhanced error handling for login with user-friendly messages
+- **🎨 UI Enhancements**: Added alert styles for better error message display
+
 ### v2.3.0 - Card Styles & Loading Animations
 - **🎴 Modern Card Styles**: Added glassmorphism effect with blur backdrop filter for detail pages
 - **🔄 Loading Animations**: Implemented full-screen loading animation for page transitions
@@ -145,7 +152,7 @@ T2YD/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v16 or higher, v22+ recommended)
 - MongoDB (local or Atlas)
 - npm (or yarn)
 
@@ -185,6 +192,17 @@ T2YD/
 
 6. **Access the app:**
    - Open [http://localhost:3000](http://localhost:3000) in your browser
+
+7. **Note on Deprecation Warnings:**
+   - If you encounter Node.js deprecation warnings, you can suppress them by starting the app with:
+     ```bash
+     # For development
+     NODE_OPTIONS="--no-deprecation" npm run dev
+     
+     # For production
+     NODE_OPTIONS="--no-deprecation" npm start
+     ```
+   - Alternatively, you can use the `--trace-deprecation` flag to identify the source of warnings
 
 ## 📋 Available Scripts
 
@@ -390,7 +408,24 @@ For support, questions, or feature requests:
 
 ## 🔄 Changelog
 
-### v2.2.0 - Enhanced User Interface & Icons (Current)
+### v2.4.0 - Dependency Updates & Deprecation Fixes (Current)
+- **🔧 Node.js Compatibility**: Fixed Node.js deprecation warnings for better compatibility with Node.js v22+
+- **⚙️ Dependency Updates**: Updated dependencies to latest versions for improved security and performance
+- **🐛 Bug Fixes**: Resolved 404 error when accessing delivery details from search results
+- **🔐 Authentication Improvements**: Enhanced error handling for login with user-friendly messages
+- **🎨 UI Enhancements**: Added alert styles for better error message display
+
+### v2.3.0 - Card Styles & Loading Animations
+- **🎴 Modern Card Styles**: Added glassmorphism effect with blur backdrop filter for detail pages
+- **🔄 Loading Animations**: Implemented full-screen loading animation for page transitions
+- **✨ Enhanced Detail Pages**: Improved delivery and lorry detail pages with modern styling
+- **📱 Responsive Cards**: Ensured card styles work seamlessly across all device sizes
+- **🎨 Status Badges**: Added color-coded status badges for different delivery/lorry statuses
+- **🚀 Transition Effects**: Smooth animations for cards and page loading
+- **🔍 Visual Feedback**: Better user feedback during navigation and data loading
+- **📊 Consistent Information Display**: Standardized information display with icons
+
+### v2.2.0 - Enhanced User Interface & Icons
 - **🎨 Comprehensive Icon Integration**: Added Font Awesome icons throughout the application
 - **🔍 Enhanced Search Interface**: Improved search input with embedded search icon
 - **📱 Navigation Improvements**: Added contextual icons to all navigation elements
