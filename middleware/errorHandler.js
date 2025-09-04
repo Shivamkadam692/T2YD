@@ -28,10 +28,28 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.code === 11000) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Duplicate key error',
-      field: Object.keys(err.keyValue)[0]
+    // Extract the duplicate key field name
+    const field = Object.keys(err.keyValue)[0];
+    let errorMessage = `Duplicate ${field} error`;
+    
+    // Provide more user-friendly messages for common fields
+    if (field === 'email') {
+      errorMessage = 'This email address is already registered. Please use a different email or try logging in.';
+    }
+    
+    // API response
+    if (req.originalUrl.includes('/api/')) {
+      return res.status(400).json({
+        status: 'error',
+        message: errorMessage,
+        field: field
+      });
+    }
+    
+    // Web response - render error page with friendly message
+    return res.status(400).render('error', {
+      message: errorMessage,
+      error: process.env.NODE_ENV === 'development' ? err : {}
     });
   }
 

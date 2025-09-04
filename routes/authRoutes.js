@@ -17,8 +17,17 @@ router.post('/signup',
   async (req, res, next) => {
     try {
       await User.create(req.body);
+      if (req.flash) req.flash('success', 'Account created successfully! Please log in.');
       res.redirect('/auth/login');
     } catch (err) {
+      // Check specifically for duplicate email error
+      if (err.code === 11000 && err.keyValue && err.keyValue.email) {
+        if (req.flash) {
+          req.flash('error', 'This email address is already registered. Please use a different email or try logging in.');
+          return res.redirect('/auth/signup');
+        }
+      }
+      // For other errors, pass to the global error handler
       next(err);
     }
   }
@@ -39,16 +48,14 @@ router.post('/login',
       const user = await User.findOne({ email });
 
       if (!user) {
-        const error = new Error('Invalid credentials');
-        error.statusCode = 401;
-        return next(error);
+        req.flash('error', 'User not found. Please check your email or create an account.');
+        return res.redirect('/auth/login');
       }
 
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
-        const error = new Error('Invalid credentials');
-        error.statusCode = 401;
-        return next(error);
+        req.flash('error', 'Invalid password. Please try again or reset your password.');
+        return res.redirect('/auth/login');
       }
 
       req.session.userId = user._id;

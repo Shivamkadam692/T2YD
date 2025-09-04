@@ -29,6 +29,24 @@
             <span><strong>Owner:</strong> <%= item.ownerName || item.shipperName %></span>
           </div>
         </div>
+        <div class="card-footer" style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem;">
+          <% if (item.goodsType) { %>
+            <% if (user && user.role === 'transporter') { %>
+              <a href="/bid/<%= item._id %>" class="btn btn-primary"><i class="fas fa-handshake"></i> Book Delivery</a>
+            <% } else { %>
+              <a href="/deliveries/<%= item._id %>" class="btn btn-outline"><i class="fas fa-eye"></i> View</a>
+            <% } %>
+          <% } else { %>
+            <% if (user && user.role === 'shipper') { %>
+              <form action="/dashboard/send-request" method="POST" style="display:inline-block;">
+                <input type="hidden" name="lorryId" value="<%= item._id %>" />
+                <button type="submit" class="btn btn-primary"><i class="fas fa-truck-moving"></i> Assign Lorry</button>
+              </form>
+            <% } else { %>
+              <a href="/lorry/<%= item._id %>" class="btn btn-outline"><i class="fas fa-eye"></i> View</a>
+            <% } %>
+          <% } %>
+        </div>
       </div>
     <% }) %>
   </div>

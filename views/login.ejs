@@ -4,6 +4,19 @@
       <h2><i class="fas fa-sign-in-alt"></i> Welcome</h2>
       <p>Sign in to your account</p>
     </div>
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
+        <% if (error.includes('User not found')) { %>
+          <p><a href="/auth/signup" class="alert-link">Create an account</a></p>
+        <% } %>
+      </div>
+    <% } %>
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <%= success %>
+      </div>
+    <% } %>
     <form method="post" action="/auth/login" class="form">
       <div class="form-group">
         <label for="email"><i class="fas fa-envelope"></i> Email</label>
