@@ -24,6 +24,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - **🐛 Bug Fixes**: Resolved 404 error when accessing delivery details from search results
 - **🔐 Authentication Improvements**: Enhanced error handling for login with user-friendly messages
 - **🎨 UI Enhancements**: Added alert styles for better error message display
+- **🔒 Security Fix**: Fixed unauthorized delivery deletion vulnerability by adding proper ownership checks
 
 ### v2.3.0 - Card Styles & Loading Animations
 - **🎴 Modern Card Styles**: Added glassmorphism effect with blur backdrop filter for detail pages
@@ -414,6 +415,7 @@ For support, questions, or feature requests:
 - **🐛 Bug Fixes**: Resolved 404 error when accessing delivery details from search results
 - **🔐 Authentication Improvements**: Enhanced error handling for login with user-friendly messages
 - **🎨 UI Enhancements**: Added alert styles for better error message display
+- **🔒 Security Fix**: Fixed unauthorized delivery deletion vulnerability by adding proper ownership checks
 
 ### v2.3.0 - Card Styles & Loading Animations
 - **🎴 Modern Card Styles**: Added glassmorphism effect with blur backdrop filter for detail pages
