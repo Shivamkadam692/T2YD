@@ -49,11 +49,13 @@
         </div>
         
         <div class="actions">
-            <% if (user && user.role === 'shipper') { %>
+            <% if (user && user.role === 'shipper' && user._id.toString() === delivery.shipper.toString()) { %>
                 <a href="/deliveries/<%= delivery._id %>/edit" class="btn btn-edit">Edit Delivery</a>
                 <form action="/deliveries/<%= delivery._id %>?_method=DELETE" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this delivery?')">Delete Delivery</button>
                 </form>
+            <% } else if (user && user.role === 'shipper') { %>
+                <div class="alert alert-info">You can only edit or delete your own deliveries.</div>
             <% } else if (user && user.role === 'transporter' && delivery.status === 'pending') { %>
                 <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Book Delivery</a>
             <% } %>
