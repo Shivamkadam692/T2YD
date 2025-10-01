@@ -88,6 +88,14 @@
   <main>
     <%- body %>
   </main>
+  
+  <!-- Chat Bot Button -->
+  <% if (user) { %>
+  <div class="chat-bot-button" id="chatBotButton">
+    <i class="fas fa-robot"></i>
+    <div class="chat-bot-tooltip">Ask me anything!</div>
+  </div>
+  <% } %>
 
   <footer>
     <div class="footer-content">
@@ -104,6 +112,19 @@
   </footer>
 
   <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- Chat Bot Button Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatBotButton = document.getElementById('chatBotButton');
+      
+      if (chatBotButton) {
+        chatBotButton.addEventListener('click', function() {
+          window.location.href = '/chatbot';
+        });
+      }
+    });
+  </script>
   
   <!-- Language Files -->
   <script src="/languages/en.js"></script>

@@ -19,6 +19,8 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const bidRoutes = require('./routes/bidRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const callRoutes = require('./routes/callRoutes');
+const chatBotRoutes = require('./routes/chatBotRoutes');
 const { requireLogin } = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -127,6 +129,8 @@ app.use('/payments', paymentRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/bid', bidRoutes);
 app.use('/profile', profileRoutes);
+app.use('/calls', callRoutes);
+app.use('/chatbot', chatBotRoutes);
 
 // Public static pages used by the footer
 app.get('/about', (req, res) => res.render('about'));

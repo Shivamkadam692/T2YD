@@ -11,6 +11,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 📍 **Real-time Tracking**: Live location tracking with Socket.IO
 - 🔐 **Authentication**: Session-based authentication with role-based access control
 - 👤 **User Profiles**: Comprehensive profile management with booking history
+- 🤖 **AI Chat Assistant**: Intelligent chatbot for user support and guidance
 - 📱 **Responsive Design**: Mobile-first design that works on all devices
 - 💳 **Payment Integration**: Stripe payment processing
 - 🔄 **Real-time Updates**: Live updates for transport status and location
@@ -259,6 +260,14 @@ npm start
 - **Navigation Clarity**: Clear visual indicators for all navigation elements
 - **Status Visualization**: Color-coded icons for different statuses and actions
 
+### 🤖 AI Chat Assistant
+- **Intelligent Support**: AI-powered chatbot for answering user questions
+- **Context-Aware Responses**: Different responses based on user authentication status
+- **Floating Button**: Accessible chat button visible on all pages when logged in
+- **Dedicated Page**: Full-featured chat interface with conversation history
+- **Smart Help Topics**: Quick access to common help topics
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+
 ## 🛣️ Application Routes
 
 ### Public Routes
@@ -283,6 +292,7 @@ npm start
 - `/dashboard/track/:requestId` - Track delivery
 
 ### Shared Routes
+- `/chatbot` - AI chat assistant interface
 - `/notifications/view` - View all notifications
 - `/payments/request/:requestId` - Payment processing
 
@@ -409,7 +419,17 @@ For support, questions, or feature requests:
 
 ## 🔄 Changelog
 
-### v2.4.0 - Dependency Updates & Deprecation Fixes (Current)
+### v2.5.0 - Chat Assistant & UI Improvements
+- **🤖 AI Chat Assistant**: Added intelligent chatbot for user support and guidance
+- **💬 Chat Interface**: Floating chat button and dedicated assistant page
+- **🧠 Smart Responses**: Context-aware responses for common user queries
+- **👤 Conditional UI**: Assistant options adapt based on user login status
+- **🎨 UI Enhancements**: Improved chat interface with modern styling
+- **🔄 Conversation History**: Persistent chat history storage
+- **📱 Responsive Chat**: Mobile-optimized chat interface
+- **🧹 Navbar Cleanup**: Removed assistant link from navbar for cleaner navigation
+
+### v2.4.0 - Dependency Updates & Deprecation Fixes
 - **🔧 Node.js Compatibility**: Fixed Node.js deprecation warnings for better compatibility with Node.js v22+
 - **⚙️ Dependency Updates**: Updated dependencies to latest versions for improved security and performance
 - **🐛 Bug Fixes**: Resolved 404 error when accessing delivery details from search results
