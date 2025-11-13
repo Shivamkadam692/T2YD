@@ -1007,12 +1007,28 @@ footer {
 }
 .mobile-menu-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 .mobile-menu-toggle span { display: block; width: 22px; height: 2.5px; background: #071124; margin: 3px 0; border-radius: 2px; transition: transform .18s ease, opacity .18s ease; }
-.mobile-menu-toggle.active span:nth-child(1) { transform: translateY(6px) rotate(-45deg); }
+.mobile-menu-toggle.active span:nth-child(1) { transform: translateY(5px) rotate(-45deg); }
 .mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
-.mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-6px) rotate(45deg); }
+.mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-5px) rotate(45deg); }
+
+/* Smaller active state for mobile */
+@media (max-width: 768px) {
+  .mobile-menu-toggle.active span:nth-child(1) { transform: translateY(4px) rotate(-45deg) !important; }
+  .mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-4px) rotate(45deg) !important; }
+}
 
 @media (max-width: 768px) {
-  .mobile-menu-toggle { display: inline-flex }
+  .mobile-menu-toggle { 
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+  .mobile-menu-toggle span {
+    width: 18px;
+    height: 2px;
+    margin: 2.5px 0;
+  }
   .nav-links { display: none }
   .nav-links.active { display: flex; position: fixed; right: 0; top: 0; bottom: 0; width: 85%; max-width: 360px; flex-direction: column; padding: 4rem 1rem; background: var(--panel); box-shadow: var(--shadow-xl); z-index: 1100; }
   .nav-backdrop.show { display: block }
@@ -1891,8 +1907,22 @@ a:focus, button:focus {
 /* Appended mobile safety overrides to guarantee hamburger visibility and nav slide-in */
 @media (max-width: 768px) {
   /* Ensure hamburger is rendered and above other elements */
-  .mobile-menu-toggle { display: inline-flex !important; position: relative; z-index: 2500; background: white; border: 1px solid rgba(15,23,42,0.06); padding: 6px; }
-  .mobile-menu-toggle span { background-color: #071124 !important; }
+  .mobile-menu-toggle { 
+    display: inline-flex !important; 
+    position: relative; 
+    z-index: 2500; 
+    background: white; 
+    border: 1px solid rgba(15,23,42,0.06); 
+    padding: 6px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .mobile-menu-toggle span { 
+    background-color: #071124 !important;
+    width: 18px !important;
+    height: 2px !important;
+    margin: 2.5px 0 !important;
+  }
 
   /* Make nav off-canvas and slide-in reliably */
   .nav-links { transform: translateX(100%) !important; transition: transform 280ms cubic-bezier(.2,.8,.2,1) !important; position: fixed !important; top: 0 !important; right: 0 !important; bottom: 0 !important; width: 85% !important; max-width: 360px !important; background: var(--glass-bg) !important; z-index: 2400 !important; display: flex !important; flex-direction: column !important; padding: 4rem 1rem !important; box-shadow: var(--shadow-xl) !important; }
@@ -1912,8 +1942,15 @@ a:focus, button:focus {
     margin: 0 !important;
     background: white !important;
     box-shadow: var(--shadow-sm) !important;
-    border-radius: 10px !important;
-    padding: 8px !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .mobile-menu-toggle span {
+    width: 18px !important;
+    height: 2px !important;
+    margin: 2.5px 0 !important;
   }
 
   /* ensure header and nav don't add extra right spacing */

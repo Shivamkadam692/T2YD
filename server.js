@@ -23,10 +23,7 @@ const callRoutes = require('./routes/callRoutes');
 const chatBotRoutes = require('./routes/chatBotRoutes');
 const { requireLogin } = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
-
-const Lorry = require('./models/Lorry');
-const Delivery = require('./models/Delivery');
-const Request = require('./models/Request');
+const homeController = require('./controllers/homeController');
 
 const app = express();
 const server = http.createServer(app);
@@ -77,49 +74,8 @@ app.use(async (req, res, next) => {
 });
 
 // Routes
-app.get('/', async (req, res) => {
-  let lorries;
-  
-  // If user is a transporter, only show their own lorries
-  if (req.session.userId && req.session.userRole === 'transporter') {
-    lorries = await Lorry.find({ transporter: req.session.userId });
-  } else {
-    // For non-transporters (shippers or guests), show all lorries
-    lorries = await Lorry.find();
-  }
-  
-  const deliveries = await Delivery.find();
-  res.render('index', { lorries, deliveries });
-});
-
-app.get('/search', async (req, res) => {
-  const query = req.query.query;
-  
-  // Base search criteria
-  const searchCriteria = {
-    $or: [
-      { location: { $regex: query, $options: 'i' } },
-      { vehicleType: { $regex: query, $options: 'i' } },
-      { ownerName: { $regex: query, $options: 'i' } }
-    ]
-  };
-  
-  // If user is a transporter, only show their own lorries
-  if (req.session.userId && req.session.userRole === 'transporter') {
-    searchCriteria.transporter = req.session.userId;
-  }
-  
-  const lorryResults = await Lorry.find(searchCriteria);
-  const deliveryResults = await Delivery.find({
-    $or: [
-      { pickupLocation: { $regex: query, $options: 'i' } },
-      { dropLocation: { $regex: query, $options: 'i' } },
-      { goodsType: { $regex: query, $options: 'i' } }
-    ]
-  });
-  const results = [...lorryResults, ...deliveryResults];
-  res.render('searchResults', { results });
-});
+app.get('/', homeController.getHome);
+app.get('/search', homeController.search);
 
 app.use('/lorries', lorryRoutes);
 app.use('/deliveries', deliveryRoutes);
