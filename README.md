@@ -1,6 +1,6 @@
 # T2YD - Goods Transport Platform
 
-A modern, multilingual transport platform built with Node.js/Express backend and EJS frontend, featuring real-time notifications, bid management, language support, responsive design, and enhanced user-friendly UI with comprehensive icon integration.
+A modern, multilingual transport platform built with Node.js/Express backend and EJS frontend, featuring real-time notifications, bid management, language support, responsive design, SEO optimization, smooth scrolling, and enhanced user-friendly UI with comprehensive icon integration.
 
 ## 🌟 Key Features
 
@@ -16,8 +16,31 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 💳 **Payment Integration**: Stripe payment processing
 - 🔄 **Real-time Updates**: Live updates for transport status and location
 - ✨ **Enhanced UI**: User-friendly interface with comprehensive Font Awesome icon integration
+- 🎯 **SEO Optimized**: Comprehensive meta tags, Open Graph, and Twitter Card support
+- ⚡ **Smooth Scrolling**: Enhanced user experience with smooth page transitions and scrolling
+- 🚀 **Performance Optimized**: Preconnect, DNS prefetch, and optimized asset loading
 
 ## 🆕 Recent Updates
+
+### v2.6.0 - SEO Optimization & Smooth Scrolling
+- **🎯 SEO Optimization**: Added comprehensive meta tags, Open Graph, and Twitter Card support
+- **📱 Social Media Integration**: Enhanced social sharing with proper meta tags
+- **⚡ Smooth Scrolling**: Implemented smooth scrolling behavior across all pages
+- **🚀 Performance Optimization**: Added preconnect and DNS prefetch for faster asset loading
+- **♿ Accessibility**: Added support for reduced motion preferences
+- **🔍 Search Engine Friendly**: Optimized title, description, and keywords for better indexing
+- **🧹 Code Cleanup**: Removed unused code and optimized file structure
+- **📄 README Updates**: Comprehensive documentation updates with latest features
+
+### v2.5.0 - Chat Assistant & UI Improvements
+- **🤖 AI Chat Assistant**: Added intelligent chatbot for user support and guidance
+- **💬 Chat Interface**: Floating chat button and dedicated assistant page
+- **🧠 Smart Responses**: Context-aware responses for common user queries
+- **👤 Conditional UI**: Assistant options adapt based on user login status
+- **🎨 UI Enhancements**: Improved chat interface with modern styling
+- **🔄 Conversation History**: Persistent chat history storage
+- **📱 Responsive Chat**: Mobile-optimized chat interface
+- **🧹 Navbar Cleanup**: Removed assistant link from navbar for cleaner navigation
 
 ### v2.4.0 - Dependency Updates & Deprecation Fixes
 - **🔧 Node.js Compatibility**: Fixed Node.js deprecation warnings for better compatibility with Node.js v22+
@@ -96,6 +119,9 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - **Font Awesome Icons** for enhanced user experience
 - **Language switching** with dynamic content updates
 - **Real-time notifications** with action buttons
+- **SEO Optimization** with meta tags and Open Graph
+- **Smooth Scrolling** with CSS scroll-behavior
+- **Performance Optimization** with preconnect and DNS prefetch
 
 ### UI Components
 - **Card Styles**: Modern glassmorphism effect with blur backdrop filter
@@ -486,6 +512,35 @@ For support, questions, or feature requests:
 - Basic transport management
 - Responsive design
 
+## 🎯 SEO Features
+
+### Meta Tags
+- **Primary Meta Tags**: Title, description, keywords, and author information
+- **Open Graph Tags**: Facebook and social media sharing optimization
+- **Twitter Cards**: Enhanced Twitter sharing with rich previews
+- **Canonical URLs**: Proper URL canonicalization for search engines
+- **Robots Meta**: Control over search engine crawling and indexing
+
+### Performance Optimization
+- **Preconnect**: Faster external resource loading
+- **DNS Prefetch**: Reduced latency for external domains
+- **Font Optimization**: Optimized Google Fonts loading
+- **Asset Optimization**: Efficient CSS and JavaScript loading
+
+### Accessibility
+- **Reduced Motion Support**: Respects user motion preferences
+- **Semantic HTML**: Proper HTML structure for screen readers
+- **ARIA Labels**: Enhanced accessibility for assistive technologies
+- **Smooth Scrolling**: Improved navigation experience
+
+## ⚡ Performance Features
+
+- **Smooth Scrolling**: CSS-based smooth scrolling behavior
+- **Optimized Loading**: Preconnect and DNS prefetch for faster loads
+- **Efficient Animations**: Respects user motion preferences
+- **Asset Optimization**: Optimized CSS and JavaScript delivery
+- **Font Loading**: Optimized Google Fonts integration
+
 ---
 
-**T2YD** - Connecting transporters and shippers across India with a modern, multilingual platform. 🚛✨
+**T2YD** - Connecting transporters and shippers across India with a modern, multilingual, SEO-optimized platform. 🚛✨

@@ -3,15 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>T2YD | Goods Transport Platform</title>
+  
+  <!-- Primary Meta Tags -->
+  <title>T2YD | Goods Transport Platform - Connect Transporters & Shippers</title>
+  <meta name="title" content="T2YD | Goods Transport Platform - Connect Transporters & Shippers">
+  <meta name="description" content="T2YD is a modern goods transport platform connecting transporters and shippers across India. Manage deliveries, find lorries, bid on transport requests, and track shipments in real-time.">
+  <meta name="keywords" content="goods transport, logistics, transporters, shippers, delivery management, lorry booking, transport platform, India logistics">
+  <meta name="author" content="T2YD">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= typeof baseUrl !== 'undefined' ? baseUrl : 'https://t2yd.com' %>">
+  <meta property="og:title" content="T2YD | Goods Transport Platform">
+  <meta property="og:description" content="Connect transporters and shippers across India. Manage deliveries, find lorries, and track shipments in real-time.">
+  <meta property="og:image" content="<%= typeof baseUrl !== 'undefined' ? baseUrl : 'https://t2yd.com' %>/og-image.jpg">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="<%= typeof baseUrl !== 'undefined' ? baseUrl : 'https://t2yd.com' %>">
+  <meta property="twitter:title" content="T2YD | Goods Transport Platform">
+  <meta property="twitter:description" content="Connect transporters and shippers across India. Manage deliveries, find lorries, and track shipments in real-time.">
+  <meta property="twitter:image" content="<%= typeof baseUrl !== 'undefined' ? baseUrl : 'https://t2yd.com' %>/og-image.jpg">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : '' %>">
+  
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/style-modern.css">
   <link rel="stylesheet" href="/card-styles.css">
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 </head>
 <body>
   <!-- Loading Animation -->
   <div class="loading-container" id="loadingContainer">
-    <div class="loading-spinner"></div>
+    <div class="truck-road">
+      <div class="truck-wrapper">
+        <div class="truck">
+          <i class="fas fa-truck truck-icon"></i>
+          <div class="truck-wheels">
+            <div class="wheel wheel-left">
+              <i class="fas fa-circle"></i>
+            </div>
+            <div class="wheel wheel-right">
+              <i class="fas fa-circle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="loading-text">Loading...</div>
   </div>
   

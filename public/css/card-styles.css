@@ -104,7 +104,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -113,6 +115,7 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+    overflow: hidden;
 }
 
 .loading-container.show {
@@ -120,20 +123,123 @@
     visibility: visible;
 }
 
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(var(--primary-rgb), 0.3);
-    border-radius: 50%;
-    border-top-color: var(--primary-color);
-    animation: spin 1s linear infinite;
+/* Truck Road Container */
+.truck-road {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 200px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Truck Wrapper */
+.truck-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: truckMove 4s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+/* Truck Container */
+.truck {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+/* Truck Shadow */
+.truck::before {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(1.5) scaleY(0.3);
+    width: 120px;
+    height: 40px;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: shadowMove 4s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+    z-index: -1;
+}
+
+.truck-icon {
+    font-size: 90px;
+    color: var(--primary-color);
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4)) 
+            drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));
+    animation: truckBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite alternate;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+}
+
+/* Truck Wheels with 3D Effect */
+.truck-wheels {
+    position: relative;
+    display: flex;
+    gap: 70px;
+    margin-top: -20px;
+    z-index: 5;
+}
+
+.wheel {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.wheel::before {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #555 30%, #222 70%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2),
+                0 2px 6px rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+.wheel i {
+    font-size: 28px;
+    color: #1a1a1a;
+    animation: wheelSpin 0.4s linear infinite;
+    position: relative;
+    z-index: 1;
+}
+
+.wheel::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #444 0%, #111 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Loading Text */
 .loading-text {
-    margin-top: 15px;
-    font-size: 1.2rem;
+    margin-top: 30px;
+    font-size: 1.3rem;
     color: var(--primary-color);
     font-weight: 600;
+    letter-spacing: 2px;
+    animation: textPulse 1.5s ease-in-out infinite;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Card Animation */
@@ -143,9 +249,78 @@
 }
 
 /* Animations */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes truckMove {
+    0% {
+        transform: translateX(-25%) scale(0.95);
+    }
+    25% {
+        transform: translateX(-5%) scale(1);
+    }
+    50% {
+        transform: translateX(25%) scale(1);
+    }
+    75% {
+        transform: translateX(5%) scale(1);
+    }
+    100% {
+        transform: translateX(-25%) scale(0.95);
+    }
+}
+
+@keyframes shadowMove {
+    0% {
+        transform: translateX(-25%) scaleX(1.5) scaleY(0.3);
+        opacity: 0.6;
+    }
+    25% {
+        transform: translateX(-5%) scaleX(1.3) scaleY(0.35);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateX(25%) scaleX(1.5) scaleY(0.3);
+        opacity: 0.6;
+    }
+    75% {
+        transform: translateX(5%) scaleX(1.3) scaleY(0.35);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(-25%) scaleX(1.5) scaleY(0.3);
+        opacity: 0.6;
+    }
+}
+
+@keyframes truckBounce {
+    0% {
+        transform: translateY(0px) rotateZ(0deg);
+    }
+    50% {
+        transform: translateY(-3px) rotateZ(1deg);
+    }
+    100% {
+        transform: translateY(-6px) rotateZ(-1deg);
+    }
+}
+
+@keyframes wheelSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes textPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
 }
 
 @keyframes pulse {
@@ -166,5 +341,43 @@
     .actions .btn {
         width: 100%;
         margin-bottom: 10px;
+    }
+    
+    .truck-road {
+        height: 180px;
+        max-width: 100%;
+    }
+    
+    .truck-icon {
+        font-size: 70px;
+    }
+    
+    .truck-wheels {
+        gap: 55px;
+        margin-top: -15px;
+    }
+    
+    .wheel {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .wheel::before {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .wheel i {
+        font-size: 22px;
+    }
+    
+    .wheel::after {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .loading-text {
+        font-size: 1.1rem;
+        margin-top: 20px;
     }
 }
