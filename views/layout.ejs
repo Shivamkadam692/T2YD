@@ -46,23 +46,43 @@
 </head>
 <body>
   <!-- Loading Animation -->
-  <div class="loading-container" id="loadingContainer">
-    <div class="truck-road">
-      <div class="truck-wrapper">
-        <div class="truck">
-          <i class="fas fa-truck truck-icon"></i>
-          <div class="truck-wheels">
-            <div class="wheel wheel-left">
-              <i class="fas fa-circle"></i>
-            </div>
-            <div class="wheel wheel-right">
-              <i class="fas fa-circle"></i>
-            </div>
-          </div>
+  <div class="loading-container" id="loadingContainer" role="status" aria-live="polite">
+    <div class="loading-orbit">
+      <div class="loading-route">
+        <div class="route-surface"></div>
+        <div class="route-glow"></div>
+        <div class="route-line"></div>
+        <div class="route-pulse pulse-one"></div>
+        <div class="route-pulse pulse-two"></div>
+        <div class="route-pin origin">
+          <span>Pick-up</span>
+        </div>
+        <div class="route-pin destination">
+          <span>Drop-off</span>
+        </div>
+        <div class="convoy">
+          <div class="convoy-cab"></div>
+          <div class="convoy-trailer"></div>
+          <div class="convoy-wheel front"></div>
+          <div class="convoy-wheel back"></div>
+        </div>
+      </div>
+      <div class="loading-progress">
+        <span class="progress-label">Syncing transport network</span>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-status">
+          <span>Matching</span>
+          <span>Routing</span>
+          <span>Ready</span>
         </div>
       </div>
     </div>
-    <div class="loading-text">Loading...</div>
+    <div class="loading-text">
+      <span class="loading-headline">Preparing your shipment</span>
+      <span class="typing-dots"><span></span><span></span><span></span></span>
+    </div>
   </div>
   
   <header>
@@ -785,42 +805,219 @@
   
   <!-- Loading Animation Script -->
   <script>
-    // Loading animation functions
-    const loadingContainer = document.getElementById('loadingContainer');
-    
-    // Show loading animation
-    function showLoading() {
-      if (loadingContainer) {
-        loadingContainer.classList.add('show');
-      }
+  // Loading animation functions
+  const loadingContainer = document.getElementById('loadingContainer');
+  const loadingHeadlineEl = loadingContainer?.querySelector('.loading-headline');
+  const progressLabelEl = loadingContainer?.querySelector('.progress-label');
+  const progressStageEls = loadingContainer ? Array.from(loadingContainer.querySelectorAll('.progress-status span')) : [];
+  
+  const defaultLoadingContext = {
+    headline: 'Preparing your shipment',
+    label: 'Syncing transport network',
+    stages: ['Matching', 'Routing', 'Ready']
+  };
+  
+  const loadingContextMap = [
+    {
+      match: path => path === '/' || path === '/home',
+      headline: 'Preparing your next shipment',
+      label: 'Syncing featured routes',
+      stages: ['Discovering', 'Pairing', 'Ready']
+    },
+    {
+      match: path => path.startsWith('/dashboard/transporter'),
+      headline: 'Refreshing transporter dashboard',
+      label: 'Fetching fleet analytics',
+      stages: ['Jobs', 'Routes', 'Insights']
+    },
+    {
+      match: path => path.startsWith('/dashboard/shipper'),
+      headline: 'Updating shipper dashboard',
+      label: 'Collecting live shipment data',
+      stages: ['Requests', 'Tracking', 'Updates']
+    },
+    {
+      match: path => path.startsWith('/deliveries/add'),
+      headline: 'Drafting delivery plan',
+      label: 'Locking shipment details',
+      stages: ['Pickup', 'Route', 'Drop-off']
+    },
+    {
+      match: path => path.startsWith('/deliveries/my') || path.startsWith('/deliveries'),
+      headline: 'Loading your deliveries',
+      label: 'Aggregating shipment logs',
+      stages: ['Upcoming', 'In Transit', 'Completed']
+    },
+    {
+      match: path => path.startsWith('/lorries/add'),
+      headline: 'Registering your fleet',
+      label: 'Saving new lorry data',
+      stages: ['Specs', 'Docs', 'Ready']
+    },
+    {
+      match: path => path.startsWith('/lorries/my') || path.startsWith('/lorries'),
+      headline: 'Fetching your lorries',
+      label: 'Syncing vehicle status',
+      stages: ['Availability', 'Capacity', 'Status']
+    },
+    {
+      match: path => path.startsWith('/notifications'),
+      headline: 'Checking notifications',
+      label: 'Pulling latest alerts',
+      stages: ['New', 'Priority', 'Queued']
+    },
+    {
+      match: path => path.startsWith('/chatbot'),
+      headline: 'Warming up your assistant',
+      label: 'Syncing conversation history',
+      stages: ['Context', 'Suggestions', 'Ready']
+    },
+    {
+      match: path => path.startsWith('/payments'),
+      headline: 'Balancing your payments',
+      label: 'Reconciling transactions',
+      stages: ['Invoices', 'Payouts', 'Receipts']
+    },
+    {
+      match: path => path.startsWith('/profile'),
+      headline: 'Securing your profile',
+      label: 'Refreshing account data',
+      stages: ['Details', 'Preferences', 'Ready']
+    },
+    {
+      match: path => path.startsWith('/auth/login'),
+      headline: 'Signing you in',
+      label: 'Verifying credentials',
+      stages: ['Secure', 'Validate', 'Redirect']
+    },
+    {
+      match: path => path.startsWith('/auth/signup'),
+      headline: 'Creating your account',
+      label: 'Setting up workspace',
+      stages: ['Details', 'Verification', 'Welcome']
+    },
+    {
+      match: path => path.startsWith('/auth/forgot') || path.startsWith('/auth/reset'),
+      headline: 'Resetting your access',
+      label: 'Protecting your security',
+      stages: ['Verify', 'Reset', 'Done']
+    },
+    {
+      match: path => path.startsWith('/track'),
+      headline: 'Tracking your shipment',
+      label: 'Locking GPS updates',
+      stages: ['Location', 'ETA', 'Status']
+    },
+    {
+      match: path => path.startsWith('/search'),
+      headline: 'Searching the network',
+      label: 'Finding best matches',
+      stages: ['Scan', 'Filter', 'Results']
+    },
+    {
+      match: path => path.startsWith('/contact'),
+      headline: 'Opening contact desk',
+      label: 'Routing your query',
+      stages: ['Details', 'Routing', 'Reply']
+    },
+    {
+      match: path => path.startsWith('/about'),
+      headline: 'Exploring our mission',
+      label: 'Loading company story',
+      stages: ['Origins', 'Vision', 'Today']
+    },
+    {
+      match: path => path.startsWith('/terms'),
+      headline: 'Preparing legal docs',
+      label: 'Loading policies',
+      stages: ['Review', 'Rights', 'Usage']
+    },
+    {
+      match: path => path.startsWith('/privacy'),
+      headline: 'Reviewing privacy guard',
+      label: 'Loading data practices',
+      stages: ['Collection', 'Protection', 'Control']
+    },
+    {
+      match: path => path.startsWith('/bid'),
+      headline: 'Evaluating bid room',
+      label: 'Refreshing bidder stats',
+      stages: ['Requests', 'Offers', 'Decision']
+    },
+    {
+      match: path => path.startsWith('/receipt'),
+      headline: 'Generating receipt',
+      label: 'Finalizing documents',
+      stages: ['Details', 'Totals', 'Stamp']
     }
-    
-    // Hide loading animation
-    function hideLoading() {
-      if (loadingContainer) {
-        loadingContainer.classList.remove('show');
-      }
+  ];
+  
+  function resolveLoadingContext(pathname) {
+    return loadingContextMap.find(ctx => ctx.match(pathname)) || defaultLoadingContext;
+  }
+  
+  function applyLoadingContext(pathname) {
+    const context = resolveLoadingContext(pathname);
+    if (loadingHeadlineEl) {
+      loadingHeadlineEl.textContent = context.headline;
     }
-    
-    // Show loading on page navigation
-    document.addEventListener('click', function(e) {
-      const target = e.target.closest('a:not([target]):not([download]), button[type="submit"]');
-      if (target && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-        // Don't show loading for same-page anchors or JavaScript actions
-        const href = target.getAttribute('href');
-        if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
-          showLoading();
+    if (progressLabelEl) {
+      progressLabelEl.textContent = context.label;
+    }
+    if (progressStageEls.length) {
+      progressStageEls.forEach((stageEl, index) => {
+        stageEl.textContent = context.stages[index] || context.stages[context.stages.length - 1] || defaultLoadingContext.stages[index] || '';
+      });
+    }
+  }
+  
+  // Initialize context for current page
+  applyLoadingContext(window.location.pathname);
+  
+  // Show loading animation
+  function showLoading(pathname = window.location.pathname) {
+    if (loadingContainer) {
+      applyLoadingContext(pathname);
+      loadingContainer.classList.add('show');
+    }
+  }
+  
+  // Hide loading animation
+  function hideLoading() {
+    if (loadingContainer) {
+      loadingContainer.classList.remove('show');
+    }
+  }
+  
+  // Show loading on page navigation
+  document.addEventListener('click', function(e) {
+    const target = e.target.closest('a:not([target]):not([download]), button[type="submit"]');
+    if (target && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      const href = target.getAttribute('href');
+      if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
+        try {
+          const nextUrl = new URL(href, window.location.origin);
+          if (nextUrl.origin === window.location.origin) {
+            showLoading(nextUrl.pathname);
+            return;
+          }
+        } catch (err) {
+          // Ignore malformed URLs and fallback
         }
+        showLoading();
+      } else if (target.tagName === 'BUTTON' && target.type === 'submit') {
+        showLoading();
       }
-    });
-    
-    // Hide loading when page is fully loaded
-    window.addEventListener('load', function() {
-      hideLoading();
-    });
-    
-    // Hide loading if still showing after 10 seconds (failsafe)
-    setTimeout(hideLoading, 10000);
+    }
+  });
+  
+  // Hide loading when page is fully loaded
+  window.addEventListener('load', function() {
+    hideLoading();
+  });
+  
+  // Hide loading if still showing after 10 seconds (failsafe)
+  setTimeout(hideLoading, 10000);
   </script>
 </body>
 </html>

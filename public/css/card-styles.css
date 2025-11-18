@@ -100,13 +100,16 @@
 /* Loading Animation */
 .loading-container {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 248, 255, 0.9) 100%);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    padding: var(--space-6);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.12), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(14, 165, 233, 0.12), transparent 50%),
+        linear-gradient(135deg, rgba(247, 250, 255, 0.95) 0%, rgba(224, 242, 254, 0.95) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -123,203 +126,330 @@
     visibility: visible;
 }
 
-/* Truck Road Container */
-.truck-road {
+.loading-orbit {
+    width: min(92vw, 620px);
+    padding: var(--space-6);
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(14, 23, 45, 0.08);
+    box-shadow: 0 20px 60px rgba(7, 17, 36, 0.18);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.loading-route {
     position: relative;
     width: 100%;
-    max-width: 900px;
-    height: 200px;
-    margin-bottom: 40px;
+    height: 220px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #071124, #0e1f3f);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-/* Truck Wrapper */
-.truck-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: truckMove 4s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+.loading-route::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.05) 0,
+            rgba(255, 255, 255, 0.05) 1px,
+            transparent 1px,
+            transparent 30px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.04) 0,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 20px
+        );
 }
 
-/* Truck Container */
-.truck {
-    position: relative;
+.route-surface {
+    position: absolute;
+    inset: 20px;
+    border-radius: 24px;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    opacity: 0.8;
+}
+
+.route-glow {
+    position: absolute;
+    inset: 40px;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.45), transparent 65%);
+    filter: blur(24px);
+    animation: routePulse 2.8s ease-in-out infinite;
+}
+
+.route-line {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #fbbf24, #38bdf8, #2563eb);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+    transform: translateY(-50%);
+    animation: routePulse 2.6s ease-in-out infinite;
+}
+
+.route-pulse {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(59, 130, 246, 0.8);
+    transform: translate(-50%, -50%);
+    animation: routePulseWave 2.8s ease-out infinite;
+}
+
+.route-pulse.pulse-one {
+    left: 25%;
+}
+
+.route-pulse.pulse-two {
+    left: 70%;
+    animation-delay: 0.6s;
+}
+
+.route-pin {
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    z-index: 10;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+    gap: 6px;
+    color: #fff;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Truck Shadow */
-.truck::before {
+.route-pin::before {
     content: '';
-    position: absolute;
-    bottom: -50px;
-    left: 50%;
-    transform: translateX(-50%) scaleX(1.5) scaleY(0.3);
-    width: 120px;
-    height: 40px;
-    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    animation: shadowMove 4s cubic-bezier(0.42, 0, 0.58, 1) infinite;
-    z-index: -1;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    background: var(--primary-color);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.7);
 }
 
-.truck-icon {
-    font-size: 90px;
-    color: var(--primary-color);
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4)) 
-            drop-shadow(0 0 8px rgba(59, 130, 246, 0.3));
-    animation: truckBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite alternate;
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
+.route-pin.origin {
+    left: 10%;
+    top: 35%;
 }
 
-/* Truck Wheels with 3D Effect */
-.truck-wheels {
-    position: relative;
-    display: flex;
-    gap: 70px;
-    margin-top: -20px;
-    z-index: 5;
+.route-pin.destination {
+    right: 10%;
+    bottom: 35%;
 }
 
-.wheel {
-    width: 36px;
-    height: 36px;
+.route-pin span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.convoy {
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    width: 120px;
+    height: 52px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    gap: 6px;
+    transform: translate(-50%, -50%);
+    animation: convoyTravel 4.2s ease-in-out infinite;
 }
 
-.wheel::before {
-    content: '';
-    position: absolute;
-    width: 32px;
+.convoy-cab {
+    width: 42px;
     height: 32px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #555 30%, #222 70%);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2),
-                0 2px 6px rgba(0, 0, 0, 0.6);
-    z-index: -1;
-}
-
-.wheel i {
-    font-size: 28px;
-    color: #1a1a1a;
-    animation: wheelSpin 0.4s linear infinite;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #38bdf8, #2563eb);
+    box-shadow: 0 6px 12px rgba(15, 23, 42, 0.4);
     position: relative;
-    z-index: 1;
 }
 
-.wheel::after {
+.convoy-cab::after {
     content: '';
     position: absolute;
-    width: 20px;
-    height: 20px;
+    inset: 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.convoy-trailer {
+    flex: 1;
+    height: 32px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #0f172a, #1e3a8a);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.convoy-wheel {
+    position: absolute;
+    bottom: -6px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: radial-gradient(circle, #444 0%, #111 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+    background: #0f172a;
+    border: 3px solid #1e293b;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
 }
 
-/* Loading Text */
-.loading-text {
-    margin-top: 30px;
-    font-size: 1.3rem;
-    color: var(--primary-color);
+.convoy-wheel.front {
+    left: 16px;
+}
+
+.convoy-wheel.back {
+    right: 12px;
+}
+
+.loading-progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.progress-label {
+    font-size: 0.9rem;
     font-weight: 600;
-    letter-spacing: 2px;
-    animation: textPulse 1.5s ease-in-out infinite;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #475569;
+    letter-spacing: 0.5px;
 }
 
-/* Card Animation */
-.delivery-card,
-.lorry-card {
-    animation: pulse 1s ease-in-out;
+.progress-track {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(14, 23, 45, 0.08);
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 40%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #facc15, #22d3ee, #2563eb);
+    animation: progressFlow 2.4s ease-in-out infinite;
+}
+
+.progress-status {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+
+.loading-text {
+    margin-top: var(--space-5);
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 1.5px;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.loading-headline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: inline-block;
+    animation: typingBlink 1.2s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
 }
 
 /* Animations */
-@keyframes truckMove {
-    0% {
-        transform: translateX(-25%) scale(0.95);
-    }
-    25% {
-        transform: translateX(-5%) scale(1);
-    }
-    50% {
-        transform: translateX(25%) scale(1);
-    }
-    75% {
-        transform: translateX(5%) scale(1);
-    }
-    100% {
-        transform: translateX(-25%) scale(0.95);
-    }
-}
-
-@keyframes shadowMove {
-    0% {
-        transform: translateX(-25%) scaleX(1.5) scaleY(0.3);
-        opacity: 0.6;
-    }
-    25% {
-        transform: translateX(-5%) scaleX(1.3) scaleY(0.35);
-        opacity: 0.7;
-    }
-    50% {
-        transform: translateX(25%) scaleX(1.5) scaleY(0.3);
-        opacity: 0.6;
-    }
-    75% {
-        transform: translateX(5%) scaleX(1.3) scaleY(0.35);
-        opacity: 0.7;
-    }
-    100% {
-        transform: translateX(-25%) scaleX(1.5) scaleY(0.3);
-        opacity: 0.6;
-    }
-}
-
-@keyframes truckBounce {
-    0% {
-        transform: translateY(0px) rotateZ(0deg);
-    }
-    50% {
-        transform: translateY(-3px) rotateZ(1deg);
-    }
-    100% {
-        transform: translateY(-6px) rotateZ(-1deg);
-    }
-}
-
-@keyframes wheelSpin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-
-@keyframes textPulse {
+@keyframes routePulse {
     0%, 100% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+    50% {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+@keyframes routePulseWave {
+    0% {
+        opacity: 0.85;
+        transform: translate(-50%, -50%) scale(0.6);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2.4);
+    }
+}
+
+@keyframes convoyTravel {
+    0% {
+        transform: translate(-45%, -50%) scale(0.95);
+    }
     50% {
-        opacity: 0.7;
-        transform: scale(1.05);
+        transform: translate(45%, -55%) scale(1.02);
+    }
+    100% {
+        transform: translate(-45%, -50%) scale(0.95);
+    }
+}
+
+@keyframes progressFlow {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(10%);
+    }
+    100% {
+        transform: translateX(120%);
+    }
+}
+
+@keyframes typingBlink {
+    0%, 100% {
+        opacity: 0.2;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-2px);
     }
 }
 
