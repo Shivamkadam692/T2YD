@@ -159,6 +159,17 @@
     <%- body %>
   </main>
   
+  <!-- Voice Control Container -->
+  <% if (user) { %>
+  <div class="voice-control-container">
+    <button class="voice-control-btn" id="voiceControlBtn" aria-label="Voice Control">
+      <i class="fas fa-microphone"></i>
+      <span>Voice Control</span>
+    </button>
+    <div class="voice-indicator" id="voiceIndicator"></div>
+  </div>
+  <% } %>
+
   <!-- Chat Bot Button -->
   <% if (user) { %>
   <div class="chat-bot-button" id="chatBotButton">
@@ -195,6 +206,9 @@
       }
     });
   </script>
+  
+  <!-- Voice Automation Script -->
+  <script src="/js/voice-automation.js"></script>
   
   <!-- Language Files -->
   <script src="/languages/en.js"></script>
