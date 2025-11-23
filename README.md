@@ -12,6 +12,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 🔐 **Authentication**: Session-based authentication with role-based access control
 - 👤 **User Profiles**: Comprehensive profile management with booking history
 - 🤖 **AI Chat Assistant**: Intelligent chatbot for user support and guidance
+- 🎤 **Voice Control**: Hands-free voice commands with wake word activation ("Hey DAAS")
 - 📱 **Responsive Design**: Mobile-first design that works on all devices
 - 💳 **Payment Integration**: Stripe payment processing
 - 🔄 **Real-time Updates**: Live updates for transport status and location
@@ -21,6 +22,19 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 🚀 **Performance Optimized**: Preconnect, DNS prefetch, and optimized asset loading
 
 ## 🆕 Recent Updates
+
+### v2.7.0 - Voice Control Integration
+- **🎤 Voice Commands**: Added hands-free voice control using Web Speech API
+- **🗣️ Wake Word Activation**: "Hey DAAS" wake word to activate voice control without clicking
+- **🎯 Auto-Correct**: Intelligent command matching with fuzzy search and auto-correction
+- **🌐 Multi-Language Commands**: Support for English, Hindi, and Marathi language switching via voice
+- **📍 Voice Navigation**: Navigate to pages (home, about, terms, privacy, contact) using voice
+- **📊 Search Commands**: Voice-activated search functionality
+- **🎨 Visual Feedback**: Real-time transcript display with animated wave effects
+- **💬 Voice Responses**: Text-to-speech feedback for executed commands
+- **🎭 Glassmorphic UI**: Modern floating card interface with blur effects
+- **📱 Mobile Optimized**: Fully responsive voice control on all devices
+- **🔧 Modular CSS**: Separated voice control styles into dedicated CSS file
 
 ### v2.6.0 - SEO Optimization & Smooth Scrolling
 - **🎯 SEO Optimization**: Added comprehensive meta tags, Open Graph, and Twitter Card support
@@ -166,7 +180,10 @@ T2YD/
 │   └── ...                # Other page templates
 ├── public/                 # Static files
 │   ├── css/               # CSS stylesheets
-│   │   └── card-styles.css # Modern card and loading styles
+│   │   ├── card-styles.css # Modern card and loading styles
+│   │   └── voice-control.css # Voice control feature styles
+│   ├── js/                # JavaScript files
+│   │   └── voice-automation.js # Voice control logic
 │   ├── style-modern.css   # Modern design system with icon styles
 │   ├── profile.css        # Profile page styles
 │   └── languages/         # Language files
@@ -293,6 +310,22 @@ npm start
 - **Dedicated Page**: Full-featured chat interface with conversation history
 - **Smart Help Topics**: Quick access to common help topics
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
+
+### 🎤 Voice Control System
+- **Web Speech API**: Browser-based voice recognition and synthesis
+- **Wake Word Activation**: "Hey DAAS" activates voice control without button click
+- **Supported Voice Commands**:
+  - **Navigation**: "Go home", "Go to about page", "Show terms", "Open privacy page", "Contact us"
+  - **Search**: "Search for [query]", "Find [keyword]"
+  - **Language**: "Change language to Hindi/English/Marathi", "Switch to [language]"
+  - **Dashboard**: "Open dashboard", "Show my dashboard"
+  - **And more**: Full command reference available in voice overlay
+- **Auto-Correct**: Levenshtein distance algorithm for typo tolerance and fuzzy matching
+- **Multi-Factor Scoring**: Intelligent command matching with 60% confidence threshold
+- **Real-time Feedback**: Visual wave animations and live transcript display
+- **Voice Responses**: Text-to-speech confirmation for all executed commands
+- **Continuous Listening**: Background wake word detection with automatic restart
+- **Mobile Support**: Full voice control functionality on mobile devices
 
 ## 🛣️ Application Routes
 
@@ -431,6 +464,8 @@ pm2 start server.js --name "t2yd"
 - Update documentation for new features
 - Ensure mobile responsiveness
 - Add language support for new features
+- Separate heavy features into modular CSS/JS files
+- Test voice commands across different browsers
 
 ## 📝 License
 
@@ -444,6 +479,18 @@ For support, questions, or feature requests:
 - Check the documentation
 
 ## 🔄 Changelog
+
+### v2.7.0 - Voice Control Integration (Latest)
+- **🎤 Voice Control**: Complete hands-free voice command system
+- **🗣️ Wake Word**: "Hey DAAS" activation with continuous background listening
+- **🎯 Smart Matching**: Levenshtein distance algorithm for command auto-correction
+- **🌐 Language Commands**: Voice-activated language switching (English/Hindi/Marathi)
+- **📍 Navigation**: Voice commands for all major pages and features
+- **💬 Voice Feedback**: Text-to-speech responses for user confirmation
+- **🎨 Modern UI**: Glassmorphic overlay with real-time transcript and wave animations
+- **📱 Responsive**: Full mobile support with optimized touch and voice interactions
+- **🔧 Modular Code**: Separated voice control CSS into dedicated file (735 lines)
+- **⚡ Performance**: Optimized recognition with dual instances for wake word and commands
 
 ### v2.5.0 - Chat Assistant & UI Improvements
 - **🤖 AI Chat Assistant**: Added intelligent chatbot for user support and guidance
