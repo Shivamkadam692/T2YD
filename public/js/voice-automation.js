@@ -12,6 +12,10 @@ class VoiceAutomation {
     this.synthesis = null;
     this.voiceEnabled = true; // Enable voice responses by default
     this.commandReference = this.initializeCommandReference();
+    this.overlay = null; // Full screen overlay element
+    this.wakeWordRecognition = null; // Separate recognition for wake word
+    this.isWakeWordActive = false;
+    this.wakeWord = 'hey daas'; // Wake word to activate voice control
     this.init();
   }
 
@@ -21,7 +25,9 @@ class VoiceAutomation {
       this.supported = true;
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       this.recognition = new SpeechRecognition();
+      this.wakeWordRecognition = new SpeechRecognition();
       this.setupRecognition();
+      this.setupWakeWordRecognition();
     } else {
       console.warn('Speech recognition not supported in this browser');
     }
@@ -40,6 +46,7 @@ class VoiceAutomation {
       'add_truck': {
         primary: 'Add my truck',
         alternatives: ['Add my lorry', 'Register my vehicle', 'Create a new truck', 'New truck'],
+        keywords: ['add', 'truck', 'lorry', 'vehicle', 'register'],
         examples: [
           'Add my truck',
           'Add my truck vehicle number MH12AB1234',
@@ -51,6 +58,7 @@ class VoiceAutomation {
       'add_delivery': {
         primary: 'Add delivery',
         alternatives: ['Add shipment', 'Create delivery', 'New delivery', 'Add order'],
+        keywords: ['add', 'delivery', 'shipment', 'order', 'create'],
         examples: [
           'Add delivery',
           'Add delivery goods type electronics',
@@ -62,42 +70,84 @@ class VoiceAutomation {
       'go_home': {
         primary: 'Go home',
         alternatives: ['Go to home', 'Show home', 'Navigate to home', 'Home page'],
+        keywords: ['home', 'main', 'page'],
         examples: ['Go home', 'Go to home', 'Show me home'],
         description: 'Navigates to the home page'
       },
       'go_dashboard': {
         primary: 'Go to dashboard',
         alternatives: ['Show dashboard', 'Open dashboard', 'My dashboard', 'Dashboard'],
+        keywords: ['dashboard', 'show', 'open'],
         examples: ['Go to dashboard', 'Show my dashboard', 'Open dashboard'],
         description: 'Navigates to your dashboard'
       },
       'my_lorries': {
         primary: 'Show my lorries',
         alternatives: ['My lorries', 'View lorries', 'Show trucks', 'My vehicles'],
+        keywords: ['lorries', 'trucks', 'vehicles', 'show', 'view'],
         examples: ['Show my lorries', 'View my trucks', 'My lorries'],
         description: 'View your registered lorries (transporters only)'
       },
       'my_deliveries': {
         primary: 'Show my deliveries',
         alternatives: ['My deliveries', 'View deliveries', 'Show shipments', 'My orders'],
+        keywords: ['deliveries', 'shipments', 'orders', 'show', 'view'],
         examples: ['Show my deliveries', 'View my deliveries', 'My deliveries'],
         description: 'View your delivery requests (shippers only)'
       },
       'go_profile': {
         primary: 'Go to profile',
         alternatives: ['Show profile', 'My profile', 'View profile', 'Open profile'],
+        keywords: ['profile', 'account', 'settings'],
         examples: ['Go to profile', 'Show my profile', 'My profile'],
         description: 'Opens your profile page'
+      },
+      'go_about': {
+        primary: 'Go to about',
+        alternatives: ['Show about', 'About page', 'About us', 'Open about'],
+        keywords: ['about', 'information', 'company'],
+        examples: ['Go to about', 'Show about page', 'About us'],
+        description: 'Opens the about us page'
+      },
+      'go_terms': {
+        primary: 'Go to terms',
+        alternatives: ['Show terms', 'Terms of service', 'Terms and conditions', 'Open terms'],
+        keywords: ['terms', 'service', 'conditions'],
+        examples: ['Go to terms', 'Show terms of service', 'Terms and conditions'],
+        description: 'Opens the terms of service page'
+      },
+      'go_privacy': {
+        primary: 'Go to privacy',
+        alternatives: ['Show privacy', 'Privacy policy', 'Open privacy', 'Privacy page'],
+        keywords: ['privacy', 'policy', 'data'],
+        examples: ['Go to privacy', 'Show privacy policy', 'Privacy policy'],
+        description: 'Opens the privacy policy page'
+      },
+      'go_contact': {
+        primary: 'Go to contact',
+        alternatives: ['Show contact', 'Contact us', 'Contact page', 'Open contact'],
+        keywords: ['contact', 'support', 'help'],
+        examples: ['Go to contact', 'Show contact page', 'Contact us'],
+        description: 'Opens the contact us page'
+      },
+      'change_language': {
+        primary: 'Change language',
+        alternatives: ['Switch language', 'Select language', 'Language settings', 'Change to English', 'Change to Hindi', 'Change to Marathi'],
+        keywords: ['language', 'change', 'switch', 'english', 'hindi', 'marathi'],
+        examples: ['Change language', 'Change language to Hindi', 'Switch to English', 'Change to Marathi'],
+        description: 'Changes the interface language'
       },
       'submit_form': {
         primary: 'Submit form',
         alternatives: ['Submit', 'Save form', 'Register', 'Create'],
+        keywords: ['submit', 'save', 'register', 'create'],
         examples: ['Submit form', 'Submit the form', 'Save form'],
         description: 'Submits the current form if all required fields are filled'
       },
       'help': {
         primary: 'Help',
         alternatives: ['Show commands', 'What can you do', 'Show help', 'Commands'],
+        keywords: ['help', 'commands', 'assist'],
         examples: ['Help', 'Show commands', 'What can you do', 'Show help'],
         description: 'Shows available voice commands'
       }
@@ -108,22 +158,42 @@ class VoiceAutomation {
     if (!this.recognition) return;
 
     this.recognition.continuous = false;
-    this.recognition.interimResults = false;
+    this.recognition.interimResults = true; // Enable interim results for real-time display
     this.recognition.lang = 'en-US';
     this.recognition.maxAlternatives = 1;
 
     this.recognition.onstart = () => {
       this.isListening = true;
       this.updateUI(true);
+      this.showOverlay();
       this.showFeedback('Listening...', 'info');
       // Optional: speak listening confirmation (can be annoying, so commented out)
       // this.speakResponse('Listening.');
     };
 
     this.recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.toLowerCase().trim();
-      console.log('Voice input:', transcript);
-      this.processCommand(transcript);
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      // Process all results
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      // Update overlay with real-time transcript
+      this.updateTranscript(interimTranscript || finalTranscript, !interimTranscript);
+
+      // Process final result
+      if (finalTranscript) {
+        const cleanTranscript = finalTranscript.toLowerCase().trim();
+        console.log('Voice input:', cleanTranscript);
+        this.processCommand(cleanTranscript);
+      }
     };
 
     this.recognition.onerror = (event) => {
@@ -131,11 +201,78 @@ class VoiceAutomation {
       this.handleError(event.error);
       this.isListening = false;
       this.updateUI(false);
+      this.hideOverlay();
     };
 
     this.recognition.onend = () => {
       this.isListening = false;
       this.updateUI(false);
+      this.hideOverlay();
+    };
+  }
+
+  setupWakeWordRecognition() {
+    if (!this.wakeWordRecognition) return;
+
+    this.wakeWordRecognition.continuous = true;
+    this.wakeWordRecognition.interimResults = true;
+    this.wakeWordRecognition.lang = 'en-US';
+    this.wakeWordRecognition.maxAlternatives = 3;
+
+    this.wakeWordRecognition.onstart = () => {
+      this.isWakeWordActive = true;
+      console.log('Wake word detection started...');
+    };
+
+    this.wakeWordRecognition.onresult = (event) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript.toLowerCase().trim();
+        
+        // Check for wake word
+        if (this.detectWakeWord(transcript)) {
+          console.log('Wake word detected:', transcript);
+          
+          // Stop wake word recognition temporarily
+          this.stopWakeWordDetection();
+          
+          // Show activation feedback
+          this.showFeedback('Voice activated! Say your command...', 'success');
+          this.speakResponse('Yes? I am listening.');
+          
+          // Start main voice recognition
+          setTimeout(() => {
+            this.startListening();
+          }, 500);
+          
+          break;
+        }
+      }
+    };
+
+    this.wakeWordRecognition.onerror = (event) => {
+      if (event.error === 'no-speech') {
+        // This is expected in continuous mode, just restart
+        return;
+      }
+      console.error('Wake word recognition error:', event.error);
+      
+      // Auto-restart on errors (except permission denied)
+      if (event.error !== 'not-allowed' && this.isWakeWordActive) {
+        setTimeout(() => {
+          if (this.isWakeWordActive && !this.isListening) {
+            this.startWakeWordDetection();
+          }
+        }, 1000);
+      }
+    };
+
+    this.wakeWordRecognition.onend = () => {
+      // Auto-restart if still supposed to be active
+      if (this.isWakeWordActive && !this.isListening) {
+        setTimeout(() => {
+          this.startWakeWordDetection();
+        }, 100);
+      }
     };
   }
 
@@ -167,6 +304,92 @@ class VoiceAutomation {
     if (this.recognition && this.isListening) {
       this.recognition.stop();
     }
+    // Restart wake word detection after command is processed
+    setTimeout(() => {
+      if (!this.isListening) {
+        this.startWakeWordDetection();
+      }
+    }, 1000);
+  }
+
+  startWakeWordDetection() {
+    if (!this.supported || !this.wakeWordRecognition) {
+      return;
+    }
+
+    // Don't start if already listening to a command
+    if (this.isListening) {
+      return;
+    }
+
+    try {
+      this.wakeWordRecognition.start();
+      this.updateWakeWordIndicator(true);
+    } catch (error) {
+      if (error.name === 'InvalidStateError') {
+        // Already running, ignore
+        console.log('Wake word detection already running');
+      } else {
+        console.error('Error starting wake word detection:', error);
+      }
+    }
+  }
+
+  stopWakeWordDetection() {
+    if (this.wakeWordRecognition && this.isWakeWordActive) {
+      try {
+        this.wakeWordRecognition.stop();
+        this.isWakeWordActive = false;
+        this.updateWakeWordIndicator(false);
+      } catch (error) {
+        console.error('Error stopping wake word detection:', error);
+      }
+    }
+  }
+
+  detectWakeWord(transcript) {
+    // Check for exact match
+    if (transcript.includes(this.wakeWord)) {
+      return true;
+    }
+
+    // Check for variations and common misheard versions
+    const variations = [
+      'hey daas',
+      'hey das',
+      'hey dass',
+      'hay daas',
+      'hay das',
+      'a daas',
+      'hey daz',
+      'hey dance', // Common mishearing
+      'hey dots',
+      'hey does'
+    ];
+
+    for (const variation of variations) {
+      if (transcript.includes(variation)) {
+        return true;
+      }
+    }
+
+    // Fuzzy matching for wake word
+    const words = transcript.split(/\s+/);
+    if (words.length >= 2) {
+      const firstWord = words[0];
+      const secondWord = words[1];
+      
+      // Check if first word is close to "hey" or "hi"
+      if (['hey', 'hi', 'hay', 'a'].includes(firstWord)) {
+        // Check if second word is close to "daas"
+        const distance = this.levenshteinDistance(secondWord, 'daas');
+        if (distance <= 2) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   processCommand(transcript) {
@@ -186,10 +409,53 @@ class VoiceAutomation {
   }
 
   handleUnrecognizedCommand(transcript) {
-    // Find similar commands based on keywords
+    // Find similar commands based on keywords and fuzzy matching
     const suggestions = this.findSimilarCommands(transcript);
     
-    // Generate helpful response
+    // Auto-correct: If top suggestion has very high confidence, execute it automatically
+    if (suggestions.length > 0 && suggestions[0]) {
+      const topSuggestion = suggestions[0];
+      
+      // Check if it's a high-confidence match (likely a typo or slight variation)
+      const transcriptWords = transcript.toLowerCase().split(/\s+/);
+      const commandWords = topSuggestion.primary.toLowerCase().split(/\s+/);
+      
+      // Calculate similarity percentage
+      let matchingWords = 0;
+      transcriptWords.forEach(word => {
+        commandWords.forEach(cmdWord => {
+          if (word === cmdWord || this.levenshteinDistance(word, cmdWord) <= 1) {
+            matchingWords++;
+          }
+        });
+      });
+      
+      const confidenceScore = (matchingWords / Math.max(transcriptWords.length, commandWords.length)) * 100;
+      
+      // Auto-correct threshold: 60% similarity or higher
+      if (confidenceScore >= 60) {
+        // Find the intent key for this command
+        const intentKey = Object.keys(this.commandReference).find(
+          key => this.commandReference[key].primary === topSuggestion.primary
+        );
+        
+        if (intentKey) {
+          this.showFeedback(
+            `Auto-corrected "${transcript}" to "${topSuggestion.primary}"`,
+            'success'
+          );
+          this.speakResponse(`I understood that as ${topSuggestion.primary}. Executing now.`);
+          
+          // Execute the corrected command
+          setTimeout(() => {
+            this.executeIntent(intentKey, this.extractEntities(transcript, intentKey));
+          }, 500);
+          return;
+        }
+      }
+    }
+    
+    // Generate helpful response if auto-correct didn't apply
     let responseMessage = "I didn't recognize that command. ";
     
     if (suggestions.length > 0) {
@@ -237,46 +503,110 @@ class VoiceAutomation {
   findSimilarCommands(transcript) {
     const transcriptLower = transcript.toLowerCase();
     const suggestions = [];
-    const keywordMatches = {};
+    const matches = [];
 
     // Extract keywords from transcript
     const keywords = transcriptLower.split(/\s+/).filter(word => 
       word.length > 2 && 
-      !['the', 'a', 'an', 'and', 'or', 'my', 'is', 'at', 'in', 'on', 'for'].includes(word)
+      !['the', 'a', 'an', 'and', 'or', 'my', 'is', 'at', 'in', 'on', 'for', 'to'].includes(word)
     );
 
-    // Score each command based on keyword matches
+    // Score each command based on multiple factors
     for (const [intent, commandInfo] of Object.entries(this.commandReference)) {
-      if (intent === 'help') continue; // Skip help command
-      
       let score = 0;
       const commandText = (commandInfo.primary + ' ' + commandInfo.alternatives.join(' ')).toLowerCase();
       
-      // Check for keyword matches
-      keywords.forEach(keyword => {
-        if (commandText.includes(keyword)) {
-          score += 1;
+      // 1. Exact phrase match (highest priority)
+      if (transcriptLower.includes(commandInfo.primary.toLowerCase())) {
+        score += 100;
+      }
+      
+      // 2. Check alternatives for exact match
+      commandInfo.alternatives.forEach(alt => {
+        if (transcriptLower.includes(alt.toLowerCase())) {
+          score += 80;
         }
-        
-        // Check alternatives
-        commandInfo.alternatives.forEach(alt => {
-          if (alt.toLowerCase().includes(keyword)) {
-            score += 0.5;
-          }
-        });
       });
       
+      // 3. Keyword matching
+      if (commandInfo.keywords) {
+        commandInfo.keywords.forEach(keyword => {
+          if (transcriptLower.includes(keyword)) {
+            score += 15;
+          }
+          // Partial keyword match
+          keywords.forEach(userWord => {
+            if (keyword.includes(userWord) || userWord.includes(keyword)) {
+              score += 8;
+            }
+            // Levenshtein distance for typo tolerance
+            const distance = this.levenshteinDistance(userWord, keyword);
+            if (distance <= 2 && keyword.length > 3) {
+              score += (3 - distance) * 5;
+            }
+          });
+        });
+      }
+      
+      // 4. General keyword matches from command text
+      keywords.forEach(keyword => {
+        if (commandText.includes(keyword)) {
+          score += 5;
+        }
+      });
+      
+      // 5. Fuzzy matching on primary command
+      const primaryDistance = this.levenshteinDistance(
+        transcriptLower.replace(/[^a-z0-9\s]/g, ''),
+        commandInfo.primary.toLowerCase().replace(/[^a-z0-9\s]/g, '')
+      );
+      if (primaryDistance <= 5) {
+        score += (6 - primaryDistance) * 3;
+      }
+      
       if (score > 0) {
-        keywordMatches[intent] = { commandInfo, score };
+        matches.push({ intent, commandInfo, score });
       }
     }
 
-    // Sort by score and return top matches
-    const sorted = Object.entries(keywordMatches)
-      .sort((a, b) => b[1].score - a[1].score)
-      .map(([intent, data]) => data.commandInfo);
+    // Sort by score (highest first) and return top matches
+    const sorted = matches
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.commandInfo);
     
     return sorted;
+  }
+
+  // Levenshtein distance algorithm for fuzzy string matching
+  levenshteinDistance(str1, str2) {
+    const len1 = str1.length;
+    const len2 = str2.length;
+    const matrix = [];
+
+    if (len1 === 0) return len2;
+    if (len2 === 0) return len1;
+
+    // Initialize matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+
+    // Fill matrix
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,      // deletion
+          matrix[i][j - 1] + 1,      // insertion
+          matrix[i - 1][j - 1] + cost // substitution
+        );
+      }
+    }
+
+    return matrix[len1][len2];
   }
 
   showCommandSuggestions(suggestions) {
@@ -470,6 +800,30 @@ class VoiceAutomation {
         /(?:go\s+to|show\s+me|open)\s+(?:my\s+)?profile/i,
         /view\s+(?:my\s+)?profile/i
       ],
+      'go_about': [
+        /(?:go\s+to|show\s+me|open)\s+(?:the\s+)?about(?:\s+page|\s+us)?/i,
+        /about\s+(?:us|page)/i
+      ],
+      'go_terms': [
+        /(?:go\s+to|show\s+me|open)\s+(?:the\s+)?terms/i,
+        /terms\s+(?:of\s+service|and\s+conditions)/i,
+        /show\s+terms/i
+      ],
+      'go_privacy': [
+        /(?:go\s+to|show\s+me|open)\s+(?:the\s+)?privacy/i,
+        /privacy\s+policy/i,
+        /show\s+privacy/i
+      ],
+      'go_contact': [
+        /(?:go\s+to|show\s+me|open)\s+(?:the\s+)?contact/i,
+        /contact\s+(?:us|page)/i,
+        /show\s+contact/i
+      ],
+      'change_language': [
+        /(?:change|switch|select)\s+(?:the\s+)?language/i,
+        /(?:change|switch)\s+to\s+(?:english|hindi|marathi)/i,
+        /language\s+settings/i
+      ],
       'help': [
         /(?:show\s+)?(?:me\s+)?(?:help|commands|what\s+can\s+you\s+do|what\s+commands)/i,
         /how\s+do\s+i\s+use/i,
@@ -493,6 +847,17 @@ class VoiceAutomation {
 
     if (!intent) return entities;
 
+    // Extract language for language change command
+    if (intent === 'change_language') {
+      if (/english|en/i.test(transcript)) {
+        entities.language = 'en';
+      } else if (/hindi|hin/i.test(transcript)) {
+        entities.language = 'hi';
+      } else if (/marathi|mar/i.test(transcript)) {
+        entities.language = 'mr';
+      }
+    }
+
     // Extract vehicle number (e.g., "MH12AB1234", "DL 01 AB 1234", "mh twelve ab one two three four")
     // First try standard format
     let vehicleNumberMatch = transcript.match(/(?:[A-Z]{2}\s?\d{1,2}\s?[A-Z]{1,3}\s?\d{1,4}|[A-Z]{2}\d{2}[A-Z]{1,3}\d{1,4})/i);
@@ -506,6 +871,8 @@ class VoiceAutomation {
     if (vehicleNumberMatch) {
       entities.vehicleNumber = vehicleNumberMatch[0].replace(/\s+/g, '').toUpperCase();
     }
+
+    // ... existing code ...
 
     // Extract vehicle type
     if (/truck/i.test(transcript)) {
@@ -638,6 +1005,25 @@ class VoiceAutomation {
       case 'go_profile':
         this.speakResponse('Opening your profile.');
         window.location.href = '/profile';
+        break;
+      case 'go_about':
+        this.speakResponse('Opening about us page.');
+        window.location.href = '/about';
+        break;
+      case 'go_terms':
+        this.speakResponse('Opening terms of service.');
+        window.location.href = '/terms';
+        break;
+      case 'go_privacy':
+        this.speakResponse('Opening privacy policy.');
+        window.location.href = '/privacy';
+        break;
+      case 'go_contact':
+        this.speakResponse('Opening contact page.');
+        window.location.href = '/contact';
+        break;
+      case 'change_language':
+        this.handleLanguageChange(entities);
         break;
       case 'help':
         this.showHelp();
@@ -1014,10 +1400,32 @@ class VoiceAutomation {
     if (button) {
       if (isListening) {
         button.classList.add('listening');
-        button.innerHTML = '<i class="fas fa-microphone-slash"></i> Stop Listening';
+        
+        // Add wave animation bars
+        let waveContainer = button.querySelector('.listening-wave');
+        if (!waveContainer) {
+          waveContainer = document.createElement('div');
+          waveContainer.className = 'listening-wave';
+          for (let i = 0; i < 5; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'wave-bar';
+            waveContainer.appendChild(bar);
+          }
+          button.appendChild(waveContainer);
+        }
+        
+        button.innerHTML = '<i class="fas fa-microphone-slash"></i> <span>Stop Listening</span>';
+        button.appendChild(waveContainer); // Re-append after innerHTML change
       } else {
         button.classList.remove('listening');
-        button.innerHTML = '<i class="fas fa-microphone"></i> Voice Control';
+        
+        // Remove wave animation bars
+        const waveContainer = button.querySelector('.listening-wave');
+        if (waveContainer) {
+          waveContainer.remove();
+        }
+        
+        button.innerHTML = '<i class="fas fa-microphone"></i> <span>Voice Control</span>';
       }
     }
 
@@ -1028,6 +1436,20 @@ class VoiceAutomation {
       } else {
         indicator.classList.remove('active');
         indicator.innerHTML = '';
+      }
+    }
+  }
+
+  updateWakeWordIndicator(isActive) {
+    const button = document.getElementById('voiceControlBtn');
+    
+    if (button) {
+      if (isActive) {
+        button.classList.add('wake-word-active');
+        button.title = 'Say "Hey DAAS" to activate voice control';
+      } else {
+        button.classList.remove('wake-word-active');
+        button.title = 'Click to use voice control';
       }
     }
   }
@@ -1104,6 +1526,136 @@ class VoiceAutomation {
       this.speakResponse(voiceMessage);
     }
   }
+
+  showOverlay() {
+    // Remove existing overlay if any
+    this.hideOverlay();
+
+    // Create overlay element
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'voice-overlay active';
+    this.overlay.innerHTML = `
+      <button class="voice-overlay-close" aria-label="Close" title="Stop Listening">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="voice-overlay-content">
+        <div class="voice-overlay-icon">
+          <i class="fas fa-microphone microphone-icon"></i>
+        </div>
+        <div class="voice-overlay-wave">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="voice-overlay-status">
+          <i class="fas fa-circle" style="font-size: 8px; color: #ef4444; margin-right: 6px;"></i>
+          Listening...
+        </div>
+        <div class="voice-overlay-transcript">
+          <div class="voice-overlay-transcript-label">Your Command</div>
+          <div class="voice-overlay-transcript-text empty">Say something...</div>
+        </div>
+        <div class="voice-overlay-hint">
+          <strong>💡 Try:</strong> "Add my truck", "Go to dashboard", "Help"
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(this.overlay);
+
+    // Add close button handler
+    const closeBtn = this.overlay.querySelector('.voice-overlay-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        this.stopListening();
+      });
+    }
+  }
+
+  hideOverlay() {
+    if (this.overlay && this.overlay.parentNode) {
+      this.overlay.classList.remove('active');
+      setTimeout(() => {
+        if (this.overlay && this.overlay.parentNode) {
+          this.overlay.remove();
+        }
+        this.overlay = null;
+      }, 300);
+    }
+  }
+
+  updateTranscript(text, isFinal) {
+    if (!this.overlay) return;
+
+    const transcriptElement = this.overlay.querySelector('.voice-overlay-transcript-text');
+    if (transcriptElement) {
+      if (text && text.trim()) {
+        transcriptElement.textContent = text;
+        transcriptElement.classList.remove('empty');
+        
+        // Add visual feedback for final transcript
+        if (isFinal) {
+          transcriptElement.style.color = '#4ade80'; // Green for final
+          setTimeout(() => {
+            if (transcriptElement) {
+              transcriptElement.style.color = '';
+            }
+          }, 500);
+        }
+      } else {
+        transcriptElement.textContent = 'Say something...';
+        transcriptElement.classList.add('empty');
+      }
+    }
+  }
+
+  handleLanguageChange(entities) {
+    // Check if language is specified in entities
+    if (entities.language) {
+      const languageNames = {
+        'en': 'English',
+        'hi': 'Hindi',
+        'mr': 'Marathi'
+      };
+      
+      const langName = languageNames[entities.language] || entities.language;
+      this.showFeedback(`Changing language to ${langName}...`, 'info');
+      this.speakResponse(`Changing language to ${langName}.`);
+      
+      // Trigger language change by clicking the language option
+      setTimeout(() => {
+        const langOption = document.querySelector(`[data-lang="${entities.language}"]`);
+        if (langOption) {
+          langOption.click();
+        } else {
+          // If direct click doesn't work, try to open language dropdown
+          const langBtn = document.getElementById('languageBtn');
+          if (langBtn) {
+            langBtn.click();
+            setTimeout(() => {
+              const option = document.querySelector(`[data-lang="${entities.language}"]`);
+              if (option) option.click();
+            }, 100);
+          }
+        }
+      }, 500);
+    } else {
+      // No specific language detected, show language selector
+      this.showFeedback('Please specify a language: English, Hindi, or Marathi', 'info');
+      this.speakResponse('Please specify which language you want. Say change to English, Hindi, or Marathi.');
+      
+      // Open language dropdown
+      const langBtn = document.getElementById('languageBtn');
+      if (langBtn) {
+        setTimeout(() => langBtn.click(), 500);
+      }
+    }
+  }
 }
 
 // Initialize voice automation when DOM is ready
@@ -1124,6 +1676,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Auto-start wake word detection after a short delay
+  setTimeout(() => {
+    if (voiceAutomation.supported) {
+      voiceAutomation.startWakeWordDetection();
+      console.log('Wake word detection enabled. Say "Hey DAAS" to activate voice control.');
+    }
+  }, 1000);
 
   // Check if we have stored voice entities from previous navigation
   const storedVoiceData = sessionStorage.getItem('voiceEntities');
