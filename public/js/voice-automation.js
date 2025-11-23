@@ -11,11 +11,15 @@ class VoiceAutomation {
     this.supported = false;
     this.synthesis = null;
     this.voiceEnabled = true; // Enable voice responses by default
+    this.websiteVoiceEnabled = true; // Enable website interaction voice responses
     this.commandReference = this.initializeCommandReference();
     this.overlay = null; // Full screen overlay element
     this.wakeWordRecognition = null; // Separate recognition for wake word
     this.isWakeWordActive = false;
     this.wakeWord = 'hey daas'; // Wake word to activate voice control
+    this.useGeminiAI = true; // Enable AI for intelligent responses (Hugging Face)
+    this.supportedLanguages = ['en-US', 'hi-IN', 'mr-IN']; // English, Hindi, Marathi
+    this.currentLanguage = 'en-US'; // Default to English
     this.init();
   }
 
@@ -150,6 +154,55 @@ class VoiceAutomation {
         keywords: ['help', 'commands', 'assist'],
         examples: ['Help', 'Show commands', 'What can you do', 'Show help'],
         description: 'Shows available voice commands'
+      },
+      'search': {
+        primary: 'Search',
+        alternatives: ['Find', 'Look for', 'Search for'],
+        keywords: ['search', 'find', 'look'],
+        examples: ['Search for trucks', 'Find deliveries', 'Look for Mumbai transporters'],
+        description: 'Search for lorries, deliveries, or transporters'
+      },
+      'go_notifications': {
+        primary: 'Go to notifications',
+        alternatives: ['Show notifications', 'View notifications', 'Open notifications'],
+        keywords: ['notifications', 'alerts', 'messages'],
+        examples: ['Go to notifications', 'Show my notifications', 'View notifications'],
+        description: 'Opens your notifications page'
+      },
+      'go_payments': {
+        primary: 'Go to payments',
+        alternatives: ['Show payments', 'View payments', 'Open payments'],
+        keywords: ['payments', 'transactions', 'money'],
+        examples: ['Go to payments', 'Show my payments', 'View payment history'],
+        description: 'Opens your payment history page'
+      },
+      'go_bids': {
+        primary: 'Go to bids',
+        alternatives: ['Show bids', 'View bids', 'Open bids'],
+        keywords: ['bids', 'offers', 'proposals'],
+        examples: ['Go to bids', 'Show my bids', 'View bid history'],
+        description: 'Opens your bid management page'
+      },
+      'go_chat': {
+        primary: 'Go to chat',
+        alternatives: ['Open chat', 'Show chat', 'Chat with support'],
+        keywords: ['chat', 'support', 'assistant'],
+        examples: ['Go to chat', 'Open chat assistant', 'Chat with support'],
+        description: 'Opens the AI chat assistant'
+      },
+      'go_settings': {
+        primary: 'Go to settings',
+        alternatives: ['Open settings', 'Show settings', 'Settings page'],
+        keywords: ['settings', 'preferences', 'configuration'],
+        examples: ['Go to settings', 'Open settings page', 'Show settings'],
+        description: 'Opens your account settings page'
+      },
+      'voice_settings': {
+        primary: 'Voice settings',
+        alternatives: ['Voice controls', 'Speech settings', 'Voice options'],
+        keywords: ['voice', 'speech', 'settings', 'controls'],
+        examples: ['Voice settings', 'Show voice controls', 'Speech settings'],
+        description: 'Opens voice response settings panel'
       }
     };
   }
@@ -159,8 +212,8 @@ class VoiceAutomation {
 
     this.recognition.continuous = false;
     this.recognition.interimResults = true; // Enable interim results for real-time display
-    this.recognition.lang = 'en-US';
-    this.recognition.maxAlternatives = 1;
+    this.recognition.lang = this.currentLanguage; // Support multiple languages
+    this.recognition.maxAlternatives = 3; // Get multiple alternatives for better accuracy
 
     this.recognition.onstart = () => {
       this.isListening = true;
@@ -216,8 +269,8 @@ class VoiceAutomation {
 
     this.wakeWordRecognition.continuous = true;
     this.wakeWordRecognition.interimResults = true;
-    this.wakeWordRecognition.lang = 'en-US';
-    this.wakeWordRecognition.maxAlternatives = 3;
+    this.wakeWordRecognition.lang = this.currentLanguage; // Support multiple languages
+    this.wakeWordRecognition.maxAlternatives = 5; // Get more alternatives for wake word detection
 
     this.wakeWordRecognition.onstart = () => {
       this.isWakeWordActive = true;
@@ -286,6 +339,9 @@ class VoiceAutomation {
       this.showFeedback('Voice recognition not available', 'error');
       return;
     }
+
+    // Detect and set language based on current UI language
+    this.detectAndSetLanguage();
 
     try {
       this.recognition.start();
@@ -392,16 +448,58 @@ class VoiceAutomation {
     return false;
   }
 
-  processCommand(transcript) {
-    const intent = this.extractIntent(transcript);
-    const entities = this.extractEntities(transcript, intent);
+  async processCommand(transcript) {
+    // Translate non-English commands to English
+    const translatedTranscript = this.translateCommand(transcript);
+    console.log('Original:', transcript);
+    console.log('Translated:', translatedTranscript);
+
+    // Try AI first for intelligent intent detection (Hugging Face)
+    if (this.useGeminiAI) {
+      try {
+        const geminiResult = await this.processWithGemini(translatedTranscript);
+        if (geminiResult && geminiResult.success) {
+          console.log('Gemini AI result:', geminiResult);
+          
+          // Use Gemini's response
+          if (geminiResult.intent && geminiResult.intent !== 'unknown') {
+            // Map Gemini intent to our command system
+            const mappedIntent = this.mapGeminiIntent(geminiResult.intent);
+            
+            if (mappedIntent) {
+              // Show Gemini's natural response
+              this.showFeedback(geminiResult.response || 'Processing your request...', 'success');
+              this.speakResponse(geminiResult.response);
+              
+              // Execute the command
+              setTimeout(() => {
+                this.executeIntent(mappedIntent, geminiResult.entities || {});
+              }, 500);
+              return;
+            }
+          } else if (geminiResult.response) {
+            // Gemini couldn't map to a command but provided a response
+            this.showFeedback(geminiResult.response, 'info');
+            this.speakResponse(geminiResult.response);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn('AI processing failed, falling back to local processing:', error);
+        // Fall through to local processing
+      }
+    }
+    
+    // Fallback to local intent extraction using translated text
+    const intent = this.extractIntent(translatedTranscript);
+    const entities = this.extractEntities(translatedTranscript, intent);
 
     console.log('Intent:', intent);
     console.log('Entities:', entities);
 
     if (!intent) {
       // Unrecognized command - provide voice feedback with suggestions
-      this.handleUnrecognizedCommand(transcript);
+      this.handleUnrecognizedCommand(translatedTranscript);
       return;
     }
 
@@ -607,6 +705,236 @@ class VoiceAutomation {
     }
 
     return matrix[len1][len2];
+  }
+
+  /**
+   * Process voice input with Gemini AI
+   */
+  async processWithGemini(transcript) {
+    try {
+      // Get user context
+      const userRole = document.querySelector('[data-user-role]')?.dataset.userRole || 'guest';
+      const isAuthenticated = !!document.querySelector('[data-user-id]');
+
+      const response = await fetch('/gemini/voice-assist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          transcript: transcript,
+          context: {
+            userRole: userRole,
+            isAuthenticated: isAuthenticated
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Gemini API error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Map Gemini intent to our command system
+   */
+  mapGeminiIntent(geminiIntent) {
+    // Direct mapping for known intents
+    const intentMap = {
+      'go_home': 'go_home',
+      'go_dashboard': 'go_dashboard',
+      'go_profile': 'go_profile',
+      'go_about': 'go_about',
+      'go_terms': 'go_terms',
+      'go_privacy': 'go_privacy',
+      'go_contact': 'go_contact',
+      'add_truck': 'add_truck',
+      'add_delivery': 'add_delivery',
+      'my_lorries': 'my_lorries',
+      'my_deliveries': 'my_deliveries',
+      'change_language': 'change_language',
+      'search': 'search',
+      'help': 'help',
+      'submit_form': 'submit_form',
+      // Additional mappings
+      'navigate_home': 'go_home',
+      'show_dashboard': 'go_dashboard',
+      'view_profile': 'go_profile',
+      'add_lorry': 'add_truck',
+      'create_delivery': 'add_delivery',
+      'show_lorries': 'my_lorries',
+      'show_deliveries': 'my_deliveries',
+      'switch_language': 'change_language'
+    };
+
+    return intentMap[geminiIntent] || null;
+  }
+
+  /**
+   * Detect and set language based on UI language selector
+   */
+  detectAndSetLanguage() {
+    // Check for language from localStorage or UI
+    const savedLang = localStorage.getItem('preferredLanguage');
+    const langMap = {
+      'en': 'en-US',
+      'hi': 'hi-IN',
+      'mr': 'mr-IN'
+    };
+
+    if (savedLang && langMap[savedLang]) {
+      this.currentLanguage = langMap[savedLang];
+    }
+
+    // Update recognition language
+    if (this.recognition) {
+      this.recognition.lang = this.currentLanguage;
+    }
+    if (this.wakeWordRecognition) {
+      this.wakeWordRecognition.lang = this.currentLanguage;
+    }
+
+    console.log('Voice recognition language set to:', this.currentLanguage);
+  }
+
+  /**
+   * Translate command to English for processing
+   */
+  translateCommand(transcript) {
+    // Marathi to English command translations
+    const marathiTranslations = {
+      // Navigation
+      'घर': 'home',
+      'घरी जा': 'go home',
+      'मुख्य पृष्ठ': 'home page',
+      'डॅशबोर्ड': 'dashboard',
+      'डॅशबोर्ड दाखवा': 'show dashboard',
+      'प्रोफाइल': 'profile',
+      'माझे प्रोफाइल': 'my profile',
+      
+      // Actions
+      'ट्रक जोडा': 'add truck',
+      'लॉरी जोडा': 'add lorry',
+      'वाहन जोडा': 'add vehicle',
+      'माझा ट्रक जोडा': 'add my truck',
+      'डिलिव्हरी जोडा': 'add delivery',
+      'माल जोडा': 'add delivery',
+      'शिपमेंट जोडा': 'add shipment',
+      
+      // View/Show
+      'माझे ट्रक': 'my lorries',
+      'माझे लॉरी': 'my lorries',
+      'माझे वाहन': 'my lorries',
+      'ट्रक दाखवा': 'show lorries',
+      'माझे डिलिव्हरी': 'my deliveries',
+      'डिलिव्हरी दाखवा': 'show deliveries',
+      'माल दाखवा': 'show deliveries',
+      
+      // Language
+      'भाषा बदला': 'change language',
+      'इंग्रजी': 'english',
+      'हिंदी': 'hindi',
+      'मराठी': 'marathi',
+      'भाषा बदलून इंग्रजी करा': 'change to english',
+      'भाषा बदलून हिंदी करा': 'change to hindi',
+      'भाषा बदलून मराठी करा': 'change to marathi',
+      
+      // Search
+      'शोधा': 'search',
+      'शोध': 'search for',
+      
+      // Pages
+      'आमच्याबद्दल': 'about',
+      'आमच्याबद्दल पृष्ठ': 'about page',
+      'अटी': 'terms',
+      'सेवा अटी': 'terms of service',
+      'गोपनीयता': 'privacy',
+      'गोपनीयता धोरण': 'privacy policy',
+      'संपर्क': 'contact',
+      'आमच्याशी संपर्क साधा': 'contact us',
+      
+      // Help
+      'मदत': 'help',
+      'आदेश': 'commands',
+      'तुम्ही काय करू शकता': 'what can you do'
+    };
+
+    // Hindi to English command translations
+    const hindiTranslations = {
+      // Navigation
+      'घर': 'home',
+      'घर जाओ': 'go home',
+      'होम पेज': 'home page',
+      'डैशबोर्ड': 'dashboard',
+      'डैशबोर्ड दिखाओ': 'show dashboard',
+      'प्रोफाइल': 'profile',
+      'मेरा प्रोफाइल': 'my profile',
+      
+      // Actions
+      'ट्रक जोड़ो': 'add truck',
+      'लॉरी जोड़ो': 'add lorry',
+      'वाहन जोड़ो': 'add vehicle',
+      'मेरा ट्रक जोड़ो': 'add my truck',
+      'डिलीवरी जोड़ो': 'add delivery',
+      'माल जोड़ो': 'add delivery',
+      
+      // View/Show
+      'मेरे ट्रक': 'my lorries',
+      'मेरी लॉरी': 'my lorries',
+      'ट्रक दिखाओ': 'show lorries',
+      'मेरी डिलीवरी': 'my deliveries',
+      'डिलीवरी दिखाओ': 'show deliveries',
+      
+      // Language
+      'भाषा बदलो': 'change language',
+      'अंग्रेजी': 'english',
+      'हिंदी': 'hindi',
+      'मराठी': 'marathi',
+      
+      // Search
+      'खोजो': 'search',
+      'ढूंढो': 'search for',
+      
+      // Pages
+      'हमारे बारे में': 'about',
+      'शर्तें': 'terms',
+      'सेवा की शर्तें': 'terms of service',
+      'गोपनीयता': 'privacy',
+      'गोपनीयता नीति': 'privacy policy',
+      'संपर्क': 'contact',
+      'संपर्क करें': 'contact us',
+      
+      // Help
+      'मदद': 'help',
+      'आदेश': 'commands',
+      'तुम क्या कर सकते हो': 'what can you do'
+    };
+
+    let translatedText = transcript.toLowerCase();
+
+    // Apply translations based on current language
+    if (this.currentLanguage === 'mr-IN') {
+      // Marathi translation
+      Object.entries(marathiTranslations).forEach(([marathi, english]) => {
+        const regex = new RegExp(marathi, 'gi');
+        translatedText = translatedText.replace(regex, english);
+      });
+    } else if (this.currentLanguage === 'hi-IN') {
+      // Hindi translation
+      Object.entries(hindiTranslations).forEach(([hindi, english]) => {
+        const regex = new RegExp(hindi, 'gi');
+        translatedText = translatedText.replace(regex, english);
+      });
+    }
+
+    return translatedText;
   }
 
   showCommandSuggestions(suggestions) {
@@ -1031,6 +1359,39 @@ class VoiceAutomation {
       case 'submit_form':
         // Already handled in extractIntent
         break;
+      case 'search':
+        this.handleSearch(entities);
+        break;
+      case 'go_notifications':
+        this.speakResponse('Opening notifications.');
+        window.location.href = '/notifications/view';
+        break;
+      case 'go_payments':
+        this.speakResponse('Opening payment history.');
+        window.location.href = '/payments/history'; // Adjust this path as needed
+        break;
+      case 'go_bids':
+        // Check user role to determine bid page
+        const bidUserRole = this.getUserRole();
+        this.speakResponse('Opening bid management.');
+        if (bidUserRole === 'transporter') {
+          window.location.href = '/bids/my'; // Adjust path as needed
+        } else if (bidUserRole === 'shipper') {
+          window.location.href = '/bids/my'; // Adjust path as needed
+        }
+        break;
+      case 'go_chat':
+        this.speakResponse('Opening chat assistant.');
+        window.location.href = '/chatbot';
+        break;
+      case 'go_settings':
+        this.speakResponse('Opening settings.');
+        window.location.href = '/profile'; // Settings are part of profile page
+        break;
+      case 'voice_settings':
+        this.speakResponse('Opening voice settings panel.');
+        this.showVoiceSettings();
+        break;
       default:
         this.showFeedback('Command executed but no action defined', 'warning');
     }
@@ -1381,6 +1742,31 @@ class VoiceAutomation {
     }
   }
 
+  handleSearch(entities) {
+    // Try to find search input on page
+    const searchInput = document.querySelector('input[name="q"], input[type="search"], #searchInput');
+    
+    if (searchInput && entities.query) {
+      // Fill search input and submit
+      searchInput.value = entities.query;
+      const searchForm = searchInput.closest('form');
+      if (searchForm) {
+        searchForm.submit();
+      } else {
+        // Trigger search event if available
+        const searchEvent = new Event('input', { bubbles: true });
+        searchInput.dispatchEvent(searchEvent);
+      }
+      this.speakResponse(`Searching for ${entities.query}`);
+    } else if (entities.query) {
+      // Try to navigate to search page with query
+      window.location.href = `/search?q=${encodeURIComponent(entities.query)}`;
+    } else {
+      // Try to navigate to search page
+      window.location.href = '/search';
+    }
+  }
+
   getUserRole() {
     // Try to get user role from page content
     const userGreeting = document.querySelector('.user-greeting');
@@ -1454,12 +1840,191 @@ class VoiceAutomation {
     }
   }
 
-  showFeedback(message, type = 'info') {
-    // Remove existing feedback
-    const existing = document.getElementById('voiceFeedback');
-    if (existing) {
-      existing.remove();
+  showVoiceSettings() {
+    // Create settings modal
+    const settingsModal = document.createElement('div');
+    settingsModal.id = 'voiceSettingsModal';
+    settingsModal.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      z-index: 10003;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    `;
+    
+    settingsModal.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: var(--primary-700);">
+          <i class="fas fa-cog"></i> Voice Settings
+        </h2>
+        <button onclick="this.closest('#voiceSettingsModal').remove()" 
+                style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--neutral-500);">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <div>
+            <strong style="color: var(--neutral-800);">Enable Voice Responses</strong>
+            <div style="font-size: 0.9rem; color: var(--neutral-600); margin-top: 4px;">
+              Turn on/off all voice responses
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="voiceEnabledToggle" ${this.voiceEnabled ? 'checked' : ''}>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <div>
+            <strong style="color: var(--neutral-800);">Website Interaction Voice</strong>
+            <div style="font-size: 0.9rem; color: var(--neutral-600); margin-top: 4px;">
+              Voice feedback for website actions
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="websiteVoiceToggle" ${this.websiteVoiceEnabled ? 'checked' : ''}>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="color: var(--neutral-800);">Voice Command Responses</strong>
+            <div style="font-size: 0.9rem; color: var(--neutral-600); margin-top: 4px;">
+              Voice feedback for voice commands
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="commandVoiceToggle" ${this.voiceEnabled ? 'checked' : ''}>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 15px; background: var(--info-50); border-radius: 6px; border-left: 4px solid var(--info-500);">
+        <strong style="color: var(--info-700);"><i class="fas fa-info-circle"></i> Tip:</strong>
+        <p style="margin: 8px 0 0 0; color: var(--neutral-700); font-size: 0.9rem;">
+          You can also say <strong>"Hey DAAS, help"</strong> to see all available voice commands.
+        </p>
+      </div>
+    `;
+    
+    document.body.appendChild(settingsModal);
+    
+    // Add CSS for toggle switches
+    if (!document.getElementById('voiceToggleStyles')) {
+      const style = document.createElement('style');
+      style.id = 'voiceToggleStyles';
+      style.textContent = `
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+        }
+        
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .4s;
+        }
+        
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 16px;
+          width: 16px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          transition: .4s;
+        }
+        
+        input:checked + .slider {
+          background-color: var(--primary-500);
+        }
+        
+        input:checked + .slider:before {
+          transform: translateX(26px);
+        }
+        
+        .slider.round {
+          border-radius: 24px;
+        }
+        
+        .slider.round:before {
+          border-radius: 50%;
+        }
+      `;
+      document.head.appendChild(style);
     }
+    
+    // Add event listeners for toggles
+    const voiceToggle = settingsModal.querySelector('#voiceEnabledToggle');
+    const websiteToggle = settingsModal.querySelector('#websiteVoiceToggle');
+    const commandToggle = settingsModal.querySelector('#commandVoiceToggle');
+    
+    voiceToggle.addEventListener('change', (e) => {
+      this.voiceEnabled = e.target.checked;
+      // If main voice is disabled, also disable command voice
+      if (!this.voiceEnabled) {
+        commandToggle.checked = false;
+        this.speakResponse('Voice responses disabled.');
+      } else {
+        this.speakResponse('Voice responses enabled.');
+      }
+    });
+    
+    websiteToggle.addEventListener('change', (e) => {
+      this.websiteVoiceEnabled = e.target.checked;
+      if (this.websiteVoiceEnabled) {
+        this.speakResponse('Website interaction voice enabled.');
+      } else {
+        this.speakResponse('Website interaction voice disabled.');
+      }
+    });
+    
+    commandToggle.addEventListener('change', (e) => {
+      this.voiceEnabled = e.target.checked;
+      voiceToggle.checked = e.target.checked; // Sync with main toggle
+      if (this.voiceEnabled) {
+        this.speakResponse('Voice command responses enabled.');
+      } else {
+        this.speakResponse('Voice command responses disabled.');
+      }
+    });
+    
+    // Close on outside click
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        settingsModal.remove();
+      }
+    });
+  }
+
+  showFeedback(message, type = 'info') {
 
     // Create feedback element
     const feedback = document.createElement('div');
@@ -1704,8 +2269,215 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error parsing stored voice data:', error);
     }
   }
+  
+  // Add page load voice feedback
+  if (voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+    // Announce page title
+    const pageTitle = document.title.replace('T2YD - ', '');
+    if (pageTitle) {
+      setTimeout(() => {
+        voiceAutomation.speakResponse(`Loaded ${pageTitle}`);
+      }, 1000);
+    }
+    
+    // Check for important page elements
+    setTimeout(() => {
+      // Announce if there are notifications
+      const notificationCount = document.querySelectorAll('.notification, .alert').length;
+      if (notificationCount > 0) {
+        voiceAutomation.speakResponse(`You have ${notificationCount} notification${notificationCount > 1 ? 's' : ''}`);
+      }
+      
+      // Announce if there are form validation errors
+      const errorElements = document.querySelectorAll('.error, .alert-error');
+      if (errorElements.length > 0) {
+        voiceAutomation.speakResponse(`Page loaded with ${errorElements.length} error${errorElements.length > 1 ? 's' : ''}`);
+      }
+    }, 1500);
+  }
+  
+  // Add keyboard shortcut for voice settings (Ctrl+Shift+V)
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'V') {
+      e.preventDefault();
+      if (voiceAutomation) {
+        voiceAutomation.showVoiceSettings();
+        voiceAutomation.speakResponse('Voice settings panel opened');
+      }
+    }
+  });
 });
 
 // Export for global access if needed
 window.VoiceAutomation = VoiceAutomation;
+
+// Add voice response functionality for website commands
+document.addEventListener('DOMContentLoaded', () => {
+  // Add voice responses for common website interactions
+  
+  // Form submission feedback
+  document.addEventListener('submit', (e) => {
+    if (voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+      const form = e.target;
+      const formType = form.getAttribute('action') || form.id || 'form';
+      
+      // Special handling for specific forms
+      if (formType.includes('add')) {
+        voiceAutomation.speakResponse('Submitting your form now. Please wait.');
+      } else if (formType.includes('search')) {
+        voiceAutomation.speakResponse('Searching for your query now.');
+      } else {
+        voiceAutomation.speakResponse('Submitting form. Please wait.');
+      }
+    }
+  });
+  
+  // Button click feedback
+  document.addEventListener('click', (e) => {
+    if (voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+      const target = e.target;
+      
+      // Handle button clicks
+      if (target.tagName === 'BUTTON' || target.getAttribute('role') === 'button') {
+        const buttonText = target.textContent.trim() || target.getAttribute('aria-label') || target.title;
+        
+        if (buttonText) {
+          // Common action buttons
+          if (buttonText.toLowerCase().includes('submit')) {
+            voiceAutomation.speakResponse('Submitting form now.');
+          } else if (buttonText.toLowerCase().includes('save')) {
+            voiceAutomation.speakResponse('Saving your changes.');
+          } else if (buttonText.toLowerCase().includes('delete')) {
+            voiceAutomation.speakResponse('Deleting item.');
+          } else if (buttonText.toLowerCase().includes('cancel')) {
+            voiceAutomation.speakResponse('Cancelling action.');
+          } else if (buttonText.toLowerCase().includes('accept')) {
+            voiceAutomation.speakResponse('Accepting request.');
+          } else if (buttonText.toLowerCase().includes('reject')) {
+            voiceAutomation.speakResponse('Rejecting request.');
+          } else if (buttonText.toLowerCase().includes('send')) {
+            voiceAutomation.speakResponse('Sending message.');
+          } else if (buttonText.toLowerCase().includes('book') || buttonText.toLowerCase().includes('bid')) {
+            voiceAutomation.speakResponse('Processing your request.');
+          }
+        }
+      }
+      
+      // Handle link clicks with voice feedback
+      if (target.tagName === 'A' && target.href) {
+        const linkText = target.textContent.trim();
+        
+        if (linkText) {
+          // Navigation links
+          if (linkText.toLowerCase().includes('dashboard')) {
+            voiceAutomation.speakResponse('Opening dashboard.');
+          } else if (linkText.toLowerCase().includes('profile')) {
+            voiceAutomation.speakResponse('Opening profile page.');
+          } else if (linkText.toLowerCase().includes('notification')) {
+            voiceAutomation.speakResponse('Opening notifications.');
+          } else if (linkText.toLowerCase().includes('payment')) {
+            voiceAutomation.speakResponse('Opening payments page.');
+          } else if (linkText.toLowerCase().includes('setting')) {
+            voiceAutomation.speakResponse('Opening settings page.');
+          } else if (linkText.toLowerCase().includes('help')) {
+            voiceAutomation.speakResponse('Opening help page.');
+          }
+        }
+      }
+    }
+  });
+  
+  // Add voice feedback for form field interactions
+  document.addEventListener('focus', (e) => {
+    if (voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+      const target = e.target;
+      
+      // Provide hints for form fields
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+        const label = document.querySelector(`label[for="${target.id}"]`) || 
+                     target.previousElementSibling;
+        
+        if (label && label.textContent) {
+          // Don't announce for every focus to avoid spam
+          if (Math.random() > 0.7) { // 30% chance to announce
+            voiceAutomation.speakResponse(`This field is for ${label.textContent}`);
+          }
+        }
+      }
+    }
+  }, true);
+  
+  // Add voice feedback for common user actions
+  document.addEventListener('click', (e) => {
+    if (voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+      const target = e.target;
+      
+      // Handle common UI interactions
+      if (target.classList.contains('btn') || target.classList.contains('button')) {
+        const buttonText = target.textContent.trim();
+        if (buttonText && buttonText.length < 30) { // Only for short button texts
+          // Small chance to provide feedback to avoid spam
+          if (Math.random() > 0.8) {
+            voiceAutomation.speakResponse(`${buttonText} button`);
+          }
+        }
+      }
+      
+      // Handle form validation errors
+      if (target.classList && target.classList.contains('error') && target.textContent) {
+        const errorText = target.textContent.trim();
+        if (errorText && errorText.length < 100) { // Reasonable length
+          voiceAutomation.speakResponse(`Error: ${errorText}`);
+        }
+      }
+      
+      // Handle success messages
+      if (target.classList && (target.classList.contains('success') || target.classList.contains('alert-success')) && target.textContent) {
+        const successText = target.textContent.trim();
+        if (successText && successText.length < 100) { // Reasonable length
+          voiceAutomation.speakResponse(`Success: ${successText}`);
+        }
+      }
+    }
+  });
+  
+  // Add voice feedback for notifications
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) { // Element node
+            // Check for notification elements
+            const notification = node.classList && 
+              (node.classList.contains('alert') || 
+               node.classList.contains('notification') ||
+               node.id === 'voiceFeedback' ||
+               (node.getAttribute && node.getAttribute('role') === 'alert')) ? 
+              node : 
+              node.querySelector && node.querySelector('.alert, .notification, [role="alert"]');
+            
+            if (notification && voiceAutomation && voiceAutomation.voiceEnabled && voiceAutomation.websiteVoiceEnabled) {
+              const text = notification.textContent.trim();
+              if (text && !text.includes('Voice activated')) { // Avoid announcing voice control messages
+                // Check if it's an error
+                if (notification.classList.contains('error') || 
+                    notification.classList.contains('alert-error') ||
+                    text.toLowerCase().includes('error') ||
+                    text.toLowerCase().includes('failed')) {
+                  voiceAutomation.speakResponse(`Error: ${text}`);
+                } else {
+                  // For success or info messages
+                  voiceAutomation.speakResponse(text);
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  });
+  
+  // Start observing for notifications
+  observer.observe(document.body, { childList: true, subtree: true });
+});
 

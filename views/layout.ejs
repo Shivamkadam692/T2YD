@@ -45,7 +45,7 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 </head>
-<body>
+<body<% if (user) { %> data-user-id="<%= user._id %>" data-user-role="<%= user.role %>"<% } %>>
   <!-- Loading Animation -->
   <div class="loading-container" id="loadingContainer" role="status" aria-live="polite">
     <div class="loading-orbit">

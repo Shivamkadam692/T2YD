@@ -23,31 +23,48 @@ exports.getHome = async (req, res) => {
  * Handle search
  */
 exports.search = async (req, res) => {
-  const query = req.query.query;
-  
-  // Base search criteria
-  const searchCriteria = {
-    $or: [
-      { location: { $regex: query, $options: 'i' } },
-      { vehicleType: { $regex: query, $options: 'i' } },
-      { ownerName: { $regex: query, $options: 'i' } }
-    ]
-  };
-  
-  // If user is a transporter, only show their own lorries
-  if (req.session.userId && req.session.userRole === 'transporter') {
-    searchCriteria.transporter = req.session.userId;
+  try {
+    const query = req.query.query;
+    
+    // Validate query parameter
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return res.render('searchResults', { results: [] });
+    }
+    
+    const trimmedQuery = query.trim();
+    
+    // Base search criteria
+    const searchCriteria = {
+      $or: [
+        { location: { $regex: trimmedQuery, $options: 'i' } },
+        { vehicleType: { $regex: trimmedQuery, $options: 'i' } },
+        { ownerName: { $regex: trimmedQuery, $options: 'i' } }
+      ]
+    };
+    
+    // If user is a transporter, only show their own lorries
+    if (req.session.userId && req.session.userRole === 'transporter') {
+      searchCriteria.transporter = req.session.userId;
+    }
+    
+    const lorryResults = await Lorry.find(searchCriteria);
+    const deliveryResults = await Delivery.find({
+      $or: [
+        { pickupLocation: { $regex: trimmedQuery, $options: 'i' } },
+        { dropLocation: { $regex: trimmedQuery, $options: 'i' } },
+        { goodsType: { $regex: trimmedQuery, $options: 'i' } }
+      ]
+    });
+    const results = [...lorryResults, ...deliveryResults];
+    res.render('searchResults', { results });
+  } catch (error) {
+    console.error('Search error:', error);
+    // Handle regex errors specifically
+    if (error.name === 'MongoServerError' && error.message.includes('$regex')) {
+      return res.render('searchResults', { results: [], error: 'Invalid search pattern. Please try a different search term.' });
+    }
+    // Fallback to showing no results
+    res.render('searchResults', { results: [] });
   }
-  
-  const lorryResults = await Lorry.find(searchCriteria);
-  const deliveryResults = await Delivery.find({
-    $or: [
-      { pickupLocation: { $regex: query, $options: 'i' } },
-      { dropLocation: { $regex: query, $options: 'i' } },
-      { goodsType: { $regex: query, $options: 'i' } }
-    ]
-  });
-  const results = [...lorryResults, ...deliveryResults];
-  res.render('searchResults', { results });
 };
 

@@ -20,6 +20,14 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
+  if (err.name === 'MongoServerError' && err.message.includes('$regex')) {
+    console.error('MongoDB Regex Error:', err.message);
+    return res.status(400).json({
+      status: 'error',
+      message: 'Invalid search pattern. Please try a different search term.'
+    });
+  }
+
   if (err.name === 'CastError') {
     return res.status(400).json({
       status: 'error',

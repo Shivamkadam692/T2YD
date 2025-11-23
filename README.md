@@ -23,11 +23,23 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 
 ## 🆕 Recent Updates
 
+### v2.8.0 - Enhanced Voice Response System
+- **🎤 Website Interaction Voice**: Added voice feedback for all website interactions (form submissions, button clicks, navigation)
+- **🎛️ Voice Settings Panel**: Dedicated UI for configuring voice response preferences with toggle switches
+- **⌨️ Keyboard Shortcut**: Ctrl+Shift+V to quickly access voice settings
+- **🔊 Smart Announcements**: Page load announcements, notification alerts, and error/success message announcements
+- **🎯 Context-Aware Responses**: Different voice responses based on user actions and page context
+- **🔇 Spam Prevention**: Randomized voice feedback to prevent overwhelming users
+- **🔄 Form Field Guidance**: Voice hints for form fields based on labels
+- **🔧 MutationObserver Integration**: Real-time detection of dynamic content changes for voice announcements
+
 ### v2.7.0 - Voice Control Integration
-- **🎤 Voice Commands**: Added hands-free voice control using Web Speech API
+- **🎤 Voice Commands**: Added hands-free voice control using Web Speech API + Google Gemini AI
+- **🤖 Gemini AI**: Integrated Google Gemini for intelligent intent detection and natural responses
+- **🌐 Multi-Language Voice**: Support for English, Hindi, and Marathi voice commands with automatic translation
 - **🗣️ Wake Word Activation**: "Hey DAAS" wake word to activate voice control without clicking
-- **🎯 Auto-Correct**: Intelligent command matching with fuzzy search and auto-correction
-- **🌐 Multi-Language Commands**: Support for English, Hindi, and Marathi language switching via voice
+- **🎯 Auto-Correct**: Intelligent command matching with fuzzy search and Gemini AI fallback
+- **🔄 Language Auto-Detection**: Automatically switches voice recognition based on UI language
 - **📍 Voice Navigation**: Navigate to pages (home, about, terms, privacy, contact) using voice
 - **📊 Search Commands**: Voice-activated search functionality
 - **🎨 Visual Feedback**: Real-time transcript display with animated wave effects
@@ -192,7 +204,6 @@ T2YD/
 │       └── mr.js          # Marathi translations
 ├── server.js               # Express server entry point
 └── package.json            # Project dependencies and scripts
-```
 
 ## 🚀 Getting Started
 
@@ -214,15 +225,25 @@ T2YD/
    ```
 
 3. **Configure environment:**
-   - Copy or create a `.env` file or update `config/env.js` as needed
-   - Set your MongoDB URI and any API keys
-   - Example:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Update `.env` with your configuration:
      ```env
      NODE_ENV=development
      PORT=3000
      MONGODB_URI=mongodb://127.0.0.1:27017/t2yd
+     SESSION_SECRET=your-session-secret-key
      STRIPE_SECRET_KEY=your-stripe-key
+     GEMINI_API_KEY=your-gemini-api-key
      ```
+   - **Get Gemini API Key** (for AI-powered voice control):
+     1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+     2. Sign in with your Google account
+     3. Create a new API key
+     4. Copy the key and add it to your `.env` file
+     5. Note: Voice control works without Gemini but with reduced accuracy
 
 4. **Start MongoDB:**
    - If running locally, start your MongoDB server:
@@ -313,19 +334,32 @@ npm start
 
 ### 🎤 Voice Control System
 - **Web Speech API**: Browser-based voice recognition and synthesis
+- **Google Gemini AI**: Intelligent intent detection and natural language understanding
+- **Multi-Language Support**: English, Hindi, and Marathi voice commands
 - **Wake Word Activation**: "Hey DAAS" activates voice control without button click
 - **Supported Voice Commands**:
   - **Navigation**: "Go home", "Go to about page", "Show terms", "Open privacy page", "Contact us"
+  - **Additional Pages**: "Go to notifications", "Show payments", "Open bids", "Go to chat", "Settings"
   - **Search**: "Search for [query]", "Find [keyword]"
   - **Language**: "Change language to Hindi/English/Marathi", "Switch to [language]"
   - **Dashboard**: "Open dashboard", "Show my dashboard"
+  - **Transport**: "Add my truck", "Add delivery", "Show my lorries", "Show my deliveries"
+  - **Voice Settings**: "Voice settings" (opens voice configuration panel)
+  - **Natural Queries**: Gemini AI handles conversational commands like "I need to add a new truck"
+  - **Marathi Commands**: "ट्रक जोडा" (Add truck), "माझे डिलिव्हरी दाखवा" (Show deliveries), "भाषा बदला" (Change language)
+  - **Hindi Commands**: "ट्रक जोड़ो" (Add truck), "मेरी डिलीवरी दिखाओ" (Show deliveries), "भाषा बदलो" (Change language)
   - **And more**: Full command reference available in voice overlay
-- **Auto-Correct**: Levenshtein distance algorithm for typo tolerance and fuzzy matching
+- **Automatic Language Detection**: Switches recognition language based on UI language setting
+- **Command Translation**: Marathi/Hindi commands automatically translated to English for processing
+- **Dual Processing**: Gemini AI for natural language + local fuzzy matching for reliability
+- **Auto-Correct**: Levenshtein distance algorithm for typo tolerance
 - **Multi-Factor Scoring**: Intelligent command matching with 60% confidence threshold
 - **Real-time Feedback**: Visual wave animations and live transcript display
 - **Voice Responses**: Text-to-speech confirmation for all executed commands
 - **Continuous Listening**: Background wake word detection with automatic restart
 - **Mobile Support**: Full voice control functionality on mobile devices
+- **Fallback System**: Works even without Gemini API key using local matching
+- **Website Interaction Voice**: Voice feedback for all website interactions (form submissions, button clicks, navigation)
 
 ## 🛣️ Application Routes
 
@@ -480,17 +514,29 @@ For support, questions, or feature requests:
 
 ## 🔄 Changelog
 
-### v2.7.0 - Voice Control Integration (Latest)
-- **🎤 Voice Control**: Complete hands-free voice command system
+### v2.8.0 - Enhanced Voice Response System (Latest)
+- **🎤 Website Interaction Voice**: Added voice feedback for all website interactions (form submissions, button clicks, navigation)
+- **🎛️ Voice Settings Panel**: Dedicated UI for configuring voice response preferences with toggle switches
+- **⌨️ Keyboard Shortcut**: Ctrl+Shift+V to quickly access voice settings
+- **🔊 Smart Announcements**: Page load announcements, notification alerts, and error/success message announcements
+- **🎯 Context-Aware Responses**: Different voice responses based on user actions and page context
+- **🔇 Spam Prevention**: Randomized voice feedback to prevent overwhelming users
+- **🔄 Form Field Guidance**: Voice hints for form fields based on labels
+- **🔧 MutationObserver Integration**: Real-time detection of dynamic content changes for voice announcements
+
+### v2.7.0 - Voice Control Integration
+- **🎤 Voice Control**: Complete hands-free voice command system with Google Gemini AI
+- **🤖 Gemini AI Integration**: Intelligent intent detection and natural language understanding
+- **🌐 Multi-Language Voice**: English, Hindi, and Marathi voice commands with automatic translation
 - **🗣️ Wake Word**: "Hey DAAS" activation with continuous background listening
-- **🎯 Smart Matching**: Levenshtein distance algorithm for command auto-correction
-- **🌐 Language Commands**: Voice-activated language switching (English/Hindi/Marathi)
+- **🎯 Smart Matching**: Levenshtein distance algorithm + Gemini AI for command auto-correction
+- **🔄 Auto Language Detection**: Switches voice recognition based on UI language (en-US, hi-IN, mr-IN)
 - **📍 Navigation**: Voice commands for all major pages and features
 - **💬 Voice Feedback**: Text-to-speech responses for user confirmation
 - **🎨 Modern UI**: Glassmorphic overlay with real-time transcript and wave animations
 - **📱 Responsive**: Full mobile support with optimized touch and voice interactions
 - **🔧 Modular Code**: Separated voice control CSS into dedicated file (735 lines)
-- **⚡ Performance**: Optimized recognition with dual instances for wake word and commands
+- **⚡ Performance**: Optimized recognition with dual instances + Gemini AI fallback
 
 ### v2.5.0 - Chat Assistant & UI Improvements
 - **🤖 AI Chat Assistant**: Added intelligent chatbot for user support and guidance

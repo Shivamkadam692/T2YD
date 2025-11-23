@@ -45,10 +45,17 @@ exports.getLorryById = async (req, res) => {
     }
     
     // Find nearby deliveries based on lorry location
-    const nearbyDeliveries = await Delivery.find({
-      status: 'pending',
-      pickupLocation: { $regex: new RegExp(lorry.location.split(',')[0], 'i') } // Match city/area part of the location
-    }).populate('shipper', 'name').limit(5);
+    const locationParts = lorry.location.split(',');
+    const locationQuery = locationParts.length > 0 ? locationParts[0].trim() : '';
+    
+    // Only search for nearby deliveries if we have a valid location query
+    let nearbyDeliveries = [];
+    if (locationQuery && typeof locationQuery === 'string' && locationQuery.length > 0) {
+      nearbyDeliveries = await Delivery.find({
+        status: 'pending',
+        pickupLocation: { $regex: locationQuery, $options: 'i' } // Match city/area part of the location
+      }).populate('shipper', 'name').limit(5);
+    }
     
     res.render('lorry', { lorry, nearbyDeliveries });
   } catch (error) {

@@ -21,6 +21,7 @@ const bidRoutes = require('./routes/bidRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const callRoutes = require('./routes/callRoutes');
 const chatBotRoutes = require('./routes/chatBotRoutes');
+const geminiRoutes = require('./routes/geminiRoutes');
 const { requireLogin } = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
 const homeController = require('./controllers/homeController');
@@ -87,6 +88,7 @@ app.use('/bid', bidRoutes);
 app.use('/profile', profileRoutes);
 app.use('/calls', callRoutes);
 app.use('/chatbot', chatBotRoutes);
+app.use('/gemini', geminiRoutes);
 
 // Public static pages used by the footer
 app.get('/about', (req, res) => res.render('about'));
