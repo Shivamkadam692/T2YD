@@ -4,7 +4,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 
 ## 🌟 Key Features
 
-- 🚛 **Transport Management**: Add and manage lorries, deliveries, and transport requests
+- 🚛 **Transport Management**: Add and manage lorries, deliveries, and transport request
 - 💰 **Bid Management**: Transporter bidding system with accept/reject functionality
 - 🔔 **Real-time Notifications**: Live notifications with Socket.IO for instant updates
 - 🌐 **Multilingual Support**: English, Hindi, and Marathi language options
