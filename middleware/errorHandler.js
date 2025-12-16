@@ -13,6 +13,14 @@ const errorHandler = (err, req, res, next) => {
 
   // Handle different types of errors
   if (err.name === 'ValidationError') {
+    // For signup route, redirect with flash message
+    if (req.originalUrl.includes('/auth/signup')) {
+      if (req.flash) {
+        req.flash('error', 'Please check your input and try again');
+      }
+      return res.redirect('/auth/signup');
+    }
+    
     return res.status(400).json({
       status: 'error',
       message: 'Validation Error',
@@ -22,6 +30,15 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === 'MongoServerError' && err.message.includes('$regex')) {
     console.error('MongoDB Regex Error:', err.message);
+    
+    // For signup route, redirect with flash message
+    if (req.originalUrl.includes('/auth/signup')) {
+      if (req.flash) {
+        req.flash('error', 'Invalid search pattern. Please try a different search term.');
+      }
+      return res.redirect('/auth/signup');
+    }
+    
     return res.status(400).json({
       status: 'error',
       message: 'Invalid search pattern. Please try a different search term.'
@@ -29,6 +46,14 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === 'CastError') {
+    // For signup route, redirect with flash message
+    if (req.originalUrl.includes('/auth/signup')) {
+      if (req.flash) {
+        req.flash('error', 'Invalid ID format');
+      }
+      return res.redirect('/auth/signup');
+    }
+    
     return res.status(400).json({
       status: 'error',
       message: 'Invalid ID format'
@@ -54,6 +79,14 @@ const errorHandler = (err, req, res, next) => {
       });
     }
     
+    // Web response for signup - redirect with flash message
+    if (req.originalUrl.includes('/auth/signup')) {
+      if (req.flash) {
+        req.flash('error', errorMessage);
+      }
+      return res.redirect('/auth/signup');
+    }
+    
     // Web response - render error page with friendly message
     return res.status(400).render('error', {
       message: errorMessage,
@@ -67,6 +100,14 @@ const errorHandler = (err, req, res, next) => {
       status: 'error',
       message
     });
+  }
+
+  // Web response for signup - redirect with flash message
+  if (req.originalUrl.includes('/auth/signup')) {
+    if (req.flash) {
+      req.flash('error', message);
+    }
+    return res.redirect('/auth/signup');
   }
 
   // Web error response

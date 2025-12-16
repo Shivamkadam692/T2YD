@@ -12,7 +12,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 🔐 **Authentication**: Session-based authentication with role-based access control
 - 👤 **User Profiles**: Comprehensive profile management with booking history
 - 🤖 **AI Chat Assistant**: Intelligent chatbot for user support and guidance
-- 🎤 **Voice Control**: Hands-free voice commands with wake word activation ("Hey DAAS")
+- 🎤 **Voice Control**: Hands-free voice commands with wake word activation ("Hey AADI")
 - 📱 **Responsive Design**: Mobile-first design that works on all devices
 - 💳 **Payment Integration**: Stripe payment processing
 - 🔄 **Real-time Updates**: Live updates for transport status and location
@@ -37,7 +37,7 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - **🎤 Voice Commands**: Added hands-free voice control using Web Speech API + Google Gemini AI
 - **🤖 Gemini AI**: Integrated Google Gemini for intelligent intent detection and natural responses
 - **🌐 Multi-Language Voice**: Support for English, Hindi, and Marathi voice commands with automatic translation
-- **🗣️ Wake Word Activation**: "Hey DAAS" wake word to activate voice control without clicking
+- **🗣️ Wake Word Activation**: "Hey AADI" wake word to activate voice control without clicking
 - **🎯 Auto-Correct**: Intelligent command matching with fuzzy search and Gemini AI fallback
 - **🔄 Language Auto-Detection**: Automatically switches voice recognition based on UI language
 - **📍 Voice Navigation**: Navigate to pages (home, about, terms, privacy, contact) using voice
@@ -336,7 +336,7 @@ npm start
 - **Web Speech API**: Browser-based voice recognition and synthesis
 - **Google Gemini AI**: Intelligent intent detection and natural language understanding
 - **Multi-Language Support**: English, Hindi, and Marathi voice commands
-- **Wake Word Activation**: "Hey DAAS" activates voice control without button click
+- **Wake Word Activation**: "Hey AADI" activates voice control without button click
 - **Supported Voice Commands**:
   - **Navigation**: "Go home", "Go to about page", "Show terms", "Open privacy page", "Contact us"
   - **Additional Pages**: "Go to notifications", "Show payments", "Open bids", "Go to chat", "Settings"
@@ -528,7 +528,7 @@ For support, questions, or feature requests:
 - **🎤 Voice Control**: Complete hands-free voice command system with Google Gemini AI
 - **🤖 Gemini AI Integration**: Intelligent intent detection and natural language understanding
 - **🌐 Multi-Language Voice**: English, Hindi, and Marathi voice commands with automatic translation
-- **🗣️ Wake Word**: "Hey DAAS" activation with continuous background listening
+- **🗣️ Wake Word**: "Hey AADI" activation with continuous background listening
 - **🎯 Smart Matching**: Levenshtein distance algorithm + Gemini AI for command auto-correction
 - **🔄 Auto Language Detection**: Switches voice recognition based on UI language (en-US, hi-IN, mr-IN)
 - **📍 Navigation**: Voice commands for all major pages and features

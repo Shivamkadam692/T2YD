@@ -34,7 +34,17 @@ const validateRequired = (requiredFields) => {
       });
     }
     
-    // Web error response
+    // Web error response for signup - redirect back with flash message
+    if (req.originalUrl.includes('/auth/signup')) {
+      if (req.flash) {
+        // Get the first error message to display
+        const firstError = errors[0].message;
+        req.flash('error', firstError);
+      }
+      return res.redirect('/auth/signup');
+    }
+    
+    // Generic web error response
     return res.status(400).render('error', {
       message: 'Please check your input and try again',
       errors
@@ -66,7 +76,15 @@ const validateEmail = (field) => {
         });
       }
       
-      // Web error response
+      // Web error response for signup - redirect back with flash message
+      if (req.originalUrl.includes('/auth/signup')) {
+        if (req.flash) {
+          req.flash('error', 'Invalid email format');
+        }
+        return res.redirect('/auth/signup');
+      }
+      
+      // Generic web error response
       return res.status(400).render('error', {
         message: 'Please check your input and try again',
         errors: [{ field, message: 'Invalid email format' }]
@@ -100,7 +118,24 @@ const validatePassword = (field) => {
         });
       }
       
-      // Web error response
+      // Web error response - redirect back with flash message
+      if (req.originalUrl.includes('/auth/signup') || 
+          req.originalUrl.includes('/auth/reset') ||
+          req.originalUrl.includes('/profile/password')) {
+        if (req.flash) {
+          req.flash('error', 'Password must be at least 6 characters long');
+        }
+        // Redirect based on the route
+        if (req.originalUrl.includes('/auth/signup')) {
+          return res.redirect('/auth/signup');
+        } else if (req.originalUrl.includes('/auth/reset')) {
+          return res.redirect('back');
+        } else if (req.originalUrl.includes('/profile/password')) {
+          return res.redirect('/profile');
+        }
+      }
+      
+      // Generic web error response
       return res.status(400).render('error', {
         message: 'Please check your input and try again',
         errors: [{ field, message: 'Password must be at least 6 characters long' }]

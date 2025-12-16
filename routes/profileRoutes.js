@@ -72,6 +72,18 @@ router.post('/password', requireLogin, async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     
+    // Validate password length
+    if (newPassword.length < 6) {
+      if (req.flash) req.flash('error', 'New password must be at least 6 characters long');
+      return res.redirect('/profile');
+    }
+    
+    // Check if new passwords match
+    if (newPassword !== confirmPassword) {
+      if (req.flash) req.flash('error', 'New passwords do not match');
+      return res.redirect('/profile');
+    }
+    
     // Get current user
     const user = await User.findById(req.session.userId);
     
@@ -79,12 +91,6 @@ router.post('/password', requireLogin, async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       if (req.flash) req.flash('error', 'Current password is incorrect');
-      return res.redirect('/profile');
-    }
-    
-    // Check if new passwords match
-    if (newPassword !== confirmPassword) {
-      if (req.flash) req.flash('error', 'New passwords do not match');
       return res.redirect('/profile');
     }
     
