@@ -124,25 +124,42 @@ io.on('connection', (socket) => {
 
   // Join tracking room
   socket.on('join', ({ requestId }) => {
+
     if (requestId) {
       socket.join(requestId);
+
     }
   });
 
   // Leave tracking room
   socket.on('leave', ({ requestId }) => {
+    console.log('Socket leaving room:', requestId);
     if (requestId) {
       socket.leave(requestId);
+      console.log('Socket left room successfully:', requestId);
     }
   });
 
   socket.on('locationUpdate', async ({ requestId, role, lat, lng }) => {
     try {
-      if (!requestId || lat == null || lng == null) return;
+      
+      if (!requestId || lat == null || lng == null) {
+        console.log('Invalid location update data:', { requestId, role, lat, lng });
+        return;
+      }
+      
+      // Import Request model inside the function to ensure it's available
+      const Request = require('./models/Request');
+      
       const update = role === 'shipper'
         ? { shipperLocation: { lat, lng, updatedAt: new Date() }, trackingActiveShipper: true }
         : { transporterLocation: { lat, lng, updatedAt: new Date() }, trackingActiveTransporter: true };
-      await Request.findByIdAndUpdate(requestId, update);
+      const updatedRequest = await Request.findByIdAndUpdate(requestId, update, { new: true });
+      if (!updatedRequest) {
+        console.log('Request not found for ID:', requestId);
+        return;
+      }
+      console.log('Emitting location update to room:', requestId, { role, lat, lng });
       io.to(requestId).emit('locationUpdate', { role, lat, lng, updatedAt: Date.now() });
     } catch (e) {
       console.error('Location update error:', e);
@@ -152,6 +169,10 @@ io.on('connection', (socket) => {
   socket.on('stopTracking', async ({ requestId, role }) => {
     try {
       if (!requestId) return;
+      
+      // Import Request model inside the function to ensure it's available
+      const Request = require('./models/Request');
+      
       const update = role === 'shipper'
         ? { trackingActiveShipper: false }
         : { trackingActiveTransporter: false };

@@ -370,6 +370,8 @@
 <% const accepted = !!(_request.acceptedAt); %>
 <% const loaded = !!(_request.loadedAt); %>
 <% const completed = (_request.status === 'completed') || !!(_request.completedAt); %>
+<% // Compute role before using it in the template %>
+<% const roleComputed = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? 'shipper' : 'transporter'; %>
 
 <div class="dashboard-header">
   <h1>Live Tracking</h1>
@@ -433,6 +435,10 @@
   <div class="form-actions">
     <button id="startBtn" class="btn btn-primary">Start Sharing My Location</button>
     <button id="stopBtn" class="btn btn-secondary">Stop Sharing</button>
+    <% // Show "Mark as Loaded" button only for transporters and when the request status allows it %>
+    <% if (roleComputed === 'transporter' && _request.status === 'accepted') { %>
+      <button id="markLoadedBtn" class="btn btn-success">Mark as Loaded</button>
+    <% } %>
     <% // Safe back-to-dashboard link decision %>
     <% const backTo = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? '/dashboard/shipper' : '/dashboard/transporter'; %>
     <a href="<%= backTo %>" class="btn btn-outline">Back to Dashboard</a>
@@ -444,12 +450,12 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
 <!-- Server-provided data as raw JSON to avoid EJS tags inside JS source -->
-<% const roleComputed = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? 'shipper' : 'transporter'; %>
 <script id="track-data" type="application/json"><%- JSON.stringify({
   requestId: _request._id ? String(_request._id) : '',
   role: roleComputed,
   userId: _user && _user._id ? String(_user._id) : null,
   requestStatus: _request && _request.status ? _request.status : null,
+  loadedAt: _request.loadedAt ? _request.loadedAt : null,
   pickupText: _request.delivery && _request.delivery.pickupLocation ? _request.delivery.pickupLocation : '',
   dropText: _request.delivery && _request.delivery.dropLocation ? _request.delivery.dropLocation : '',
   shipperLocation: (_request && _request.shipperLocation && _request.shipperLocation.lat != null) ? { lat: _request.shipperLocation.lat, lng: _request.shipperLocation.lng } : null,
@@ -467,6 +473,7 @@
 
   const requestId = serverData.requestId || '';
   const role = serverData.role || 'transporter';
+  const loadedAt = serverData.loadedAt; // Add loadedAt status
   const pickupText = serverData.pickupText || '';
   const dropText = serverData.dropText || '';
 
@@ -594,21 +601,36 @@
   function showDirections() {
     document.getElementById('directionsPanel').style.display = 'block';
     
-    // Determine start and end points based on user role
+    // Determine start and end points based on user role and loaded status
     let startLatLng, endLatLng, startName, endName;
     
     if (role === 'transporter') {
-      // Transporter: from current location to pickup
-      if (transporterMarker) {
-        startLatLng = transporterMarker.getLatLng();
-        startName = "Your Location";
-      }
-      if (pickupMarker) {
-        endLatLng = pickupMarker.getLatLng();
-        endName = "Pickup Location";
+      // Check if goods are loaded by checking if loadedAt exists
+      const isLoaded = loadedAt !== null && loadedAt !== undefined;
+      
+      if (isLoaded) {
+        // After loading: from pickup to drop location
+        if (pickupMarker) {
+          startLatLng = pickupMarker.getLatLng();
+          startName = "Pickup Location";
+        }
+        if (dropMarker) {
+          endLatLng = dropMarker.getLatLng();
+          endName = "Drop Location";
+        }
+      } else {
+        // Before loading: from current location to pickup
+        if (transporterMarker) {
+          startLatLng = transporterMarker.getLatLng();
+          startName = "Your Location";
+        }
+        if (pickupMarker) {
+          endLatLng = pickupMarker.getLatLng();
+          endName = "Pickup Location";
+        }
       }
     } else {
-      // Shipper: from pickup to drop location
+      // Shipper: from pickup to drop location (always)
       if (pickupMarker) {
         startLatLng = pickupMarker.getLatLng();
         startName = "Pickup Location";
@@ -731,7 +753,49 @@
     // Event listeners for directions
     document.getElementById('showDirectionsBtn')?.addEventListener('click', showDirections);
     document.getElementById('hideDirectionsBtn')?.addEventListener('click', hideDirections);
+    
+    // Mark as Loaded button event listener
+    document.getElementById('markLoadedBtn')?.addEventListener('click', function() {
+      if (confirm('Are you sure you have loaded the goods? This will update the delivery status.')) {
+        // Send request to mark as loaded
+        fetch(`/dashboard/mark-loaded/${requestId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Goods marked as loaded successfully!');
+            // Update the UI to reflect the loaded status
+            document.getElementById('markLoadedBtn').style.display = 'none';
+            // Update directions to show pickup to drop route
+            updateDirectionsAfterLoaded();
+          } else {
+            alert('Failed to mark as loaded. Please try again.');
+          }
+        })
+        .catch(error => {
+          console.error('Error marking as loaded:', error);
+          alert('Error occurred while marking as loaded.');
+        });
+      }
+    });
   });
+
+  // Function to update directions after goods are loaded
+  function updateDirectionsAfterLoaded() {
+    // For transporter, after loading, show directions from pickup to drop location
+    if (role === 'transporter' && pickupMarker && dropMarker) {
+      calculateDirections(pickupMarker.getLatLng(), dropMarker.getLatLng(), "Pickup Location", "Drop Location");
+      // Remove the route from transporter to pickup and draw route from pickup to drop
+      clearRouteLayers(true); // Clear route to pickup
+      drawRoute(pickupMarker.getLatLng(), dropMarker.getLatLng(), false); // Draw pickup to drop route
+    
+      // Update the loadedAt status in the server data
+      serverData.loadedAt = new Date().toISOString();
+    }
+  }
 
   async function fetchRoute(from, to, includeAlternatives = true) {
     const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson${includeAlternatives ? '&alternatives=true' : ''}`;
@@ -792,18 +856,29 @@
   }, 2000);
 
   function setMarker(isShipper, lat, lng) {
+    if (lat == null || lng == null) {
+      console.error('Invalid coordinates provided to setMarker:', { isShipper, lat, lng });
+      return;
+    }
+    
     const pos = [lat, lng];
+    console.log('Setting marker for:', isShipper ? 'shipper' : 'transporter', 'at', pos);
+    
     if (isShipper) {
       if (!shipperMarker) {
         shipperMarker = L.marker(pos, { title: 'Shipper', icon: shipperIcon }).addTo(map).bindPopup('Shipper');
       } else {
         shipperMarker.setLatLng(pos);
+        // Update popup to show current coordinates
+        shipperMarker.bindPopup(`Shipper<br>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
       }
     } else {
       if (!transporterMarker) {
         transporterMarker = L.marker(pos, { title: 'Transporter', icon: transporterIcon }).addTo(map).bindPopup('Transporter');
       } else {
         transporterMarker.setLatLng(pos);
+        // Update popup to show current coordinates
+        transporterMarker.bindPopup(`Transporter<br>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`);
       }
     }
     fitAllBounds();
@@ -811,9 +886,11 @@
 
   // Seed existing last known locations (if present)
   if (serverData.shipperLocation) {
+    console.log('Initializing shipper location:', serverData.shipperLocation);
     setMarker(true, serverData.shipperLocation.lat, serverData.shipperLocation.lng);
   }
   if (serverData.transporterLocation) {
+    console.log('Initializing transporter location:', serverData.transporterLocation);
     setMarker(false, serverData.transporterLocation.lat, serverData.transporterLocation.lng);
   }
 
@@ -834,18 +911,45 @@
     }
   }).catch(()=>{});
 
+  // Create a single socket instance for both location tracking and chat
   const socket = (typeof io !== 'undefined') ? io() : null;
+  
   if (socket) {
     socket.on('connect', () => {
+      console.log('Connected to socket, joining room:', requestId);
       if (requestId) socket.emit('join', { requestId });
     });
 
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    // Handle location updates and update routes accordingly
     socket.on('locationUpdate', ({ role: r, lat, lng }) => {
+      console.log('Received location update:', { role: r, lat, lng });
       setMarker(r === 'shipper', lat, lng);
       if (r !== 'shipper') {
-        // transporter moved; refresh route to pickup
-        debouncedRouteToPickup();
+        // transporter moved; refresh route to pickup if not loaded yet
+        const isLoaded = serverData.loadedAt !== null && serverData.loadedAt !== undefined;
+        if (!isLoaded) {
+          // Only update route to pickup if goods are not loaded yet
+          debouncedRouteToPickup();
+        }
       }
+    });
+    
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+    
+    // Handle new messages through the same socket
+    socket.on('newMessage', (payload) => {
+      if (!payload || !payload.requestId || String(payload.requestId) !== String(requestId)) return;
+ 
+      // payload may not include senderName; append directly
+      const msg = { sender: payload.sender, text: payload.text || payload.text, createdAt: payload.createdAt || new Date() };
+      msg.senderName = (payload.sender === serverData.userId) ? 'You' : undefined;
+      appendMessage(msg);
     });
   }
 
@@ -864,14 +968,18 @@
     const sendOnce = () => {
       navigator.geolocation.getCurrentPosition(pos => {
         const { latitude, longitude } = pos.coords;
-        if (socket) socket.emit('locationUpdate', { requestId, role, lat: latitude, lng: longitude });
+        if (socket) {
+          socket.emit('locationUpdate', { requestId, role, lat: latitude, lng: longitude });
+          console.log('Sent location update:', { requestId, role, lat: latitude, lng: longitude });
+        }
       }, err => {
-        console.error(err);
+        console.error('Geolocation error:', err);
+        alert('Unable to get your location: ' + err.message);
       }, options);
     };
     sendOnce();
-    // Changed from 5000ms (5 seconds) to 60000ms (1 minute)
-    intervalId = setInterval(sendOnce, 60000);
+    // Changed from 5000ms (5 seconds) to 60000ms (1 minute) - let's make it more frequent for better real-time experience
+    intervalId = setInterval(sendOnce, 10000); // Update every 10 seconds for better real-time tracking
   }
 
   function stopSharing() {
@@ -915,7 +1023,7 @@
 </div>
 
 <script>
-  // Chat client logic
+  // Chat client logic - reusing the same socket instance
   (function(){
     const serverDataEl = document.getElementById('track-data');
     let sdata = {};
@@ -1000,21 +1108,7 @@
       sendMessage(txt);
     });
 
-    // Socket listener for newMessage
-    if (typeof io !== 'undefined'){
-      const sock = io();
-      sock.on('connect', ()=>{
-        if (requestId) sock.emit('join', { requestId });
-      });
-      sock.on('newMessage', (payload)=>{
-        if (!payload || !payload.requestId || String(payload.requestId) !== String(requestId)) return;
-        // payload may not include senderName; append directly
-        const msg = { sender: payload.sender, text: payload.text || payload.text, createdAt: payload.createdAt || new Date() };
-        msg.senderName = (payload.sender === userId) ? 'You' : undefined;
-        appendMessage(msg);
-      });
-    }
-
+    // The newMessage listener is now handled in the main socket connection above
     // initial load
     loadMessages();
   })();

@@ -90,7 +90,8 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
     // - Transporter: can access shipper location until goods loaded (loadedAt). After that, can still share own location for shipper to track
     if (isTransporter && request.loadedAt) {
       // After loading, do not expose shipper location anymore
-      request.shipperLocation = undefined;
+      // Only remove the shipper location from the response, not the entire object
+      request._doc.shipperLocation = undefined;
     }
     if (request.status === 'completed') {
       // After completion, no tracking access for either party
