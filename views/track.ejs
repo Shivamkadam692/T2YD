@@ -437,13 +437,36 @@
     <button id="stopBtn" class="btn btn-secondary">Stop Sharing</button>
     <% // Show "Mark as Loaded" button only for transporters and when the request status allows it %>
     <% if (roleComputed === 'transporter' && _request.status === 'accepted') { %>
-      <button id="markLoadedBtn" class="btn btn-success">Mark as Loaded</button>
+      <div class="photo-upload-section">
+        <input type="file" id="photoUpload" name="loadedPhoto" accept="image/*" style="display: none;">
+        <button type="button" id="uploadPhotoBtn" class="btn btn-outline">
+          <i class="fas fa-camera"></i> Upload Photo
+        </button>
+        <div id="photoPreview" style="display: none; margin-top: 10px; text-align: center;">
+          <img id="previewImage" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
+          <button type="button" id="removePhotoBtn" class="btn btn-sm btn-danger" style="margin-top: 5px;">Remove Photo</button>
+        </div>
+      </div>
+      <button id="markLoadedBtn" class="btn btn-success">
+        <i class="fas fa-check"></i> Mark as Loaded
+      </button>
     <% } %>
     <% // Safe back-to-dashboard link decision %>
     <% const backTo = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? '/dashboard/shipper' : '/dashboard/transporter'; %>
     <a href="<%= backTo %>" class="btn btn-outline">Back to Dashboard</a>
   </div>
   <p style="margin-top: .5rem; color:#666;">Both sides will see each other's live movement on the map while the request is active.</p>
+  
+  <!-- Loaded Photo Section - Only visible to shipper after goods are loaded -->
+  <% if (roleComputed === 'shipper' && _request.loadedAt && _request.loadedPhoto) { %>
+    <div class="loaded-photo-section" style="margin-top: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+      <h4><i class="fas fa-image"></i> Loaded Goods Photo</h4>
+      <p>Transporter has uploaded a photo of the loaded goods:</p>
+      <div style="text-align: center;">
+        <img src="<%= _request.loadedPhoto %>" alt="Loaded Goods" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid #ccc;">
+      </div>
+    </div>
+  <% } %>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -456,6 +479,7 @@
   userId: _user && _user._id ? String(_user._id) : null,
   requestStatus: _request && _request.status ? _request.status : null,
   loadedAt: _request.loadedAt ? _request.loadedAt : null,
+  loadedPhoto: _request.loadedPhoto ? _request.loadedPhoto : null,
   pickupText: _request.delivery && _request.delivery.pickupLocation ? _request.delivery.pickupLocation : '',
   dropText: _request.delivery && _request.delivery.dropLocation ? _request.delivery.dropLocation : '',
   shipperLocation: (_request && _request.shipperLocation && _request.shipperLocation.lat != null) ? { lat: _request.shipperLocation.lat, lng: _request.shipperLocation.lng } : null,
@@ -474,6 +498,7 @@
   const requestId = serverData.requestId || '';
   const role = serverData.role || 'transporter';
   const loadedAt = serverData.loadedAt; // Add loadedAt status
+  const loadedPhoto = serverData.loadedPhoto; // Add loadedPhoto path
   const pickupText = serverData.pickupText || '';
   const dropText = serverData.dropText || '';
 
@@ -754,21 +779,59 @@
     document.getElementById('showDirectionsBtn')?.addEventListener('click', showDirections);
     document.getElementById('hideDirectionsBtn')?.addEventListener('click', hideDirections);
     
+    // Photo upload functionality
+    document.getElementById('uploadPhotoBtn')?.addEventListener('click', function() {
+      document.getElementById('photoUpload').click();
+    });
+    
+    document.getElementById('photoUpload')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Check if file is an image
+        if (!file.type.startsWith('image/')) {
+          alert('Please select an image file (JPEG, PNG, etc.)');
+          return;
+        }
+        
+        // Preview the selected image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewImage = document.getElementById('previewImage');
+          previewImage.src = e.target.result;
+          document.getElementById('photoPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    document.getElementById('removePhotoBtn')?.addEventListener('click', function() {
+      document.getElementById('photoUpload').value = '';
+      document.getElementById('photoPreview').style.display = 'none';
+      document.getElementById('previewImage').src = '';
+    });
+    
     // Mark as Loaded button event listener
     document.getElementById('markLoadedBtn')?.addEventListener('click', function() {
       if (confirm('Are you sure you have loaded the goods? This will update the delivery status.')) {
-        // Send request to mark as loaded
+        // Create form data to send the photo if available
+        const formData = new FormData();
+        const photoFile = document.getElementById('photoUpload')?.files[0];
+        
+        if (photoFile) {
+          formData.append('loadedPhoto', photoFile);
+        }
+        
+        // Send request to mark as loaded with optional photo
         fetch(`/dashboard/mark-loaded/${requestId}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          body: formData
         })
         .then(response => {
           if (response.ok) {
             alert('Goods marked as loaded successfully!');
             // Update the UI to reflect the loaded status
             document.getElementById('markLoadedBtn').style.display = 'none';
+            document.querySelector('.photo-upload-section')?.remove();
             // Update directions to show pickup to drop route
             updateDirectionsAfterLoaded();
           } else {

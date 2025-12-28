@@ -28,6 +28,7 @@ const requestSchema = new mongoose.Schema({
   acceptedAt: Date,
   rejectedAt: Date,
   loadedAt: Date,
+  loadedPhoto: String, // Path to the photo of loaded goods
   completedAt: Date,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

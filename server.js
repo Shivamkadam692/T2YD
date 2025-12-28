@@ -10,6 +10,8 @@ const MongoStore = require('connect-mongo');
 const connectDB = require('./config/db');
 const expressLayouts = require('express-ejs-layouts');
 const flash = require('connect-flash');
+const multer = require('multer');
+const path = require('path');
 
 const lorryRoutes = require('./routes/lorryRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
@@ -61,6 +63,32 @@ app.use(session({
 
 // Flash messages middleware
 app.use(flash());
+
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/'); // Store uploads in public/uploads/
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with timestamp
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 
 // Pass user and flash messages to all views
 app.use(async (req, res, next) => {

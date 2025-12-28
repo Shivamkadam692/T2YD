@@ -7,6 +7,34 @@ const Lorry = require('../models/Lorry');
 const User = require('../models/User');
 const NotificationService = require('../services/notificationService');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
+
+// Configure multer for photo uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads/'); // Store uploads in public/uploads/
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with timestamp
+    cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: function (req, file, cb) {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 
 // Shipper Dashboard
 router.get('/shipper', requireLogin, requireRole('shipper'), async (req, res) => {
@@ -93,8 +121,9 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
       // Only remove the shipper location from the response, not the entire object
       request._doc.shipperLocation = undefined;
     }
-    if (request.status === 'completed') {
-      // After completion, no tracking access for either party
+    // Allow tracking access even after completion if there's a loaded photo to view
+    if (request.status === 'completed' && !request.loadedPhoto) {
+      // After completion, no tracking access for either party (unless there's a loaded photo to view)
       return res.status(403).render('error', { message: 'Tracking is no longer available for this delivery' });
     }
 
@@ -328,14 +357,24 @@ router.post('/reject-request/:requestId', requireLogin, requireRole('shipper'), 
 });
 
 // Mark goods loaded (called by transporter after reaching shipper and loading)
-router.post('/mark-loaded/:requestId', requireLogin, requireRole('transporter'), async (req, res) => {
+router.post('/mark-loaded/:requestId', upload.single('loadedPhoto'), requireLogin, requireRole('transporter'), async (req, res) => {
   try {
     const request = await Request.findById(req.params.requestId);
     if (!request) return res.status(404).render('error', { message: 'Request not found' });
     if (request.transporter.toString() !== req.session.userId) {
       return res.status(403).render('error', { message: 'Unauthorized' });
     }
-    await Request.findByIdAndUpdate(req.params.requestId, { loadedAt: new Date() });
+    
+    // Update with loaded status and optional photo
+    const updateData = { loadedAt: new Date() };
+    
+    // If there's a photo in the request, save its path
+    if (req.file) {
+      updateData.loadedPhoto = `/uploads/${req.file.filename}`;
+    }
+    
+    await Request.findByIdAndUpdate(req.params.requestId, updateData);
+    
     // Notify shipper that goods are loaded
     try {
       const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
