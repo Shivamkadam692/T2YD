@@ -39,47 +39,129 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/style-modern.css">
   <link rel="stylesheet" href="/card-styles.css">
-  <link rel="stylesheet" href="/css/voice-control.css">
+  <!-- VOICE_DISABLED: <link rel="stylesheet" href="/css/voice-control.css"> -->
   
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 </head>
 <body<% if (user) { %> data-user-id="<%= user._id %>" data-user-role="<%= user.role %>"<% } %>>
-  <!-- Loading Animation -->
   <div class="loading-container" id="loadingContainer" role="status" aria-live="polite">
     <div class="loading-orbit">
-      <div class="loading-route">
-        <div class="route-surface"></div>
-        <div class="route-glow"></div>
-        <div class="route-line"></div>
-        <div class="route-pulse pulse-one"></div>
-        <div class="route-pulse pulse-two"></div>
-        <div class="route-pin origin">
-          <span>Pick-up</span>
-        </div>
-        <div class="route-pin destination">
-          <span>Drop-off</span>
-        </div>
-        <div class="convoy">
-          <div class="convoy-cab"></div>
-          <div class="convoy-trailer"></div>
-          <div class="convoy-wheel front"></div>
-          <div class="convoy-wheel back"></div>
+      <!-- High-tech Header HUD -->
+      <div class="hud-header">
+        <div class="hud-brand"><i class="fas fa-truck-fast"></i> T2YD LOGISTICS ENGINE</div>
+        <div class="hud-meta">
+          <span class="hud-badge"><i class="fas fa-wifi"></i> 32ms</span>
+          <span class="hud-badge speed"><i class="fas fa-gauge-high"></i> 85 KM/H</span>
         </div>
       </div>
+
+      <!-- Road Scene -->
+      <div class="loading-road-scene">
+        <!-- Sky gradient background with moon and stars -->
+        <div class="road-sky">
+          <div class="sky-moon"></div>
+          <div class="sky-star star-1"></div>
+          <div class="sky-star star-2"></div>
+          <div class="sky-star star-3"></div>
+          <div class="sky-cloud cloud-1"></div>
+          <div class="sky-cloud cloud-2"></div>
+          <div class="sky-cloud cloud-3"></div>
+        </div>
+
+        <!-- Scenery silhouettes (Distant mountains + City Skyline + Streetlamps) -->
+        <div class="road-scenery">
+          <div class="scenery-mountains"></div>
+          <div class="scenery-city"></div>
+          <div class="streetlamp lamp-1"></div>
+          <div class="streetlamp lamp-2"></div>
+          <div class="streetlamp lamp-3"></div>
+        </div>
+
+        <!-- Road surface with realistic asphalt texture and glowing lane marks -->
+        <div class="road-surface">
+          <div class="road-edge top"></div>
+          <div class="road-lane-marking"></div>
+          <div class="road-lane-marking delay-1"></div>
+          <div class="road-lane-marking delay-2"></div>
+          <div class="road-lane-marking delay-3"></div>
+          <div class="road-lane-marking delay-4"></div>
+          <div class="road-lane-marking delay-5"></div>
+          <div class="road-edge bottom"></div>
+          <div class="guardrail"></div>
+        </div>
+
+        <!-- Realistic Heavy Freight 3D Truck Vehicle -->
+        <div class="truck-vehicle">
+          <!-- Volumetric Headlight Cone -->
+          <div class="light-cone"></div>
+          
+          <!-- Exhaust Smoke -->
+          <div class="truck-exhaust">
+            <span></span><span></span><span></span><span></span>
+          </div>
+
+          <!-- Heavy Container Body with Metallic Ribs -->
+          <div class="truck-container-body">
+            <div class="container-ribs">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="container-logo">
+              <span class="logo-text">T2YD</span>
+              <span class="logo-sub">EXPRESS FREIGHT</span>
+            </div>
+            <div class="hazard-stripe"></div>
+          </div>
+
+          <!-- Truck Cab with Metallic Finish & Roof Sun Visor -->
+          <div class="truck-cab">
+            <div class="cab-roof-lights"><span></span><span></span><span></span></div>
+            <div class="cab-visor"></div>
+            <div class="truck-window">
+              <div class="driver-silhouette"></div>
+            </div>
+            <div class="side-mirror"></div>
+            <div class="chrome-grill">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="truck-headlight main-light"></div>
+            <div class="fog-light"></div>
+          </div>
+
+          <!-- Detailed Dual Wheels with Rubber Tread and Spinning Hubcaps -->
+          <div class="truck-wheel-assembly front-wheels">
+            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
+          </div>
+          <div class="truck-wheel-assembly rear-wheels">
+            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
+            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
+          </div>
+
+          <!-- Realistic Contact Shadow -->
+          <div class="truck-shadow"></div>
+        </div>
+      </div>
+
+      <!-- Live Progress HUD -->
       <div class="loading-progress">
-        <span class="progress-label">Syncing transport network</span>
+        <div class="progress-info-row">
+          <span class="progress-label">Syncing transport network</span>
+          <span class="progress-percentage" id="loadingPercentage">85%</span>
+        </div>
         <div class="progress-track">
           <div class="progress-fill"></div>
+          <div class="progress-glow"></div>
         </div>
         <div class="progress-status">
-          <span>Matching</span>
-          <span>Routing</span>
-          <span>Ready</span>
+          <span class="active"><i class="fas fa-circle-check"></i> Matching</span>
+          <span class="active"><i class="fas fa-spinner fa-spin"></i> Routing</span>
+          <span><i class="fas fa-flag-checkered"></i> Ready</span>
         </div>
       </div>
     </div>
+
+    <!-- Loading Headline Text -->
     <div class="loading-text">
       <span class="loading-headline">Preparing your shipment</span>
       <span class="typing-dots"><span></span><span></span><span></span></span>
@@ -90,68 +172,71 @@
     <nav>
       <a href="/" class="logo">T2<span>YD</span></a>
       
-      <!-- Language Selector -->
-      <div class="language-selector">
-        <button class="language-btn" id="languageBtn" aria-label="Select Language">
-          <i class="fas fa-globe"></i>
-          <span id="currentLanguage">English</span>
-          <i class="fas fa-chevron-down"></i>
-        </button>
-        <div class="language-dropdown" id="languageDropdown">
-          <!-- Language options will be generated dynamically -->
+      <div class="nav-right-group">
+        <!-- Language Selector -->
+        <div class="language-selector">
+          <button class="language-btn" id="languageBtn" aria-label="Select Language">
+            <i class="fas fa-globe"></i>
+            <span id="currentLanguage">English</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="language-dropdown" id="languageDropdown">
+            <!-- Language options will be generated dynamically -->
+          </div>
         </div>
-      </div>
-      
-      <ul class="nav-links" id="mobile-nav" tabindex="-1" aria-hidden="true" role="navigation" aria-label="Primary">
-        <li class="mobile-menu-header" style="display:none">
-          <button class="close-mobile btn btn-outline" aria-label="Close menu" style="display:none">Close ✕</button>
-        </li>
-        <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
-        <% if (user) { %>
-          <% if (user.role === 'transporter') { %>
-            <li><a href="/dashboard/transporter"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="/lorries/add"><i class="fas fa-plus-circle"></i> Add Lorry</a></li>
-            <li><a href="/lorries/my"><i class="fas fa-truck"></i> My Lorries</a></li>
-          <% } else if (user.role === 'shipper') { %>
-            <li><a href="/dashboard/shipper"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="/deliveries/add"><i class="fas fa-plus-circle"></i> Add Delivery</a></li>
-            <li><a href="/deliveries/my"><i class="fas fa-box"></i> My Deliveries</a></li>
+        
+        <ul class="nav-links" id="mobile-nav" tabindex="-1" aria-hidden="true" role="navigation" aria-label="Primary">
+          <li class="mobile-menu-header">
+            <span class="mobile-nav-title"><i class="fas fa-truck-fast"></i> T2YD Menu</span>
+            <button class="close-mobile" aria-label="Close menu">✕</button>
+          </li>
+          <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+          <% if (user) { %>
+            <% if (user.role === 'transporter') { %>
+              <li><a href="/dashboard/transporter"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+              <li><a href="/lorries/add"><i class="fas fa-plus-circle"></i> Add Lorry</a></li>
+              <li><a href="/lorries/my"><i class="fas fa-truck"></i> My Lorries</a></li>
+            <% } else if (user.role === 'shipper') { %>
+              <li><a href="/dashboard/shipper"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+              <li><a href="/deliveries/add"><i class="fas fa-plus-circle"></i> Add Delivery</a></li>
+              <li><a href="/deliveries/my"><i class="fas fa-box"></i> My Deliveries</a></li>
+            <% } %>
           <% } %>
-        <% } %>
-        <% if (!user) { %>
-          <li><a href="/auth/login" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-          <li><a href="/auth/signup" class="btn"><i class="fas fa-user-plus"></i> Signup</a></li>
-        <% } else { %>
-          <li class="user-greeting" style="color:#071124;font-weight:600"><i class="fas fa-hand-wave"></i> Welcome, <span style="color:#071124"><%= user.name %></span> (<%= user.role%>) </li>
-          <li>
-            <div class="notification-container">
-              <button class="notification-btn" id="notificationBtn" aria-label="Notifications">
-                <i class="fas fa-bell" style="color:#071124"></i>
-                <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-              </button>
-              <div class="notification-dropdown" id="notificationDropdown">
-                <div class="notification-header">
-                  <h3><i class="fas fa-bell"></i> Notifications</h3>
-                  <button class="mark-all-read" id="markAllRead"><i class="fas fa-check-double"></i> Mark all read</button>
-                </div>
-                <div class="notification-list" id="notificationList">
-                  <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading notifications...</div>
-                </div>
-                <div class="notification-footer">
-                  <a href="/notifications/view" class="view-all"><i class="fas fa-external-link-alt"></i> View all notifications</a>
+          <% if (!user) { %>
+            <li><a href="/auth/login" class="btn btn-outline"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+            <li><a href="/auth/signup" class="btn"><i class="fas fa-user-plus"></i> Signup</a></li>
+          <% } else { %>
+            <li class="user-greeting"><i class="fas fa-hand-wave"></i> Welcome, <span><%= user.name %></span> (<%= user.role%>) </li>
+            <li>
+              <div class="notification-container">
+                <button class="notification-btn" id="notificationBtn" aria-label="Notifications">
+                  <i class="fas fa-bell"></i>
+                  <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                <div class="notification-dropdown" id="notificationDropdown">
+                  <div class="notification-header">
+                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                    <button class="mark-all-read" id="markAllRead"><i class="fas fa-check-double"></i> Mark all read</button>
+                  </div>
+                  <div class="notification-list" id="notificationList">
+                    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading notifications...</div>
+                  </div>
+                  <div class="notification-footer">
+                    <a href="/notifications/view" class="view-all"><i class="fas fa-external-link-alt"></i> View all notifications</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </li>
-          <li><a href="/profile"><i class="fas fa-user"></i> My Profile</a></li>
-          <li><a href="/auth/logout" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        <% } %>
-      </ul>
-      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+            </li>
+            <li><a href="/profile"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="/auth/logout" class="btn btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+          <% } %>
+        </ul>
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </nav>
   </header>
   <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
@@ -162,6 +247,7 @@
   
   <!-- Voice Control Container -->
   <% if (user) { %>
+  <!-- VOICE_DISABLED
   <div class="voice-control-container">
     <button class="voice-control-btn" id="voiceControlBtn" aria-label="Voice Control">
       <i class="fas fa-microphone"></i>
@@ -169,6 +255,7 @@
     </button>
     <div class="voice-indicator" id="voiceIndicator"></div>
   </div>
+  VOICE_DISABLED -->
   <% } %>
 
   <!-- Chat Bot Button -->
@@ -209,7 +296,7 @@
   </script>
   
   <!-- Voice Automation Script -->
-  <script src="/js/voice-automation.js"></script>
+  <!-- VOICE_DISABLED: <script src="/js/voice-automation.js"></script> -->
   
   <!-- Language Files -->
   <script src="/languages/en.js"></script>
@@ -449,23 +536,51 @@
   </script>
   
   <script>
-    // Minimal mobile toggle: simple inline menu for small screens
+    // Robust mobile menu toggle & backdrop controls
     (function(){
       const toggle = document.getElementById('mobile-menu-toggle');
       const nav = document.getElementById('mobile-nav');
       const backdrop = document.getElementById('nav-backdrop');
       if (!toggle || !nav) return;
 
-      toggle.addEventListener('click', function(){
-        const open = document.body.classList.toggle('simple-inline-open');
-        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      function openMenu() {
+        document.body.classList.add('nav-open');
+        nav.classList.add('active');
+        if (backdrop) backdrop.classList.add('show');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeMenu() {
+        document.body.classList.remove('nav-open');
+        nav.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('show');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+
+      toggle.addEventListener('click', function(e){
+        e.stopPropagation();
+        if (nav.classList.contains('active') || document.body.classList.contains('nav-open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
       });
 
-      // Close when clicking backdrop or close button or a nav link
-      if (backdrop) backdrop.addEventListener('click', function(){ document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); });
+      if (backdrop) backdrop.addEventListener('click', closeMenu);
+
       const closeMobileBtn = nav.querySelector('.close-mobile');
-      if (closeMobileBtn) { closeMobileBtn.style.display = 'inline-block'; closeMobileBtn.addEventListener('click', function(e){ e.preventDefault(); document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); }); }
-      nav.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'A') { document.body.classList.remove('simple-inline-open'); toggle.setAttribute('aria-expanded','false'); } });
+      if (closeMobileBtn) {
+        closeMobileBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          closeMenu();
+        });
+      }
+
+      nav.addEventListener('click', function(e){
+        if (e.target && (e.target.tagName === 'A' || e.target.closest('a'))) {
+          closeMenu();
+        }
+      });
     })();
   </script>
   <% if (user) { %>
@@ -1006,8 +1121,13 @@
   
   // Show loading on page navigation
   document.addEventListener('click', function(e) {
-    const target = e.target.closest('a:not([target]):not([download]), button[type="submit"]');
+    const target = e.target.closest('a:not([target]):not([download]), button[type="submit"], button#sendButton, button#sendBtn');
     if (target && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      // Skip full page loading screen for chat messages and async forms
+      if (target.closest('#msgForm, #chatContainer, #chatInputContainer, .no-loading, form.message-form') || target.id === 'sendBtn' || target.id === 'sendButton') {
+        return;
+      }
+
       const href = target.getAttribute('href');
       if (href && !href.startsWith('#') && !href.startsWith('javascript:')) {
         try {

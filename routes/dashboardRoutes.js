@@ -467,18 +467,38 @@ router.post('/complete-delivery/:requestId', requireLogin, requireRole('transpor
         return res.status(400).json({ error: 'Messaging not allowed for this request status' });
       }
 
-    const message = { sender: new mongoose.Types.ObjectId(userId), text };
+      const message = { sender: new mongoose.Types.ObjectId(userId), text };
       request.messages.push(message);
       await request.save();
+
+      const senderUser = await User.findById(userId).select('name');
+      const senderName = senderUser ? senderUser.name : 'User';
 
       // Emit via Socket.IO to both parties in request room
       if (global.io) {
         global.io.to(request._id.toString()).emit('newMessage', {
           requestId: request._id,
           sender: userId,
+          senderName: senderName,
           text,
           createdAt: new Date()
         });
+      }
+
+      // Notify the recipient if they aren't currently viewing the room
+      const recipientId = request.shipper.toString() === userId ? request.transporter.toString() : request.shipper.toString();
+      try {
+        await NotificationService.createNotification({
+          recipient: recipientId,
+          sender: userId,
+          type: 'new_message',
+          title: `New Message from ${senderName}`,
+          message: text.length > 50 ? text.substring(0, 47) + '...' : text,
+          relatedRequest: request._id,
+          priority: 'medium'
+        });
+      } catch (notifErr) {
+        console.error('Error creating chat notification:', notifErr);
       }
 
       res.json({ success: true });

@@ -1004,16 +1004,6 @@
     socket.on('error', (error) => {
       console.error('Socket error:', error);
     });
-    
-    // Handle new messages through the same socket
-    socket.on('newMessage', (payload) => {
-      if (!payload || !payload.requestId || String(payload.requestId) !== String(requestId)) return;
- 
-      // payload may not include senderName; append directly
-      const msg = { sender: payload.sender, text: payload.text || payload.text, createdAt: payload.createdAt || new Date() };
-      msg.senderName = (payload.sender === serverData.userId) ? 'You' : undefined;
-      appendMessage(msg);
-    });
   }
 
   let intervalId = null;
@@ -1140,19 +1130,35 @@
       } catch (e) { console.error(e); }
     }
 
+    let lastOptimisticText = null;
+
     async function sendMessage(text){
       if (!requestId) return;
+
+      // Optimistically append user message to UI immediately for instant real-time feel
+      lastOptimisticText = text;
+      appendMessage({
+        sender: userId,
+        senderName: 'You',
+        text: text,
+        createdAt: new Date()
+      });
+
+      msgInput.value = '';
+
       try {
         const res = await fetch(`/dashboard/requests/${requestId}/messages`, {
-          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ text })
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ text })
         });
         if (!res.ok) {
           const err = await res.json().catch(()=>({}));
           console.error('Send failed', err);
-          return;
         }
-        msgInput.value = '';
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error('Send error:', e);
+      }
     }
 
     // Disable messaging if status not allowed
@@ -1166,13 +1172,34 @@
 
     msgForm.addEventListener('submit', (e)=>{
       e.preventDefault();
+      e.stopPropagation();
       const txt = msgInput.value && msgInput.value.trim();
       if (!txt) return;
       sendMessage(txt);
     });
 
-    // The newMessage listener is now handled in the main socket connection above
-    // initial load
+    // Listen for incoming real-time socket messages
+    if (typeof socket !== 'undefined' && socket) {
+      socket.on('newMessage', (payload) => {
+        if (!payload || !payload.requestId || String(payload.requestId) !== String(requestId)) return;
+
+        // Skip duplicate rendering if this user just optimistically rendered the exact same message
+        if (String(payload.sender) === String(userId) && payload.text === lastOptimisticText) {
+          lastOptimisticText = null;
+          return;
+        }
+
+        const msg = {
+          sender: payload.sender,
+          senderName: payload.senderName || (String(payload.sender) === String(userId) ? 'You' : 'User'),
+          text: payload.text,
+          createdAt: payload.createdAt || new Date()
+        };
+        appendMessage(msg);
+      });
+    }
+
+    // Initial load of past messages
     loadMessages();
   })();
 </script>
