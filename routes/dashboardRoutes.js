@@ -265,7 +265,11 @@ router.post('/accept-request/:requestId', requireLogin, requireRole('shipper'), 
     }
     
     await Request.findByIdAndUpdate(req.params.requestId, { status: 'accepted', acceptedAt: new Date() });
-    await Delivery.findByIdAndUpdate(request.delivery, { status: 'in-transit' });
+    await Delivery.findByIdAndUpdate(request.delivery, { 
+      status: 'in-transit',
+      transporter: request.transporter,
+      amount: request.price
+    });
     await Lorry.findByIdAndUpdate(request.lorry, { status: 'busy' });
     await Request.updateMany(
       { delivery: request.delivery, status: 'pending' },
@@ -408,7 +412,11 @@ router.post('/complete-delivery/:requestId', requireLogin, requireRole('transpor
     }
     
     await Request.findByIdAndUpdate(req.params.requestId, { status: 'completed', completedAt: new Date(), trackingActiveShipper: false, trackingActiveTransporter: false });
-    await Delivery.findByIdAndUpdate(request.delivery, { status: 'delivered' });
+    await Delivery.findByIdAndUpdate(request.delivery, { 
+      status: 'delivered',
+      transporter: request.transporter,
+      amount: request.price
+    });
     await Lorry.findByIdAndUpdate(request.lorry, { status: 'available' });
     
     // Notify shipper that delivery completed

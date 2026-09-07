@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Delivery = require('../models/Delivery');
+const Request = require('../models/Request');
 const bcrypt = require('bcryptjs');
 const { requireLogin } = require('../middleware/auth');
 
@@ -16,6 +17,20 @@ router.get('/', requireLogin, async (req, res) => {
       return res.redirect('/');
     }
     
+    // Retroactively sync accepted/completed requests to deliveries if transporter or amount is missing
+    const acceptedRequests = await Request.find({ 
+      status: { $in: ['accepted', 'completed'] } 
+    });
+
+    for (const reqItem of acceptedRequests) {
+      if (reqItem.delivery) {
+        await Delivery.findByIdAndUpdate(reqItem.delivery, {
+          transporter: reqItem.transporter,
+          amount: reqItem.price
+        });
+      }
+    }
+    
     // Get booking history based on user role
     let bookings = [];
     
@@ -23,15 +38,27 @@ router.get('/', requireLogin, async (req, res) => {
       // For transporters, get deliveries where they are the transporter
       bookings = await Delivery.find({ transporter: user._id })
         .populate('shipper', 'name')
+        .populate('transporter', 'name')
         .sort({ createdAt: -1 });
     } else if (user.role === 'shipper') {
       // For shippers, get deliveries they created
       bookings = await Delivery.find({ shipper: user._id })
+        .populate('shipper', 'name')
         .populate('transporter', 'name')
         .sort({ createdAt: -1 });
     }
     
-    res.render('profile', { user, bookings });
+    // Map bookings to ensure all view properties exist
+    const formattedBookings = bookings.map(b => {
+      const obj = b.toObject ? b.toObject({ virtuals: true }) : b;
+      return {
+        ...obj,
+        pickupDate: obj.pickupDate || obj.pickupDateTime || obj.createdAt,
+        amount: typeof obj.amount === 'number' ? obj.amount : 0
+      };
+    });
+    
+    res.render('profile', { user, bookings: formattedBookings });
   } catch (err) {
     console.error('Error fetching profile data:', err);
     if (req.flash) req.flash('error', 'Failed to load profile data');

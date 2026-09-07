@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const deliverySchema = new mongoose.Schema({
   shipper: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  transporter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  amount: Number,
   shipperName: String,
   contact: String,
   goodsType: String,
@@ -14,6 +16,13 @@ const deliverySchema = new mongoose.Schema({
   description: String,
   requests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Request' }],
   createdAt: { type: Date, default: Date.now }
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+deliverySchema.virtual('pickupDate').get(function() {
+  return this.pickupDateTime;
 });
 
 module.exports = mongoose.model('Delivery', deliverySchema);
