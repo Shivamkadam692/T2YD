@@ -1,5 +1,5 @@
-// load custom env object (dotenv populated) so the project can access a separate env map
-const customEnv = require('./config/env');
+// Load environment variables
+require('./config/env');
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -48,10 +48,10 @@ app.use(methodOverride('_method'));
 
 // Session config
 app.use(session({
-  secret: customEnv.SESSION_SECRET || process.env.SESSION_SECRET || 'vahak-secret',
+  secret: process.env.SESSION_SECRET || 'vahak-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: customEnv.MONGODB_URI || process.env.MONGODB_URI || '' }),
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI || '' }),
   cookie: { 
     // Session will persist until user explicitly logs out
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
@@ -60,6 +60,7 @@ app.use(session({
     sameSite: 'lax' // Protects against CSRF attacks
   }
 }));
+
 
 // Flash messages middleware
 app.use(flash());
@@ -215,5 +216,5 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = customEnv.PORT || process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

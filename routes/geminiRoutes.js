@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const customEnv = require('../config/env');
 
 // Initialize Gemini API
-const genAI = new GoogleGenerativeAI(customEnv.GEMINI_API_KEY || process.env.GEMINI_API_KEY || '');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 /**
  * POST /gemini/voice-assist
@@ -22,7 +21,7 @@ router.post('/voice-assist', async (req, res) => {
     }
 
     // Check if API key is configured
-    if (!customEnv.GEMINI_API_KEY && !process.env.GEMINI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
       return res.json({
         success: true,
         intent: 'unknown',
