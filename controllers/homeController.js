@@ -5,18 +5,22 @@ const Delivery = require('../models/Delivery');
  * Render home page
  */
 exports.getHome = async (req, res) => {
-  let lorries;
-  
-  // If user is a transporter, only show their own lorries
-  if (req.session.userId && req.session.userRole === 'transporter') {
-    lorries = await Lorry.find({ transporter: req.session.userId });
-  } else {
-    // For non-transporters (shippers or guests), show all lorries
-    lorries = await Lorry.find();
+  try {
+    const isTransporter = req.session?.userId && req.session.userRole === 'transporter';
+    const lorryQuery = isTransporter 
+      ? Lorry.find({ transporter: req.session.userId }).lean() 
+      : Lorry.find().lean();
+    
+    const [lorries, deliveries] = await Promise.all([
+      lorryQuery,
+      Delivery.find().lean()
+    ]);
+    
+    res.render('index', { lorries, deliveries });
+  } catch (error) {
+    console.error('Error in getHome:', error);
+    res.status(500).render('error', { message: 'Unable to load home page' });
   }
-  
-  const deliveries = await Delivery.find();
-  res.render('index', { lorries, deliveries });
 };
 
 /**
@@ -47,14 +51,16 @@ exports.search = async (req, res) => {
       searchCriteria.transporter = req.session.userId;
     }
     
-    const lorryResults = await Lorry.find(searchCriteria);
-    const deliveryResults = await Delivery.find({
-      $or: [
-        { pickupLocation: { $regex: trimmedQuery, $options: 'i' } },
-        { dropLocation: { $regex: trimmedQuery, $options: 'i' } },
-        { goodsType: { $regex: trimmedQuery, $options: 'i' } }
-      ]
-    });
+    const [lorryResults, deliveryResults] = await Promise.all([
+      Lorry.find(searchCriteria).lean(),
+      Delivery.find({
+        $or: [
+          { pickupLocation: { $regex: trimmedQuery, $options: 'i' } },
+          { dropLocation: { $regex: trimmedQuery, $options: 'i' } },
+          { goodsType: { $regex: trimmedQuery, $options: 'i' } }
+        ]
+      }).lean()
+    ]);
     const results = [...lorryResults, ...deliveryResults];
     res.render('searchResults', { results });
   } catch (error) {

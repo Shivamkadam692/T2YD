@@ -29,7 +29,7 @@ exports.postAddDelivery = async (req, res, next) => {
  */
 exports.getMyDeliveries = async (req, res) => {
   try {
-    const deliveries = await Delivery.find({ shipper: req.session.userId }).sort({ createdAt: -1 });
+    const deliveries = await Delivery.find({ shipper: req.session.userId }).sort({ createdAt: -1 }).lean();
     res.render('myDeliveries', { deliveries });
   } catch (error) {
     console.error('Error fetching my deliveries:', error);
@@ -42,7 +42,7 @@ exports.getMyDeliveries = async (req, res) => {
  */
 exports.getDeliveryById = async (req, res) => {
   try {
-    const delivery = await Delivery.findById(req.params.id);
+    const delivery = await Delivery.findById(req.params.id).lean();
     if (!delivery) {
       return res.status(404).render('error', { message: 'Delivery not found' });
     }

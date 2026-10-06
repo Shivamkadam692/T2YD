@@ -1146,13 +1146,17 @@
     }
   });
   
-  // Hide loading when page is fully loaded
-  window.addEventListener('load', function() {
+  // Hide loading as soon as DOM is ready without waiting for heavy assets
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
     hideLoading();
-  });
+  } else {
+    document.addEventListener('DOMContentLoaded', hideLoading);
+  }
+  window.addEventListener('load', hideLoading);
+  window.addEventListener('pageshow', hideLoading);
   
-  // Hide loading if still showing after 10 seconds (failsafe)
-  setTimeout(hideLoading, 10000);
+  // Hide loading if still showing after 3 seconds (failsafe)
+  setTimeout(hideLoading, 3000);
   </script>
 </body>
 </html>

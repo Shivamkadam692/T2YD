@@ -39,18 +39,22 @@ const upload = multer({
 // Shipper Dashboard
 router.get('/shipper', requireLogin, requireRole('shipper'), async (req, res) => {
   try {
-    const deliveries = await Delivery.find({ shipper: req.session.userId }).sort({ createdAt: -1 });
-    const requests = await Request.find({ 
-      shipper: req.session.userId,
-      delivery: { $exists: true, $ne: null } // Ensure delivery exists
-    })
-      .populate('transporter', 'name email')
-      .populate('lorry', 'vehicleNumber vehicleType capacity')
-      .populate('delivery', 'goodsType pickupLocation dropLocation')
-      .sort({ createdAt: -1 });
+    const [deliveries, requests] = await Promise.all([
+      Delivery.find({ shipper: req.session.userId }).sort({ createdAt: -1 }).lean(),
+      Request.find({ 
+        shipper: req.session.userId,
+        delivery: { $exists: true, $ne: null }
+      })
+        .populate('transporter', 'name email')
+        .populate('lorry', 'vehicleNumber vehicleType capacity')
+        .populate('delivery', 'goodsType pickupLocation dropLocation')
+        .sort({ createdAt: -1 })
+        .lean()
+    ]);
     
     res.render('shipperDashboard', { deliveries, requests });
   } catch (error) {
+    console.error('Error loading shipper dashboard:', error);
     res.status(500).render('error', { message: 'Error loading dashboard' });
   }
 });
@@ -58,40 +62,47 @@ router.get('/shipper', requireLogin, requireRole('shipper'), async (req, res) =>
 // Transporter Dashboard
 router.get('/transporter', requireLogin, requireRole('transporter'), async (req, res) => {
   try {
-    const lorries = await Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 });
-    const requests = await Request.find({ 
-      transporter: req.session.userId,
-      delivery: { $exists: true, $ne: null } // Ensure delivery exists
-    })
-      .populate('shipper', 'name email')
-      .populate('delivery', 'goodsType pickupLocation dropLocation weight')
-      .populate('lorry', 'vehicleNumber vehicleType capacity')
-      .sort({ createdAt: -1 });
+    const [lorries, requests, availableDeliveries] = await Promise.all([
+      Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 }).lean(),
+      Request.find({ 
+        transporter: req.session.userId,
+        delivery: { $exists: true, $ne: null }
+      })
+        .populate('shipper', 'name email')
+        .populate('delivery', 'goodsType pickupLocation dropLocation weight')
+        .populate('lorry', 'vehicleNumber vehicleType capacity')
+        .sort({ createdAt: -1 })
+        .lean(),
+      Delivery.find({ status: 'pending' })
+        .populate('shipper', 'name')
+        .sort({ createdAt: -1 })
+        .lean()
+    ]);
     
-    // Get available deliveries for transporters to bid on
-    const availableDeliveries = await Delivery.find({ status: 'pending' })
-      .populate('shipper', 'name')
-      .sort({ createdAt: -1 });
+    // Batch query bids to avoid N+1 database queries
+    const deliveryIds = availableDeliveries.map(d => d._id);
+    const existingBids = deliveryIds.length > 0 ? await Request.find({
+      delivery: { $in: deliveryIds },
+      transporter: req.session.userId
+    }).select('delivery status price createdAt').lean() : [];
     
-    // Add bid status information for each delivery
-    const deliveriesWithBidStatus = await Promise.all(availableDeliveries.map(async (delivery) => {
-      const existingBid = await Request.findOne({
-        delivery: delivery._id,
-        transporter: req.session.userId
-      }).select('status price createdAt');
-      
+    const bidsMap = new Map(existingBids.map(b => [b.delivery.toString(), b]));
+    
+    const deliveriesWithBidStatus = availableDeliveries.map((delivery) => {
+      const existingBid = bidsMap.get(delivery._id.toString());
       return {
-        ...delivery.toObject(),
+        ...delivery,
         bidStatus: existingBid ? {
           status: existingBid.status,
           price: existingBid.price,
           createdAt: existingBid.createdAt
         } : null
       };
-    }));
+    });
     
     res.render('transporterDashboard', { lorries, requests, availableDeliveries: deliveriesWithBidStatus });
   } catch (error) {
+    console.error('Error loading transporter dashboard:', error);
     res.status(500).render('error', { message: 'Error loading dashboard' });
   }
 });

@@ -26,7 +26,7 @@ exports.postAddLorry = async (req, res) => {
  */
 exports.getMyLorries = async (req, res) => {
   try {
-    const lorries = await Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 });
+    const lorries = await Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 }).lean();
     res.render('myLorries', { lorries });
   } catch (error) {
     console.error('Error fetching my lorries:', error);
@@ -39,13 +39,13 @@ exports.getMyLorries = async (req, res) => {
  */
 exports.getLorryById = async (req, res) => {
   try {
-    const lorry = await Lorry.findById(req.params.id);
+    const lorry = await Lorry.findById(req.params.id).lean();
     if (!lorry) {
       return res.status(404).render('error', { message: 'Lorry not found' });
     }
     
     // Find nearby deliveries based on lorry location
-    const locationParts = lorry.location.split(',');
+    const locationParts = (lorry.location || '').split(',');
     const locationQuery = locationParts.length > 0 ? locationParts[0].trim() : '';
     
     // Only search for nearby deliveries if we have a valid location query
@@ -54,7 +54,7 @@ exports.getLorryById = async (req, res) => {
       nearbyDeliveries = await Delivery.find({
         status: 'pending',
         pickupLocation: { $regex: locationQuery, $options: 'i' } // Match city/area part of the location
-      }).populate('shipper', 'name').limit(5);
+      }).populate('shipper', 'name').limit(5).lean();
     }
     
     res.render('lorry', { lorry, nearbyDeliveries });

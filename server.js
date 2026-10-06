@@ -13,6 +13,9 @@ const flash = require('connect-flash');
 const multer = require('multer');
 const path = require('path');
 
+const compression = require('compression');
+const User = require('./models/User');
+
 const lorryRoutes = require('./routes/lorryRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -32,6 +35,15 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
+// Performance & security headers
+app.disable('x-powered-by');
+if (process.env.NODE_ENV === 'production') {
+  app.enable('view cache');
+}
+
+// Enable response compression for all routes (Gzip / Deflate)
+app.use(compression());
+
 // Make io globally available for notification service
 global.io = io;
 
@@ -41,7 +53,13 @@ connectDB();
 app.use(expressLayouts);
 app.set('layout', 'layout');
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
+
+// Static assets with browser cache headers (1 day in prod, 1 hour in dev)
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : '1h',
+  etag: true
+}));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(methodOverride('_method'));
@@ -60,7 +78,6 @@ app.use(session({
     sameSite: 'lax' // Protects against CSRF attacks
   }
 }));
-
 
 // Flash messages middleware
 app.use(flash());
@@ -91,14 +108,17 @@ const upload = multer({
   }
 });
 
-// Pass user and flash messages to all views
+// Pass user and flash messages to all views efficiently using lean query
 app.use(async (req, res, next) => {
   res.locals.user = null;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
-  if (req.session.userId) {
-    const User = require('./models/User');
-    res.locals.user = await User.findById(req.session.userId);
+  if (req.session?.userId) {
+    try {
+      res.locals.user = await User.findById(req.session.userId).select('-password').lean();
+    } catch (err) {
+      console.error('Error attaching session user:', err);
+    }
   }
   next();
 });
