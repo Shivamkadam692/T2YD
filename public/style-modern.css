@@ -266,31 +266,30 @@ nav {
 }
 
 .logo {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: var(--primary-700);
   text-decoration: none;
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: var(--transition-normal);
-  letter-spacing: -0.02em;
   display: inline-flex;
   align-items: center;
+  padding: 2px 0;
+  line-height: 0;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.logo span {
-  background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.navbar-logo-img {
+  height: 52px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
 }
 
 .logo:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.logo:hover .navbar-logo-img {
+  filter: drop-shadow(0 4px 14px rgba(249, 115, 22, 0.35));
 }
 
 .nav-right-group {
@@ -594,72 +593,86 @@ main {
   min-height: calc(100vh - 200px);
 }
 
-/* Premium Hero Section */
-.hero {
+/* Accessibility Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Hero Banner Card */
+.hero,
+.hero-banner-card,
+.hero-truck-card {
   text-align: center;
-  padding: var(--space-20) var(--space-8);
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: var(--radius-2xl);
-  margin-bottom: var(--space-12);
-  border: 1px solid rgba(249, 115, 22, 0.1);
-  box-shadow: var(--shadow-xl);
+  padding: 0;
+  background: #ffffff;
+  border-radius: 24px;
+  margin: 0 auto var(--space-8) auto;
+  border: 1px solid rgba(249, 115, 22, 0.16);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.1), 0 6px 18px -4px rgba(249, 115, 22, 0.12);
   position: relative;
   overflow: hidden;
+  display: block;
+  width: 100%;
+  max-width: 1200px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: -30%;
-  left: -10%;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-600), var(--secondary-600), var(--primary-700));
-  background-size: 200% 200%;
-  animation: fadeInUp 0.8s ease-out, gradientShift 6s ease infinite;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: var(--space-6);
-  letter-spacing: -0.02em;
+.hero-banner-wrapper,
+.hero-truck-wrapper {
+  width: 100%;
+  display: block;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  border-radius: inherit;
+  line-height: 0;
 }
 
-.hero p {
-  font-size: 1.25rem;
-  color: var(--neutral-600);
-  max-width: 600px;
-  margin: 0 auto var(--space-8);
-  animation: fadeInUp 0.8s ease-out 0.2s both;
-  position: relative;
-  z-index: 1;
+.hero-banner-image,
+.hero-truck-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 909 / 323;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  border-radius: inherit;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
+  animation: heroBannerEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@media (hover: hover) {
+  .hero-banner-card:hover,
+  .hero-truck-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.14), 0 10px 25px -4px rgba(249, 115, 22, 0.18);
+  }
+  .hero-banner-card:hover .hero-banner-image,
+  .hero-truck-card:hover .hero-truck-image {
+    transform: scale(1.012);
+  }
+}
+
+@keyframes heroBannerEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Modern Search Section */
@@ -1531,8 +1544,21 @@ a:focus, button:focus {
     flex-direction: column;
   }
   
-  .hero h1 {
-    font-size: 2.5rem;
+  .hero,
+  .hero-banner-card,
+  .hero-truck-card {
+    padding: 0;
+    border-radius: 18px;
+    margin-bottom: var(--space-6);
+  }
+  
+  .hero-banner-image,
+  .hero-truck-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 909 / 323;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
   }
   
   .card-container {
@@ -1604,8 +1630,22 @@ a:focus, button:focus {
     padding: 0 var(--space-3);
   }
   
-  .hero {
-    padding: var(--space-8) var(--space-4);
+  .hero,
+  .hero-banner-card,
+  .hero-truck-card {
+    padding: 0;
+    border-radius: 14px;
+    margin-bottom: var(--space-4);
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+  }
+
+  .hero-banner-image,
+  .hero-truck-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 909 / 323;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.05));
   }
   
   .search-container {
@@ -2646,4 +2686,596 @@ a:focus, button:focus {
     max-width: none;
     padding: 14px 16px;
   }
+}
+
+/* ===================================================
+   TRUCK DESI ART CARD DESIGN SYSTEM (Uploaded UI)
+   =================================================== */
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+  margin-bottom: var(--space-12);
+}
+
+.truck-card {
+  background: #ffffff;
+  border: 3.5px solid #f97316;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px -6px rgba(249, 115, 22, 0.16), 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.truck-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -8px rgba(249, 115, 22, 0.26), 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 1. Top Orange Permit Bar */
+.truck-card-topbar {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  padding: 0.65rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.permit-tag {
+  background: #facc15;
+  color: #111827;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.8px;
+  border-radius: 6px;
+  padding: 4px 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  text-transform: uppercase;
+}
+
+/* 2. Slogans Row (Shayari) */
+.truck-slogans-bar {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  background: #ffffff;
+  border-bottom: 2.5px solid #f97316;
+  padding: 0.5rem 0.6rem;
+  gap: 0.4rem;
+}
+
+.slogan-col {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 8px;
+  padding: 0.35rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.slogan-col.slogan-center {
+  border-color: #fdba74;
+  background: #fffaf5;
+}
+
+.slogan-emoji {
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+  line-height: 1;
+}
+
+.slogan-green {
+  color: #15803d;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.slogan-orange {
+  color: #ea580c;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.slogan-dark {
+  color: #0f172a;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.slogan-red {
+  color: #dc2626;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+/* 3. Card Content Area */
+.truck-card-content {
+  padding: 1.15rem 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #ffffff;
+}
+
+.truck-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Location / Plate Row */
+.location-row {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.truck-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.truck-cell.text-right {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.truck-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #ea580c;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.truck-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.truck-val.plate-val {
+  font-family: 'Courier New', Courier, monospace, sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.truck-stationed-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ea580c;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0 0.5rem;
+}
+
+.truck-stationed-badge i {
+  font-size: 1.1rem;
+  color: #ea580c;
+  margin-bottom: 2px;
+}
+
+.truck-stationed-badge span {
+  font-size: 0.65rem;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+
+/* Specs Row */
+.specs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.truck-spec-card {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.spec-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #fff7ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ea580c;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.spec-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.spec-info .truck-val {
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Owner & Status Row */
+.truck-owner-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.6rem;
+  border-top: 1.5px dashed #fed7aa;
+}
+
+.owner-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.owner-info .owner-name {
+  font-size: 1.1rem;
+}
+
+.truck-status-pill {
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.truck-status-pill.available {
+  border: 2px solid #16a34a;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.truck-status-pill.busy,
+.truck-status-pill.in-transit {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.truck-status-pill.maintenance,
+.truck-status-pill.pending {
+  border: 2px solid #f59e0b;
+  background: #fefce8;
+  color: #d97706;
+}
+
+/* 4. Iconic Indian Truck Back Graphic */
+.truck-back-graphic {
+  background: #ffffff;
+  border: 2px solid #ea580c;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Horn OK Please / Blow Horn */
+.truck-horn-bar {
+  background: #facc15;
+  padding: 0.45rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #ea580c;
+}
+
+.truck-horn-bar .flag {
+  font-size: 1.1rem;
+}
+
+.truck-horn-bar .horn-text {
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #1e3a8a;
+  text-shadow: 1.5px 1.5px 0 #fbbf24, 2.5px 2.5px 0 #ea580c;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+}
+
+.truck-horn-bar .lotus-flower {
+  font-size: 1.35rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* Dipper Bar */
+.truck-dipper-bar {
+  background: #ffffff;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-bottom: 2px solid #0f172a;
+}
+
+.truck-dipper-bar .arrow-left,
+.truck-dipper-bar .arrow-right {
+  color: #dc2626;
+  font-size: 0.85rem;
+  letter-spacing: -2px;
+}
+
+.truck-dipper-bar .dipper-text {
+  color: #1e3a8a;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-family: sans-serif;
+}
+
+/* Bumper Bar */
+.truck-bumper-bar {
+  background: #0f172a;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.bumper-left,
+.bumper-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tail-lights {
+  display: flex;
+  gap: 4px;
+}
+
+.tail-lights .light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tail-lights .light.yellow {
+  background: #facc15;
+  box-shadow: 0 0 4px #facc15;
+}
+
+.tail-lights .light.red {
+  background: #ef4444;
+  box-shadow: 0 0 4px #ef4444;
+}
+
+.speed-badge {
+  background: #facc15;
+  color: #0f172a;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.bumper-plate-recess {
+  height: 14px;
+  flex: 1;
+  background: #000000;
+  border-radius: 3px;
+  border: 1px solid #334155;
+  margin: 0 4px;
+}
+
+.ind-plate {
+  background: #facc15;
+  color: #0f172a;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ind-plate .ind-text {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.ind-plate .ind-num {
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-family: 'Courier New', Courier, monospace, sans-serif;
+}
+
+/* Hazard Chevron Stripe */
+.truck-hazard-stripes {
+  height: 12px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #facc15,
+    #facc15 10px,
+    #dc2626 10px,
+    #dc2626 20px
+  );
+  border-top: 1px solid #991b1b;
+  border-bottom: 1.5px solid #0f172a;
+}
+
+/* Hanging Mudflaps */
+.truck-mudflaps-container {
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1.25rem 0.25rem;
+}
+
+.mudflap {
+  background: #0f172a;
+  border: 1.5px solid #334155;
+  border-top: none;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 4px 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mudflap-ribs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.flap-flower {
+  font-size: 0.75rem;
+}
+
+.flap-text {
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* 5. Card Bottom Action Buttons */
+.truck-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.btn-truck-specs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #ffffff;
+  border: 2px solid #ea580c;
+  color: #ea580c;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-truck-specs:hover {
+  background: #fff7ed;
+  border-color: #c2410c;
+  color: #c2410c;
+  transform: translateY(-1px);
+}
+
+.btn-truck-book {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: 2px solid #ea580c;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-truck-book:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.35);
+  color: #ffffff;
+}
+
+/* Mobile Responsiveness for Truck Cards */
+@media (max-width: 480px) {
+  .card-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .truck-slogans-bar {
+    padding: 0.4rem 0.3rem;
+    gap: 0.25rem;
+  }
+  .slogan-green, .slogan-orange, .slogan-dark, .slogan-red {
+    font-size: 0.7rem;
+  }
+  .truck-horn-bar .horn-text {
+    font-size: 1.2rem;
+  }
+  .truck-dipper-bar .dipper-text {
+    font-size: 0.72rem;
+  }
+  .truck-card-content {
+    padding: 0.9rem;
+  }
+}
+
+
+/* Global Button Overlap Prevention */
+.request-actions,
+.card-actions,
+.truck-card-actions,
+.lorry-actions,
+.delivery-actions,
+.form-actions,
+.card-footer,
+.track-actions,
+.form-actions-bar,
+.actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.65rem !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.request-actions form,
+.card-footer form,
+.lorry-actions form,
+.delivery-actions form,
+.track-actions form {
+  display: inline-flex !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.btn {
+  white-space: nowrap !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }

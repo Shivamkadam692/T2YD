@@ -452,6 +452,14 @@
       </button>
     <% } %>
     <% // Safe back-to-dashboard link decision %>
+    <% if (roleComputed === 'shipper') { %>
+      <a href="/dashboard/set-locations/<%= _request._id %>" class="btn btn-outline" style="border-color:#f97316; color:#ea580c;">
+        📍 <%= (_request.exactPickup && _request.exactPickup.lat) ? 'Update Location' : 'Select Location' %>
+      </a>
+    <% } %>
+    <a id="googleMapsNavBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn" style="background:#1a73e8; color:white; display:none;">
+      <i class="fab fa-google"></i> Google Maps Navigation
+    </a>
     <% const backTo = (_request && _request.shipper && _user && _request.shipper._id && _user._id && String(_request.shipper._id) === String(_user._id)) ? '/dashboard/shipper' : '/dashboard/transporter'; %>
     <a href="<%= backTo %>" class="btn btn-outline">Back to Dashboard</a>
   </div>
@@ -483,7 +491,9 @@
   pickupText: _request.delivery && _request.delivery.pickupLocation ? _request.delivery.pickupLocation : '',
   dropText: _request.delivery && _request.delivery.dropLocation ? _request.delivery.dropLocation : '',
   shipperLocation: (_request && _request.shipperLocation && _request.shipperLocation.lat != null) ? { lat: _request.shipperLocation.lat, lng: _request.shipperLocation.lng } : null,
-  transporterLocation: (_request && _request.transporterLocation && _request.transporterLocation.lat != null) ? { lat: _request.transporterLocation.lat, lng: _request.transporterLocation.lng } : null
+  transporterLocation: (_request && _request.transporterLocation && _request.transporterLocation.lat != null) ? { lat: _request.transporterLocation.lat, lng: _request.transporterLocation.lng } : null,
+  exactPickup: (_request && _request.exactPickup && _request.exactPickup.lat != null) ? _request.exactPickup : (_request && _request.delivery && _request.delivery.exactPickup && _request.delivery.exactPickup.lat != null ? _request.delivery.exactPickup : null),
+  exactDrop: (_request && _request.exactDrop && _request.exactDrop.lat != null) ? _request.exactDrop : (_request && _request.delivery && _request.delivery.exactDrop && _request.delivery.exactDrop.lat != null ? _request.delivery.exactDrop : null)
 }) %></script>
 
 <script>
@@ -957,22 +967,55 @@
     setMarker(false, serverData.transporterLocation.lat, serverData.transporterLocation.lng);
   }
 
-  // Plot pickup and drop and compute straight-line distance for transporter
-  Promise.all([geocode(pickupText), geocode(dropText)]).then(([p, d]) => {
+  function updateGoogleMapsButton(pLat, pLng, dLat, dLng) {
+    const btn = document.getElementById('googleMapsNavBtn');
+    if (!btn) return;
+    if (!pLat || !dLat) {
+      btn.style.display = 'none';
+      return;
+    }
+    btn.style.display = 'inline-flex';
+    const tLoc = serverData.transporterLocation || (transporterMarker ? transporterMarker.getLatLng() : null);
+    if (tLoc && tLoc.lat != null) {
+      btn.href = `https://www.google.com/maps/dir/?api=1&origin=${tLoc.lat},${tLoc.lng}&destination=${dLat},${dLng}&waypoints=${pLat},${pLng}&travelmode=driving`;
+    } else {
+      btn.href = `https://www.google.com/maps/dir/?api=1&origin=${pLat},${pLng}&destination=${dLat},${dLng}&travelmode=driving`;
+    }
+  }
+
+  // Check exact locations first
+  const ep = serverData.exactPickup;
+  const ed = serverData.exactDrop;
+
+  async function resolvePickupDrop() {
+    let p = (ep && ep.lat) ? { lat: ep.lat, lng: ep.lng, label: ep.address || 'Exact Pickup Spot' } : null;
+    let d = (ed && ed.lat) ? { lat: ed.lat, lng: ed.lng, label: ed.address || 'Exact Drop Spot' } : null;
+
+    if (!p && pickupText) {
+      const geoP = await geocode(pickupText);
+      if (geoP) p = { lat: geoP.lat, lng: geoP.lng, label: pickupText };
+    }
+    if (!d && dropText) {
+      const geoD = await geocode(dropText);
+      if (geoD) d = { lat: geoD.lat, lng: geoD.lng, label: dropText };
+    }
+
     if (p && !pickupMarker) {
-      pickupMarker = L.marker([p.lat, p.lng], { title: 'Pickup' }).addTo(map).bindPopup(`Pickup: ${pickupText}`);
+      pickupMarker = L.marker([p.lat, p.lng], { title: 'Pickup' }).addTo(map).bindPopup(`<b>🟢 Pickup:</b><br>${p.label}`);
     }
     if (d && !dropMarker) {
-      dropMarker = L.marker([d.lat, d.lng], { title: 'Drop' }).addTo(map).bindPopup(`Drop: ${dropText}`);
+      dropMarker = L.marker([d.lat, d.lng], { title: 'Drop' }).addTo(map).bindPopup(`<b>🔴 Drop:</b><br>${d.label}`);
     }
     if (pickupMarker && dropMarker) {
       const km = haversineKm(pickupMarker.getLatLng(), dropMarker.getLatLng());
       updateDistanceControl(km);
       fitAllBounds();
-      // Draw driving route pickup -> drop
       drawRoute(pickupMarker.getLatLng(), dropMarker.getLatLng(), false);
+      updateGoogleMapsButton(p.lat, p.lng, d.lat, d.lng);
     }
-  }).catch(()=>{});
+  }
+
+  resolvePickupDrop();
 
   // Create a single socket instance for both location tracking and chat
   const socket = (typeof io !== 'undefined') ? io() : null;
@@ -985,6 +1028,36 @@
 
     socket.on('disconnect', () => {
       console.log('Socket disconnected');
+    });
+
+    // Handle real-time route location updates from shipper
+    socket.on('locationsUpdated', ({ exactPickup, exactDrop }) => {
+      console.log('Real-time location update received:', exactPickup, exactDrop);
+      if (exactPickup && exactPickup.lat) {
+        if (pickupMarker) {
+          pickupMarker.setLatLng([exactPickup.lat, exactPickup.lng]);
+        } else {
+          pickupMarker = L.marker([exactPickup.lat, exactPickup.lng], { title: 'Pickup' }).addTo(map);
+        }
+        pickupMarker.bindPopup(`<b>🟢 Exact Pickup:</b><br>${exactPickup.address || 'Pinned on map'}`);
+      }
+      if (exactDrop && exactDrop.lat) {
+        if (dropMarker) {
+          dropMarker.setLatLng([exactDrop.lat, exactDrop.lng]);
+        } else {
+          dropMarker = L.marker([exactDrop.lat, exactDrop.lng], { title: 'Drop' }).addTo(map);
+        }
+        dropMarker.bindPopup(`<b>🔴 Exact Drop:</b><br>${exactDrop.address || 'Pinned on map'}`);
+      }
+      if (pickupMarker && dropMarker) {
+        const km = haversineKm(pickupMarker.getLatLng(), dropMarker.getLatLng());
+        updateDistanceControl(km);
+        fitAllBounds();
+        drawRoute(pickupMarker.getLatLng(), dropMarker.getLatLng(), false);
+        if (typeof updateGoogleMapsButton === 'function') {
+          updateGoogleMapsButton(exactPickup ? exactPickup.lat : null, exactPickup ? exactPickup.lng : null, exactDrop ? exactDrop.lat : null, exactDrop ? exactDrop.lng : null);
+        }
+      }
     });
 
     // Handle location updates and update routes accordingly

@@ -95,6 +95,13 @@
                                 <span><%= request.delivery.pickupLocation %> → <%= request.delivery.dropLocation %></span>
                             </div>
                         <% } %>
+                        <% if (request.exactPickup && request.exactPickup.lat) { %>
+                            <div class="detail-group" style="background: rgba(22, 163, 74, 0.08); padding: 0.6rem 0.8rem; border-radius: 10px; border-left: 3px solid #16a34a; margin-top: 0.5rem;">
+                                <label style="color: #15803d; font-weight: 700;">📍 Selected Locations on Map:</label>
+                                <span><strong>Pickup:</strong> <%= request.exactPickup.address || (request.exactPickup.lat.toFixed(4) + ', ' + request.exactPickup.lng.toFixed(4)) %><br>
+                                <strong>Drop:</strong> <%= request.exactDrop ? (request.exactDrop.address || (request.exactDrop.lat.toFixed(4) + ', ' + request.exactDrop.lng.toFixed(4))) : 'Pending' %></span>
+                            </div>
+                        <% } %>
                     </div>
                     
                     <% if (request.status === 'pending') { %>
@@ -109,7 +116,10 @@
                     <% } else if (request.status === 'accepted' || request.status === 'completed') { %>
                         <div class="request-actions">
                             <% if (request.status === 'accepted') { %>
-                              <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary">Track</a>
+                              <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary"><i class="fas fa-location-arrow"></i> Track</a>
+                              <a href="/dashboard/set-locations/<%= request._id %>" class="btn btn-outline" style="border-color: #f97316; color: #ea580c;">
+                                📍 <%= (request.exactPickup && request.exactPickup.lat) ? 'Update Location' : 'Select Location' %>
+                              </a>
                             <% } %>
                             <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
                             <% if (request.loadedAt && !request.advancePaidAt) { %>

@@ -23,6 +23,18 @@ const requestSchema = new mongoose.Schema({
   ],
   shipperLocation: coordinateSchema,
   transporterLocation: coordinateSchema,
+  exactPickup: {
+    lat: Number,
+    lng: Number,
+    address: String,
+    updatedAt: { type: Date, default: Date.now }
+  },
+  exactDrop: {
+    lat: Number,
+    lng: Number,
+    address: String,
+    updatedAt: { type: Date, default: Date.now }
+  },
   trackingActiveShipper: { type: Boolean, default: false },
   trackingActiveTransporter: { type: Boolean, default: false },
   acceptedAt: Date,

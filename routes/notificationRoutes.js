@@ -198,7 +198,8 @@ router.post('/accept-request/:requestId', requireLogin, async (req, res) => {
 
     res.json({ 
       message: 'Request accepted successfully',
-      requestId: req.params.requestId
+      requestId: req.params.requestId,
+      redirectUrl: '/dashboard/set-locations/' + req.params.requestId
     });
   } catch (error) {
     console.error('Error accepting request:', error);
@@ -273,7 +274,8 @@ router.post('/accept-bid/:requestId', requireLogin, async (req, res) => {
 
     res.json({ 
       message: 'Bid accepted successfully',
-      requestId: req.params.requestId
+      requestId: req.params.requestId,
+      redirectUrl: '/dashboard/set-locations/' + req.params.requestId
     });
   } catch (error) {
     console.error('Error accepting bid:', error);

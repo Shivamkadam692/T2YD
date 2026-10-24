@@ -113,7 +113,7 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
     const request = await Request.findById(req.params.requestId)
       .populate('shipper', 'name')
       .populate('transporter', 'name')
-      .populate('delivery', 'pickupLocation dropLocation goodsType')
+      .populate('delivery', 'pickupLocation dropLocation goodsType exactPickup exactDrop')
       .populate('lorry', 'vehicleNumber vehicleType');
     if (!request) return res.status(404).render('error', { message: 'Request not found' });
 
@@ -314,9 +314,101 @@ router.post('/accept-request/:requestId', requireLogin, requireRole('shipper'), 
       });
     } catch {}
 
-    res.redirect('/dashboard/shipper');
+    res.redirect('/dashboard/set-locations/' + req.params.requestId);
   } catch (error) {
     res.status(500).render('error', { message: 'Error accepting request' });
+  }
+});
+
+// Set exact pickup and drop locations on interactive map (shipper only)
+router.get('/set-locations/:requestId', requireLogin, requireRole('shipper'), async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.requestId)
+      .populate('shipper', 'name')
+      .populate('transporter', 'name')
+      .populate('delivery')
+      .populate('lorry', 'vehicleNumber vehicleType');
+
+    if (!request) return res.status(404).render('error', { message: 'Request not found' });
+    if (request.shipper._id.toString() !== req.session.userId) {
+      return res.status(403).render('error', { message: 'Unauthorized' });
+    }
+
+    res.render('setLocations', { request });
+  } catch (err) {
+    console.error('Error opening set-locations:', err);
+    res.status(500).render('error', { message: 'Error loading location selector' });
+  }
+});
+
+router.post('/set-locations/:requestId', requireLogin, requireRole('shipper'), async (req, res) => {
+  try {
+    const { pickupLat, pickupLng, pickupAddress, dropLat, dropLng, dropAddress } = req.body;
+    const request = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
+
+    if (!request) return res.status(404).render('error', { message: 'Request not found' });
+    if (request.shipper._id.toString() !== req.session.userId) {
+      return res.status(403).render('error', { message: 'Unauthorized' });
+    }
+
+    const exactPickup = {
+      lat: parseFloat(pickupLat) || 0,
+      lng: parseFloat(pickupLng) || 0,
+      address: (pickupAddress || '').trim() || (request.delivery ? request.delivery.pickupLocation : ''),
+      updatedAt: new Date()
+    };
+
+    const exactDrop = {
+      lat: parseFloat(dropLat) || 0,
+      lng: parseFloat(dropLng) || 0,
+      address: (dropAddress || '').trim() || (request.delivery ? request.delivery.dropLocation : ''),
+      updatedAt: new Date()
+    };
+
+    request.exactPickup = exactPickup;
+    request.exactDrop = exactDrop;
+    await request.save();
+
+    if (request.delivery) {
+      await Delivery.findByIdAndUpdate(request.delivery._id, {
+        exactPickup,
+        exactDrop
+      });
+    }
+
+    // Broadcast live update over Socket.io
+    try {
+      if (global.io) {
+        global.io.to(req.params.requestId).emit('locationsUpdated', {
+          exactPickup,
+          exactDrop,
+          updatedBy: 'shipper'
+        });
+      }
+    } catch (sockErr) {
+      console.error('Socket emission error:', sockErr);
+    }
+
+    // Send notification to transporter
+    try {
+      await NotificationService.createNotification({
+        recipient: request.transporter._id,
+        sender: request.shipper._id,
+        type: 'locations_updated',
+        title: 'Exact Route Locations Updated',
+        message: `${request.shipper.name} has pinned the exact pickup and drop locations on the map.`,
+        relatedRequest: request._id,
+        relatedDelivery: request.delivery ? request.delivery._id : null,
+        priority: 'high'
+      });
+    } catch (notifErr) {
+      console.error('Notification error:', notifErr);
+    }
+
+    res.redirect('/dashboard/shipper');
+  } catch (err) {
+    console.error('Error saving exact locations:', err);
+    res.status(500).render('error', { message: 'Error saving exact locations' });
   }
 });
 

@@ -1744,7 +1744,7 @@ class VoiceAutomation {
 
   handleSearch(entities) {
     // Try to find search input on page
-    const searchInput = document.querySelector('input[name="q"], input[type="search"], #searchInput');
+    const searchInput = document.querySelector('input[name="query"], input[name="q"], input[type="search"], #searchInput');
     
     if (searchInput && entities.query) {
       // Fill search input and submit

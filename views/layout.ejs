@@ -37,140 +37,188 @@
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/style-modern.css">
-  <link rel="stylesheet" href="/card-styles.css">
+  <link rel="stylesheet" href="/style-modern.css?v=<%= Date.now() %>">
+  <link rel="stylesheet" href="/card-styles.css?v=<%= Date.now() %>">
   <!-- VOICE_DISABLED: <link rel="stylesheet" href="/css/voice-control.css"> -->
   
   <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+<style>
+/* Global Button & Action Overlap Prevention Across All Pages */
+.request-actions,
+.card-actions,
+.truck-card-actions,
+.lorry-actions,
+.delivery-actions,
+.form-actions,
+.card-footer,
+.track-actions,
+.form-actions-bar,
+.actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.65rem !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.request-actions form,
+.card-footer form,
+.lorry-actions form,
+.delivery-actions form,
+.track-actions form,
+.card-actions form {
+  display: inline-flex !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.btn,
+.btn-primary,
+.btn-outline,
+.btn-success,
+.btn-danger,
+.btn-delete,
+.btn-secondary,
+.btn-edit,
+.btn-truck-specs,
+.btn-truck-book {
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Dashboard pinned location badges */
+.pinned-location-badge {
+  word-break: break-word !important;
+}
+
+/* Navbar Brand Logo */
+.logo {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  padding: 2px 0 !important;
+  line-height: 0 !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.navbar-logo-img {
+  height: 52px !important;
+  width: auto !important;
+  max-width: 220px !important;
+  object-fit: contain !important;
+  display: block !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08)) !important;
+}
+
+.logo:hover {
+  transform: translateY(-1px) scale(1.02) !important;
+}
+
+.logo:hover .navbar-logo-img {
+  filter: drop-shadow(0 4px 14px rgba(249, 115, 22, 0.35)) !important;
+}
+
+@media (max-width: 768px) {
+  .navbar-logo-img {
+    height: 42px !important;
+    max-width: 175px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-logo-img {
+    height: 35px !important;
+    max-width: 145px !important;
+  }
+}
+</style>
+
 </head>
 <body<% if (user) { %> data-user-id="<%= user._id %>" data-user-role="<%= user.role %>"<% } %>>
-  <div class="loading-container" id="loadingContainer" role="status" aria-live="polite">
-    <div class="loading-orbit">
-      <!-- High-tech Header HUD -->
-      <div class="hud-header">
-        <div class="hud-brand"><i class="fas fa-truck-fast"></i> T2YD LOGISTICS ENGINE</div>
-        <div class="hud-meta">
-          <span class="hud-badge"><i class="fas fa-wifi"></i> 32ms</span>
-          <span class="hud-badge speed"><i class="fas fa-gauge-high"></i> 85 KM/H</span>
+  <!-- Modern Skeleton Loading Screen -->
+  <div class="loading-container skeleton-screen" id="loadingContainer" role="status" aria-live="polite">
+    <div class="skeleton-wrapper">
+      <!-- Status pill -->
+      <div class="skeleton-header-pill">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <span class="loading-headline">Loading T2YD Logistics...</span>
+      </div>
+
+      <!-- Skeleton Header Bar -->
+      <div class="skeleton-bar skeleton-nav">
+        <div class="skeleton-box skeleton-logo"></div>
+        <div class="skeleton-nav-items">
+          <div class="skeleton-box skeleton-nav-link"></div>
+          <div class="skeleton-box skeleton-nav-link"></div>
+          <div class="skeleton-box skeleton-nav-btn"></div>
         </div>
       </div>
 
-      <!-- Road Scene -->
-      <div class="loading-road-scene">
-        <!-- Sky gradient background with moon and stars -->
-        <div class="road-sky">
-          <div class="sky-moon"></div>
-          <div class="sky-star star-1"></div>
-          <div class="sky-star star-2"></div>
-          <div class="sky-star star-3"></div>
-          <div class="sky-cloud cloud-1"></div>
-          <div class="sky-cloud cloud-2"></div>
-          <div class="sky-cloud cloud-3"></div>
+      <!-- Skeleton Hero Banner -->
+      <div class="skeleton-box skeleton-hero"></div>
+
+      <!-- Skeleton Search Bar -->
+      <div class="skeleton-box skeleton-search"></div>
+
+      <!-- Skeleton Cards Grid -->
+      <div class="skeleton-grid">
+        <div class="skeleton-card">
+          <div class="skeleton-card-header">
+            <div class="skeleton-box skeleton-avatar"></div>
+            <div class="skeleton-box skeleton-card-title"></div>
+          </div>
+          <div class="skeleton-card-body">
+            <div class="skeleton-box skeleton-line w-80"></div>
+            <div class="skeleton-box skeleton-line w-60"></div>
+            <div class="skeleton-box skeleton-line w-40"></div>
+          </div>
+          <div class="skeleton-box skeleton-btn"></div>
         </div>
-
-        <!-- Scenery silhouettes (Distant mountains + City Skyline + Streetlamps) -->
-        <div class="road-scenery">
-          <div class="scenery-mountains"></div>
-          <div class="scenery-city"></div>
-          <div class="streetlamp lamp-1"></div>
-          <div class="streetlamp lamp-2"></div>
-          <div class="streetlamp lamp-3"></div>
+        <div class="skeleton-card">
+          <div class="skeleton-card-header">
+            <div class="skeleton-box skeleton-avatar"></div>
+            <div class="skeleton-box skeleton-card-title"></div>
+          </div>
+          <div class="skeleton-card-body">
+            <div class="skeleton-box skeleton-line w-80"></div>
+            <div class="skeleton-box skeleton-line w-60"></div>
+            <div class="skeleton-box skeleton-line w-40"></div>
+          </div>
+          <div class="skeleton-box skeleton-btn"></div>
         </div>
-
-        <!-- Road surface with realistic asphalt texture and glowing lane marks -->
-        <div class="road-surface">
-          <div class="road-edge top"></div>
-          <div class="road-lane-marking"></div>
-          <div class="road-lane-marking delay-1"></div>
-          <div class="road-lane-marking delay-2"></div>
-          <div class="road-lane-marking delay-3"></div>
-          <div class="road-lane-marking delay-4"></div>
-          <div class="road-lane-marking delay-5"></div>
-          <div class="road-edge bottom"></div>
-          <div class="guardrail"></div>
-        </div>
-
-        <!-- Realistic Heavy Freight 3D Truck Vehicle -->
-        <div class="truck-vehicle">
-          <!-- Volumetric Headlight Cone -->
-          <div class="light-cone"></div>
-          
-          <!-- Exhaust Smoke -->
-          <div class="truck-exhaust">
-            <span></span><span></span><span></span><span></span>
+        <div class="skeleton-card">
+          <div class="skeleton-card-header">
+            <div class="skeleton-box skeleton-avatar"></div>
+            <div class="skeleton-box skeleton-card-title"></div>
           </div>
-
-          <!-- Heavy Container Body with Metallic Ribs -->
-          <div class="truck-container-body">
-            <div class="container-ribs">
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div class="container-logo">
-              <span class="logo-text">T2YD</span>
-              <span class="logo-sub">EXPRESS FREIGHT</span>
-            </div>
-            <div class="hazard-stripe"></div>
+          <div class="skeleton-card-body">
+            <div class="skeleton-box skeleton-line w-80"></div>
+            <div class="skeleton-box skeleton-line w-60"></div>
+            <div class="skeleton-box skeleton-line w-40"></div>
           </div>
-
-          <!-- Truck Cab with Metallic Finish & Roof Sun Visor -->
-          <div class="truck-cab">
-            <div class="cab-roof-lights"><span></span><span></span><span></span></div>
-            <div class="cab-visor"></div>
-            <div class="truck-window">
-              <div class="driver-silhouette"></div>
-            </div>
-            <div class="side-mirror"></div>
-            <div class="chrome-grill">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="truck-headlight main-light"></div>
-            <div class="fog-light"></div>
-          </div>
-
-          <!-- Detailed Dual Wheels with Rubber Tread and Spinning Hubcaps -->
-          <div class="truck-wheel-assembly front-wheels">
-            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
-          </div>
-          <div class="truck-wheel-assembly rear-wheels">
-            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
-            <div class="truck-wheel"><div class="wheel-rim"><div class="wheel-hub"></div></div></div>
-          </div>
-
-          <!-- Realistic Contact Shadow -->
-          <div class="truck-shadow"></div>
+          <div class="skeleton-box skeleton-btn"></div>
         </div>
       </div>
-
-      <!-- Live Progress HUD -->
-      <div class="loading-progress">
-        <div class="progress-info-row">
-          <span class="progress-label">Syncing transport network</span>
-          <span class="progress-percentage" id="loadingPercentage">85%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill"></div>
-          <div class="progress-glow"></div>
-        </div>
-        <div class="progress-status">
-          <span class="active"><i class="fas fa-circle-check"></i> Matching</span>
-          <span class="active"><i class="fas fa-spinner fa-spin"></i> Routing</span>
-          <span><i class="fas fa-flag-checkered"></i> Ready</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading Headline Text -->
-    <div class="loading-text">
-      <span class="loading-headline">Preparing your shipment</span>
-      <span class="typing-dots"><span></span><span></span><span></span></span>
     </div>
   </div>
   
   <header>
     <nav>
-      <a href="/" class="logo">T2<span>YD</span></a>
+      <a href="/" class="logo" aria-label="T2YD - Transport to Your Destination">
+        <img src="/images/t2yd-logo.png?v=<%= Date.now() %>" alt="T2YD - Transport to Your Destination" class="navbar-logo-img">
+      </a>
       
       <div class="nav-right-group">
         <!-- Language Selector -->
@@ -187,7 +235,9 @@
         
         <ul class="nav-links" id="mobile-nav" tabindex="-1" aria-hidden="true" role="navigation" aria-label="Primary">
           <li class="mobile-menu-header">
-            <span class="mobile-nav-title"><i class="fas fa-truck-fast"></i> T2YD Menu</span>
+            <span class="mobile-nav-title">
+              <img src="/images/t2yd-logo.png?v=<%= Date.now() %>" alt="T2YD" style="height: 34px; width: auto; object-fit: contain; vertical-align: middle;">
+            </span>
             <button class="close-mobile" aria-label="Close menu">✕</button>
           </li>
           <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
@@ -865,9 +915,12 @@
           const data = await response.json();
           
           if (response.ok) {
-            alert('Request accepted successfully!');
-            // Reload notifications to update the UI
-            loadNotifications();
+            if (data.redirectUrl) {
+              window.location.href = data.redirectUrl;
+            } else {
+              alert('Request accepted successfully!');
+              loadNotifications();
+            }
           } else {
             alert(data.message || 'Error accepting request');
           }
@@ -877,26 +930,29 @@
         }
       };
 
-             // Function to accept bid from dropdown
-       window.acceptBidFromDropdown = async function(requestId) {
-         if (!confirm('Are you sure you want to accept this bid?')) {
-           return;
-         }
-         
-         try {
-           const response = await fetch(`/notifications/accept-bid/${requestId}`, {
-             method: 'POST'
-           });
-           
-           const data = await response.json();
-           
-           if (response.ok) {
-             alert('Bid accepted successfully!');
-             // Reload notifications to update the UI
-             loadNotifications();
-           } else {
-             alert(data.message || 'Error accepting bid');
-           }
+      // Function to accept bid from dropdown
+      window.acceptBidFromDropdown = async function(requestId) {
+        if (!confirm('Are you sure you want to accept this bid?')) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`/notifications/accept-bid/${requestId}`, {
+            method: 'POST'
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            if (data.redirectUrl) {
+              window.location.href = data.redirectUrl;
+            } else {
+              alert('Bid accepted successfully!');
+              loadNotifications();
+            }
+          } else {
+            alert(data.message || 'Error accepting bid');
+          }
          } catch (error) {
            console.error('Error accepting bid:', error);
            alert('Error accepting bid. Please try again.');

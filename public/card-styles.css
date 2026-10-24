@@ -187,30 +187,27 @@
 }
 
 /* ========================================
-   LOADING ANIMATION — Realistic Heavy Transport Scene
+   MODERN SKELETON LOADING ANIMATION
    ======================================== */
 
-.loading-container {
+.loading-container.skeleton-screen {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  padding: var(--space-6);
-  background:
-    radial-gradient(circle at 50% 20%, rgba(249, 115, 22, 0.12), transparent 60%),
-    radial-gradient(circle at 10% 80%, rgba(30, 41, 59, 0.95), transparent 70%),
-    linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #090d16 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(254, 252, 251, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  z-index: 9999;
+  z-index: 99999;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s ease;
-  overflow: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  overflow-y: auto;
+  padding: 1.5rem 1rem 3rem;
 }
 
 .loading-container.show {
@@ -218,787 +215,169 @@
   visibility: visible;
 }
 
-.loading-orbit {
-  width: min(94vw, 680px);
-  padding: 1.5rem;
-  border-radius: 28px;
-  background: rgba(30, 41, 59, 0.75);
-  border: 1px solid rgba(249, 115, 22, 0.25);
-  box-shadow:
-    0 25px 70px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+.skeleton-wrapper {
+  width: 100%;
+  max-width: 1100px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  backdrop-filter: blur(16px);
+  gap: 1.5rem;
+  margin: 0 auto;
 }
 
-/* ---- HUD Header Bar ---- */
-.hud-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-family: 'Outfit', sans-serif;
-}
-
-.hud-brand {
-  font-size: 0.85rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: #ea580c;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hud-meta {
-  display: flex;
-  gap: 10px;
-}
-
-.hud-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #94a3b8;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.hud-badge.speed {
-  background: rgba(249, 115, 22, 0.15);
-  color: #fdba74;
-  border-color: rgba(249, 115, 22, 0.3);
-}
-
-/* ---- Road Scene Container ---- */
-.loading-road-scene {
-  position: relative;
-  width: 100%;
-  height: 250px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #020617;
-}
-
-/* ---- Twilight Night Sky ---- */
-.road-sky {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48%;
-  background: linear-gradient(180deg, #090d16 0%, #1e1b4b 50%, #312e81 85%, #4338ca 100%);
-  overflow: hidden;
-}
-
-.sky-moon {
-  position: absolute;
-  top: 12px;
-  right: 40px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fffbeb, #fde68a 70%, #f59e0b 100%);
-  box-shadow: 0 0 20px rgba(253, 230, 138, 0.6), 0 0 40px rgba(253, 230, 138, 0.3);
-}
-
-.sky-star {
-  position: absolute;
-  background: #ffffff;
-  border-radius: 50%;
-  animation: starTwinkle 2s infinite alternate ease-in-out;
-}
-.star-1 { top: 15px; left: 80px; width: 2px; height: 2px; }
-.star-2 { top: 35px; left: 220px; width: 3px; height: 3px; animation-delay: 0.7s; }
-.star-3 { top: 20px; left: 450px; width: 2px; height: 2px; animation-delay: 1.4s; }
-
-@keyframes starTwinkle {
-  0% { opacity: 0.3; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1.2); }
-}
-
-.sky-cloud {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(4px);
-  border-radius: 50px;
-  animation: cloudDrift 18s linear infinite;
-}
-
-.sky-cloud::before,
-.sky-cloud::after {
-  content: '';
-  position: absolute;
-  background: inherit;
-  border-radius: inherit;
-}
-
-.cloud-1 { width: 80px; height: 24px; top: 15%; left: -100px; animation-duration: 16s; }
-.cloud-1::before { width: 36px; height: 30px; top: -14px; left: 14px; }
-.cloud-1::after  { width: 28px; height: 22px; top: -10px; left: 42px; }
-
-.cloud-2 { width: 60px; height: 18px; top: 40%; left: -80px; animation-duration: 22s; animation-delay: -6s; }
-.cloud-2::before { width: 28px; height: 22px; top: -12px; left: 10px; }
-
-.cloud-3 { width: 45px; height: 14px; top: 60%; left: -60px; animation-duration: 28s; animation-delay: -12s; opacity: 0.5; }
-
-@keyframes cloudDrift {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(calc(100vw + 150px)); }
-}
-
-/* ---- Scenery Silhouettes ---- */
-.road-scenery {
-  position: absolute;
-  top: 25%;
-  left: 0;
-  right: 0;
-  height: 35%;
-  overflow: hidden;
-}
-
-.scenery-city {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 200%;
-  height: 55px;
-  background-image: repeating-linear-gradient(90deg,
-    #1e1b4b 0px, #1e1b4b 18px,
-    transparent 18px, transparent 22px,
-    #312e81 22px, #312e81 45px,
-    transparent 45px, transparent 50px
-  );
-  box-shadow: inset 0 10px 20px rgba(0,0,0,0.5);
-  animation: cityScroll 25s linear infinite;
-  opacity: 0.7;
-}
-
-.scenery-city::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 5px;
-  width: 4px;
-  height: 4px;
-  background: #fde047;
-  box-shadow:
-    14px 10px 0 #fbbf24,
-    28px 4px 0 #38bdf8,
-    42px 16px 0 #fde047,
-    65px 6px 0 #fbbf24,
-    88px 12px 0 #fde047,
-    110px 4px 0 #38bdf8,
-    135px 14px 0 #fbbf24;
-}
-
-@keyframes cityScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* Streetlamps passing by */
-.streetlamp {
-  position: absolute;
-  bottom: 0;
-  width: 4px;
-  height: 48px;
-  background: #475569;
-  animation: lampScroll 4s linear infinite;
-}
-
-.streetlamp::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: -8px;
-  width: 12px;
-  height: 3px;
-  background: #64748b;
-  border-radius: 2px;
-}
-
-.streetlamp::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  right: -8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #fef08a;
-  box-shadow: 0 0 12px #fef08a, 0 0 24px rgba(254, 240, 138, 0.8);
-}
-
-.lamp-1 { left: -20px; animation-delay: 0s; }
-.lamp-2 { left: -20px; animation-delay: -1.33s; }
-.lamp-3 { left: -20px; animation-delay: -2.66s; }
-
-@keyframes lampScroll {
-  0% { transform: translateX(calc(100vw + 40px)); }
-  100% { transform: translateX(-40px); }
-}
-
-/* ---- Realistic Asphalt Road Surface ---- */
-.road-surface {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 52%;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 40%, #020617 100%);
-  border-top: 2px solid #ea580c;
-  box-shadow: 0 -4px 15px rgba(234, 88, 12, 0.3);
-}
-
-.road-edge.top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #f59e0b, #ea580c, #f59e0b);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
-}
-
-.road-edge.bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: #475569;
-}
-
-/* Lane Markings */
-.road-lane-marking {
-  position: absolute;
-  top: 52%;
-  transform: translateY(-50%);
-  width: 50px;
-  height: 5px;
-  background: #f8fafc;
-  border-radius: 3px;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-  animation: laneScroll 0.9s linear infinite;
-}
-
-.road-lane-marking.delay-1 { animation-delay: -0.15s; }
-.road-lane-marking.delay-2 { animation-delay: -0.30s; }
-.road-lane-marking.delay-3 { animation-delay: -0.45s; }
-.road-lane-marking.delay-4 { animation-delay: -0.60s; }
-.road-lane-marking.delay-5 { animation-delay: -0.75s; }
-
-@keyframes laneScroll {
-  0%   { left: 110%; }
-  100% { left: -70px; }
-}
-
-/* Guardrail with reflective markers */
-.guardrail {
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: repeating-linear-gradient(90deg, #64748b 0px, #64748b 20px, #f59e0b 20px, #f59e0b 24px);
-  opacity: 0.8;
-}
-
-/* ---- Photorealistic 3D Heavy Freight Truck Vehicle ---- */
-.truck-vehicle {
-  position: absolute;
-  bottom: 16%;
-  left: 16%;
-  width: 175px;
-  height: 75px;
-  animation: truckBounce 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-  z-index: 10;
-}
-
-@keyframes truckBounce {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25%      { transform: translateY(-3px) rotate(-0.5deg); }
-  75%      { transform: translateY(1.5px) rotate(0.3deg); }
-}
-
-/* Volumetric Headlight Beam Projection */
-.light-cone {
-  position: absolute;
-  bottom: 8px;
-  right: -130px;
-  width: 140px;
-  height: 55px;
-  background: linear-gradient(90deg, rgba(254, 240, 138, 0.75) 0%, rgba(253, 224, 71, 0.25) 45%, rgba(253, 224, 71, 0) 100%);
-  clip-path: polygon(0% 35%, 100% 0%, 100% 100%, 0% 65%);
-  z-index: 1;
-  pointer-events: none;
-  animation: lightBeamPulse 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes lightBeamPulse {
-  0%   { opacity: 0.85; filter: drop-shadow(0 0 15px rgba(254, 240, 138, 0.8)); }
-  100% { opacity: 1;    filter: drop-shadow(0 0 25px rgba(254, 240, 138, 1)); }
-}
-
-/* Truck Cab */
-.truck-cab {
-  position: absolute;
-  right: 0;
-  bottom: 14px;
-  width: 48px;
-  height: 44px;
-  background: linear-gradient(145deg, #f97316 0%, #ea580c 60%, #c2410c 100%);
-  border-radius: 8px 14px 4px 4px;
-  box-shadow:
-    inset 1px 1px 2px rgba(255, 255, 255, 0.4),
-    inset -2px -3px 5px rgba(0, 0, 0, 0.4),
-    0 4px 15px rgba(234, 88, 12, 0.5);
-  z-index: 5;
-}
-
-.cab-roof-lights {
-  position: absolute;
-  top: -4px;
-  right: 8px;
-  display: flex;
-  gap: 5px;
-}
-
-.cab-roof-lights span {
-  width: 4px;
-  height: 3px;
-  background: #f59e0b;
-  border-radius: 1px;
-  box-shadow: 0 0 6px #f59e0b;
-}
-
-.cab-visor {
-  position: absolute;
-  top: 4px;
-  right: 2px;
-  width: 26px;
-  height: 4px;
-  background: #1e293b;
-  border-radius: 2px;
-}
-
-.truck-window {
-  position: absolute;
-  top: 9px;
-  right: 5px;
-  width: 22px;
-  height: 16px;
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 80%, #0369a1 100%);
-  border-radius: 4px 8px 2px 2px;
-  border: 1.5px solid #0f172a;
-  overflow: hidden;
-  box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
-}
-
-.driver-silhouette {
-  position: absolute;
-  bottom: 0;
-  left: 4px;
-  width: 10px;
-  height: 10px;
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 50% 50% 0 0;
-}
-
-.side-mirror {
-  position: absolute;
-  top: 12px;
-  right: -3px;
-  width: 3px;
-  height: 9px;
-  background: #0f172a;
-  border-radius: 1px;
-  box-shadow: 1px 0 2px rgba(0,0,0,0.5);
-}
-
-.chrome-grill {
-  position: absolute;
-  bottom: 8px;
-  right: -2px;
-  width: 4px;
-  height: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  z-index: 6;
-}
-
-.chrome-grill span {
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #94a3b8, #f8fafc, #64748b);
-  border-radius: 1px;
-}
-
-.truck-headlight.main-light {
-  position: absolute;
-  bottom: 8px;
-  right: -4px;
-  width: 7px;
-  height: 10px;
-  background: #fef08a;
-  border-radius: 3px;
-  box-shadow: 0 0 15px #fef08a, 0 0 25px #f59e0b;
-  z-index: 7;
-}
-
-.fog-light {
-  position: absolute;
-  bottom: 3px;
-  right: -2px;
-  width: 4px;
-  height: 4px;
-  background: #fbbf24;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #fbbf24;
-}
-
-/* Heavy Metallic Container Body */
-.truck-container-body {
-  position: absolute;
-  right: 44px;
-  bottom: 14px;
-  width: 105px;
-  height: 40px;
-  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
-  border: 2px solid #94a3b8;
-  border-radius: 5px 3px 3px 5px;
-  box-shadow:
-    inset 0 4px 6px rgba(255, 255, 255, 0.8),
-    inset 0 -6px 10px rgba(0, 0, 0, 0.2),
-    0 5px 15px rgba(0, 0, 0, 0.3);
-  z-index: 4;
-  overflow: hidden;
-}
-
-.container-ribs {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: space-around;
-  padding: 0 4px;
-  pointer-events: none;
-}
-
-.container-ribs span {
-  width: 3px;
-  height: 100%;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.4), rgba(0, 0, 0, 0.15));
-}
-
-.container-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  text-align: center;
-  z-index: 3;
-  width: 85%;
-}
-
-.logo-text {
-  display: block;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  font-weight: 900;
-  color: #ea580c;
-  letter-spacing: 2px;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.8), -1px -1px 0 rgba(0,0,0,0.2);
-}
-
-.logo-sub {
-  display: block;
-  font-family: 'Outfit', sans-serif;
-  font-size: 5px;
-  font-weight: 800;
-  color: #475569;
-  letter-spacing: 1px;
-}
-
-.hazard-stripe {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: repeating-linear-gradient(135deg, #f59e0b 0px, #f59e0b 6px, #0f172a 6px, #0f172a 12px);
-}
-
-/* Wheels Assembly & Rim Details */
-.truck-wheel-assembly {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  gap: 5px;
-  z-index: 6;
-}
-
-.front-wheels { right: 8px; }
-.rear-wheels  { left: 12px; }
-
-.truck-wheel {
-  width: 22px;
-  height: 22px;
-  background: radial-gradient(circle, #262626 40%, #0a0a0a 100%);
-  border-radius: 50%;
-  border: 2px solid #404040;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-  position: relative;
-  animation: wheelSpin 0.35s linear infinite;
-}
-
-.wheel-rim {
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #cbd5e1, #64748b);
-  border: 1px solid #475569;
-}
-
-.wheel-hub {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 7px;
-  height: 7px;
-  background: #f8fafc;
-  border-radius: 50%;
-  box-shadow: inset 0 0 2px rgba(0,0,0,0.8);
-}
-
-.wheel-hub::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 11px;
-  height: 2px;
-  background: #334155;
-}
-
-@keyframes wheelSpin {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Wheel Shadow */
-.truck-shadow {
-  position: absolute;
-  bottom: -4px;
-  left: 5px;
-  right: 5px;
-  height: 10px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 75%);
-  border-radius: 50%;
-  z-index: 2;
-}
-
-/* Exhaust Smoke Particles */
-.truck-exhaust {
-  position: absolute;
-  left: -10px;
-  bottom: 22px;
-  z-index: 3;
-}
-
-.truck-exhaust span {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: rgba(203, 213, 225, 0.5);
-  border-radius: 50%;
-  filter: blur(2px);
-  animation: exhaustPuff 1.6s ease-out infinite;
-}
-
-.truck-exhaust span:nth-child(1) { animation-delay: 0s; }
-.truck-exhaust span:nth-child(2) { animation-delay: 0.4s; }
-.truck-exhaust span:nth-child(3) { animation-delay: 0.8s; }
-.truck-exhaust span:nth-child(4) { animation-delay: 1.2s; }
-
-@keyframes exhaustPuff {
-  0%   { transform: translate(0, 0) scale(0.4); opacity: 0.7; }
-  50%  { transform: translate(-25px, -15px) scale(1.4); opacity: 0.35; }
-  100% { transform: translate(-55px, -30px) scale(2.2); opacity: 0; }
-}
-
-/* ---- Live Progress Telemetry HUD ---- */
-.loading-progress {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.progress-info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.progress-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  letter-spacing: 0.5px;
-}
-
-.progress-percentage {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #fdba74;
-  letter-spacing: 1px;
-}
-
-.progress-track {
-  position: relative;
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
-}
-
-.progress-fill {
-  width: 60%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #f59e0b 0%, #ea580c 50%, #f97316 100%);
-  animation: progressFlow 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-  box-shadow: 0 0 15px rgba(249, 115, 22, 0.8);
-}
-
-.progress-glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-  animation: progressGlowScan 1.8s ease-in-out infinite;
-}
-
-.progress-status {
-  display: flex;
-  justify-content: space-between;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748b;
-  margin-top: 4px;
-}
-
-.progress-status span.active {
-  color: #fbbf24;
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-}
-
-/* ---- Loading Headline Text ---- */
-.loading-text {
-  margin-top: 1.25rem;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
-  color: #f8fafc;
-  letter-spacing: 1.5px;
-  font-size: 1.15rem;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.loading-headline {
+.skeleton-header-pill {
+  align-self: center;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.6rem;
+  padding: 0.5rem 1.25rem;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 9999px;
+  color: #ea580c;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: 'Outfit', sans-serif;
+  animation: pulsePill 1.8s infinite ease-in-out;
 }
 
-.typing-dots {
+@keyframes pulsePill {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50% { transform: scale(1.02); opacity: 1; }
+}
+
+/* Base Skeleton Box with Shimmer */
+.skeleton-box {
+  background: #e5e7eb;
+  background: linear-gradient(
+    90deg,
+    rgba(229, 231, 235, 0.8) 0%,
+    rgba(243, 244, 246, 0.95) 50%,
+    rgba(229, 231, 235, 0.8) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite linear;
+  border-radius: 12px;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Skeleton Nav Bar */
+.skeleton-bar.skeleton-nav {
   display: flex;
-  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.typing-dots span {
-  width: 9px;
-  height: 9px;
+.skeleton-logo {
+  width: 90px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.skeleton-nav-items {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.skeleton-nav-link {
+  width: 60px;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.skeleton-nav-btn {
+  width: 80px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Skeleton Hero */
+.skeleton-hero {
+  width: 100%;
+  height: 180px;
+  border-radius: 24px;
+}
+
+/* Skeleton Search */
+.skeleton-search {
+  width: 100%;
+  max-width: 780px;
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 16px;
+}
+
+/* Skeleton Grid & Cards */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.skeleton-card {
+  background: #ffffff;
+  padding: 1.25rem;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skeleton-avatar {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: #ea580c;
-  display: inline-block;
-  box-shadow: 0 0 8px #ea580c;
-  animation: typingBlink 1.2s infinite;
+  flex-shrink: 0;
 }
 
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-/* ---- Keyframes ---- */
-@keyframes progressFlow {
-  0%   { transform: translateX(-100%); }
-  50%  { transform: translateX(20%); }
-  100% { transform: translateX(130%); }
+.skeleton-card-title {
+  width: 140px;
+  height: 20px;
 }
 
-@keyframes progressGlowScan {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+.skeleton-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-@keyframes typingBlink {
-  0%, 100% { opacity: 0.25; transform: translateY(0); }
-  50%      { opacity: 1;    transform: translateY(-3px); }
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+}
+.skeleton-line.w-80 { width: 85%; }
+.skeleton-line.w-60 { width: 65%; }
+.skeleton-line.w-40 { width: 45%; }
+
+.skeleton-btn {
+  height: 38px;
+  border-radius: 10px;
+  margin-top: 0.5rem;
 }
 
-/* ---- Responsive Adjustments ---- */
 @media (max-width: 768px) {
-  .loading-road-scene {
-    height: 190px;
+  .skeleton-hero {
+    height: 140px;
   }
-
-  .truck-vehicle {
-    left: 10%;
-    transform: scale(0.82);
-  }
-
-  .light-cone {
-    width: 100px;
-    right: -95px;
-  }
-
-  .loading-text {
-    font-size: 1rem;
-    margin-top: 14px;
-  }
-
-  .loading-orbit {
-    padding: 1rem;
-    border-radius: 20px;
-  }
-
-  .hud-header {
-    font-size: 0.75rem;
+  .skeleton-bar.skeleton-nav {
+    padding: 0.75rem 1rem;
   }
 }
 
@@ -1028,5 +407,959 @@
   
   .delivery-list {
     grid-template-columns: 1fr;
+  }
+}
+
+
+/* ==========================================================================
+   T2YD LANDING PAGE & INDIAN TRUCK DESI ART CARD DESIGN SYSTEM
+   ========================================================================== */
+
+/* 1. Hero Banner */
+.hero-banner-card {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 1.5rem auto;
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.1), 0 6px 18px -4px rgba(249, 115, 22, 0.12);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hero-banner-wrapper {
+  width: 100%;
+  line-height: 0;
+  display: block;
+}
+
+.hero-banner-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 909 / 323;
+  object-fit: cover;
+  display: block;
+}
+
+/* 2. Animated Truck Highway Stage */
+.highway-stage-container {
+  max-width: 1200px;
+  margin: 0 auto 2.5rem auto;
+  background: linear-gradient(180deg, #fff7ed 0%, #fed7aa 60%, #fdba74 100%);
+  border-radius: 24px;
+  border: 2px solid rgba(249, 115, 22, 0.25);
+  box-shadow: 0 16px 36px -8px rgba(249, 115, 22, 0.18);
+  padding: 1.5rem 1.5rem 0.75rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.highway-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.highway-title-group h2 {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.highway-title-group h2 i {
+  color: #ea580c;
+}
+
+.highway-title-group p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.highway-trust-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.trust-pill {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Highway Road Strip */
+.highway-road {
+  background: #1e293b;
+  border-radius: 16px;
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-top: 4px solid #f97316;
+  border-bottom: 4px solid #f97316;
+  box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Road Dividers Moving Animation */
+.road-dividers {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 200%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    to right,
+    #facc15 0,
+    #facc15 30px,
+    transparent 30px,
+    transparent 60px
+  );
+  animation: roadTravel 1.2s linear infinite;
+}
+
+@keyframes roadTravel {
+  from { transform: translateY(-50%) translateX(0); }
+  to { transform: translateY(-50%) translateX(-60px); }
+}
+
+/* Animated Truck */
+.animated-truck-wrapper {
+  position: absolute;
+  left: 10%;
+  bottom: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: truckBounce 1.8s ease-in-out infinite alternate;
+}
+
+.animated-truck-img {
+  width: 140px;
+  height: auto;
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.5));
+  user-select: none;
+}
+
+.truck-road-shadow {
+  width: 125px;
+  height: 8px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, transparent 75%);
+  margin-top: -4px;
+  border-radius: 50%;
+}
+
+@keyframes truckBounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+/* Milestone Sign */
+.highway-milestone {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ffffff;
+  border: 2px solid #ea580c;
+  border-top: 10px solid #facc15;
+  border-radius: 8px 8px 4px 4px;
+  padding: 6px 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.milestone-route {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.milestone-km {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+/* 3. Search Bar */
+.search-container {
+  max-width: 1200px;
+  margin: 0 auto 2.5rem auto;
+  background: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.search-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border-radius: 12px;
+  border: 1.5px solid #fed7aa;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: #fffaf5;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #ea580c;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ea580c;
+  font-size: 1.1rem;
+}
+
+.search-form button {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+}
+
+.search-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+}
+
+/* Quick Filter Tags */
+.quick-tags-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #fed7aa;
+  align-items: center;
+}
+
+.quick-tags-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.quick-tag-btn {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.quick-tag-btn:hover {
+  background: #ea580c;
+  color: #ffffff;
+  border-color: #ea580c;
+}
+
+/* 4. Section Titles */
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title i {
+  color: #ea580c;
+}
+
+/* 5. Truck Cards Grid */
+.card-container {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)) !important;
+  gap: 2rem !important;
+  margin-bottom: 3.5rem !important;
+}
+
+/* ==========================================================================
+   AUTHENTIC INDIAN TRUCK CARD DESIGN (UPLOADED MOCKUP REPLICA)
+   ========================================================================== */
+.truck-card {
+  background: #ffffff !important;
+  border: 3.5px solid #f97316 !important;
+  border-radius: 26px !important;
+  overflow: hidden !important;
+  box-shadow: 0 16px 36px -6px rgba(249, 115, 22, 0.18), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.truck-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 24px 48px -8px rgba(249, 115, 22, 0.28), 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Top Orange Permit Bar */
+.truck-card-topbar {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  padding: 0.65rem 1rem !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
+
+.permit-tag {
+  background: #facc15 !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.8px !important;
+  border-radius: 6px !important;
+  padding: 4px 14px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  text-transform: uppercase !important;
+}
+
+/* Slogans Row (Shayari) */
+.truck-slogans-bar {
+  display: grid !important;
+  grid-template-columns: 1fr 1.25fr 1fr !important;
+  background: #ffffff !important;
+  border-bottom: 2.5px solid #f97316 !important;
+  padding: 0.5rem 0.6rem !important;
+  gap: 0.4rem !important;
+}
+
+.slogan-col {
+  background: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  border-radius: 8px !important;
+  padding: 0.35rem 0.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  line-height: 1.25 !important;
+}
+
+.slogan-col.slogan-center {
+  border-color: #fdba74 !important;
+  background: #fffaf5 !important;
+}
+
+.slogan-emoji {
+  font-size: 0.95rem !important;
+  margin-bottom: 2px !important;
+  line-height: 1 !important;
+}
+
+.slogan-green {
+  color: #15803d !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+}
+
+.slogan-orange {
+  color: #ea580c !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+}
+
+.slogan-dark {
+  color: #0f172a !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+}
+
+.slogan-red {
+  color: #dc2626 !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+}
+
+/* Card Content Area */
+.truck-card-content {
+  padding: 1.15rem 1.15rem 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.85rem !important;
+  background: #ffffff !important;
+}
+
+.truck-info-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.75rem !important;
+}
+
+/* Location Row */
+.location-row {
+  background: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.truck-cell {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.truck-cell.text-right {
+  text-align: right !important;
+  align-items: flex-end !important;
+}
+
+.truck-label {
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  color: #ea580c !important;
+  text-transform: uppercase !important;
+  margin-bottom: 2px !important;
+}
+
+.truck-val {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  line-height: 1.2 !important;
+}
+
+.truck-val.plate-val {
+  font-family: 'Courier New', Courier, monospace, sans-serif !important;
+  letter-spacing: 0.5px !important;
+}
+
+.truck-stationed-badge {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ea580c !important;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  padding: 0 0.5rem !important;
+}
+
+.truck-stationed-badge i {
+  font-size: 1.1rem !important;
+  color: #ea580c !important;
+  margin-bottom: 2px !important;
+}
+
+.truck-stationed-badge span {
+  font-size: 0.65rem !important;
+  color: #64748b !important;
+  letter-spacing: 0.5px !important;
+  font-weight: 700 !important;
+}
+
+/* Specs Row */
+.specs-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.75rem !important;
+}
+
+.truck-spec-card {
+  background: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 0.85rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+}
+
+.spec-icon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+  background: #fff7ed !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ea580c !important;
+  font-size: 1.1rem !important;
+  flex-shrink: 0 !important;
+}
+
+.spec-info {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.spec-info .truck-val {
+  font-size: 1rem !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Owner & Status Row */
+.truck-owner-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-top: 0.6rem !important;
+  border-top: 1.5px dashed #fed7aa !important;
+}
+
+.owner-info {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.owner-info .owner-name {
+  font-size: 1.1rem !important;
+}
+
+.truck-status-pill {
+  padding: 4px 14px !important;
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+}
+
+.truck-status-pill.available {
+  border: 2px solid #16a34a !important;
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+}
+
+.truck-status-pill.busy,
+.truck-status-pill.in-transit {
+  border: 2px solid #2563eb !important;
+  background: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+.truck-status-pill.maintenance,
+.truck-status-pill.pending {
+  border: 2px solid #f59e0b !important;
+  background: #fefce8 !important;
+  color: #d97706 !important;
+}
+
+/* Iconic Indian Truck Back Graphic */
+.truck-back-graphic {
+  background: #ffffff !important;
+  border: 2px solid #ea580c !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  margin-top: 0.25rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Horn OK Please / Blow Horn */
+.truck-horn-bar {
+  background: #facc15 !important;
+  padding: 0.45rem 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 2px solid #ea580c !important;
+}
+
+.truck-horn-bar .flag {
+  font-size: 1.1rem !important;
+}
+
+.truck-horn-bar .horn-text {
+  font-size: 1.45rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+  color: #1e3a8a !important;
+  text-shadow: 1.5px 1.5px 0 #fbbf24, 2.5px 2.5px 0 #ea580c !important;
+  font-family: 'Impact', 'Arial Black', sans-serif !important;
+}
+
+.truck-horn-bar .lotus-flower {
+  font-size: 1.35rem !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15)) !important;
+}
+
+/* Dipper Bar */
+.truck-dipper-bar {
+  background: #ffffff !important;
+  padding: 0.35rem 0.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.6rem !important;
+  border-bottom: 2px solid #0f172a !important;
+}
+
+.truck-dipper-bar .arrow-left,
+.truck-dipper-bar .arrow-right {
+  color: #dc2626 !important;
+  font-size: 0.85rem !important;
+  letter-spacing: -2px !important;
+}
+
+.truck-dipper-bar .dipper-text {
+  color: #1e3a8a !important;
+  font-size: 0.82rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  font-family: sans-serif !important;
+}
+
+/* Bumper Bar */
+.truck-bumper-bar {
+  background: #0f172a !important;
+  padding: 0.5rem 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.5rem !important;
+}
+
+.bumper-left,
+.bumper-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+}
+
+.tail-lights {
+  display: flex !important;
+  gap: 4px !important;
+}
+
+.tail-lights .light {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.tail-lights .light.yellow {
+  background: #facc15 !important;
+  box-shadow: 0 0 4px #facc15 !important;
+}
+
+.tail-lights .light.red {
+  background: #ef4444 !important;
+  box-shadow: 0 0 4px #ef4444 !important;
+}
+
+.speed-badge {
+  background: #facc15 !important;
+  color: #0f172a !important;
+  font-size: 0.65rem !important;
+  font-weight: 900 !important;
+  padding: 2px 5px !important;
+  border-radius: 3px !important;
+  white-space: nowrap !important;
+}
+
+.bumper-plate-recess {
+  height: 14px !important;
+  flex: 1 !important;
+  background: #000000 !important;
+  border-radius: 3px !important;
+  border: 1px solid #334155 !important;
+  margin: 0 4px !important;
+}
+
+.ind-plate {
+  background: #facc15 !important;
+  color: #0f172a !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.ind-plate .ind-text {
+  font-size: 0.6rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.ind-plate .ind-num {
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.5px !important;
+  font-family: 'Courier New', Courier, monospace, sans-serif !important;
+}
+
+/* Hazard Chevron Stripe */
+.truck-hazard-stripes {
+  height: 12px !important;
+  background: repeating-linear-gradient(
+    -45deg,
+    #facc15,
+    #facc15 10px,
+    #dc2626 10px,
+    #dc2626 20px
+  ) !important;
+  border-top: 1px solid #991b1b !important;
+  border-bottom: 1.5px solid #0f172a !important;
+}
+
+/* Hanging Mudflaps */
+.truck-mudflaps-container {
+  background: #f8fafc !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 0 1.25rem 0.25rem !important;
+}
+
+.mudflap {
+  background: #0f172a !important;
+  border: 1.5px solid #334155 !important;
+  border-top: none !important;
+  border-bottom-left-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  padding: 4px 10px !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.mudflap-ribs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.flap-flower {
+  font-size: 0.75rem !important;
+}
+
+.flap-text {
+  color: #ffffff !important;
+  font-size: 0.65rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+}
+
+/* Card Bottom Action Buttons */
+.truck-card-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1.35fr !important;
+  gap: 0.65rem !important;
+  margin-top: 0.25rem !important;
+}
+
+.btn-truck-specs {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  background: #ffffff !important;
+  border: 2px solid #ea580c !important;
+  color: #ea580c !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 0.75rem !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.btn-truck-specs:hover {
+  background: #fff7ed !important;
+  border-color: #c2410c !important;
+  color: #c2410c !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-truck-book {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  border: 2px solid #ea580c !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 0.75rem !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.btn-truck-book:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.35) !important;
+  color: #ffffff !important;
+}
+
+/* 6. Why T2YD Grid */
+.features-section {
+  max-width: 1200px;
+  margin: 3.5rem auto 2.5rem;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.feature-item {
+  background: #fffaf5;
+  border: 1.5px solid #fed7aa;
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-4px);
+  border-color: #ea580c;
+}
+
+.feature-icon-circle {
+  width: 54px;
+  height: 54px;
+  background: #ea580c;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 6px 14px rgba(234, 88, 12, 0.3);
+}
+
+.feature-item h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.feature-item p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .highway-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .card-container {
+    grid-template-columns: 1fr !important;
+    gap: 1.75rem !important;
+  }
+  .search-form {
+    flex-direction: column;
+  }
+  .search-form button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .truck-slogans-bar {
+    padding: 0.4rem 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  .slogan-green, .slogan-orange, .slogan-dark, .slogan-red {
+    font-size: 0.7rem !important;
+  }
+  .truck-horn-bar .horn-text {
+    font-size: 1.15rem !important;
+  }
+  .truck-dipper-bar .dipper-text {
+    font-size: 0.7rem !important;
+  }
+  .truck-card-content {
+    padding: 0.85rem !important;
+  }
+  .animated-truck-img {
+    width: 100px;
+  }
+  .truck-road-shadow {
+    width: 90px;
   }
 }

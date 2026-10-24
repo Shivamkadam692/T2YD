@@ -1,60 +1,726 @@
-<h2 class="section-title">Search Results</h2>
-<a href="/" class="btn btn-outline" style="margin-bottom: 2rem;">Back to Home</a>
+<style>
+/* ==========================================================================
+   SEARCH RESULTS PAGE & INDIAN TRUCK DESI ART CARD DESIGN SYSTEM
+   ========================================================================== */
+
+/* Search Container & Controls */
+.search-results-top {
+  margin-bottom: 2rem;
+}
+
+.search-container {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem auto;
+  background: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 20px;
+  border: 1.5px solid rgba(249, 115, 22, 0.25);
+  box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.1);
+}
+
+.search-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border-radius: 12px;
+  border: 1.5px solid #fed7aa;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: #fffaf5;
+  box-sizing: border-box;
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+  border-color: #ea580c;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ea580c;
+  font-size: 1.1rem;
+}
+
+.search-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  border: none;
+  padding: 14px 26px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  white-space: nowrap;
+}
+
+.search-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+}
+
+.quick-tags-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed #fed7aa;
+  align-items: center;
+}
+
+.quick-tags-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.quick-tag-btn {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #ea580c;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.quick-tag-btn:hover {
+  background: #ea580c;
+  color: #ffffff;
+  border-color: #ea580c;
+}
+
+/* Header & Filter Tabs */
+.search-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid #fed7aa;
+}
+
+.search-title-meta h1 {
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-title-meta p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.search-filter-pills {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-pill {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid #fed7aa;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.filter-pill:hover {
+  border-color: #ea580c;
+  color: #ea580c;
+  transform: translateY(-1px);
+}
+
+.filter-pill.active {
+  background: #ea580c;
+  color: #ffffff;
+  border-color: #ea580c;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
+}
+
+/* Card Container */
+.card-container {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+  gap: 2rem !important;
+  margin-bottom: 3.5rem !important;
+  align-items: stretch !important;
+}
+
+.truck-card {
+  background: #ffffff !important;
+  border: 3.5px solid #f97316 !important;
+  border-radius: 26px !important;
+  overflow: hidden !important;
+  box-shadow: 0 16px 36px -6px rgba(249, 115, 22, 0.18), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.truck-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 24px 48px -8px rgba(249, 115, 22, 0.28), 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.truck-card-topbar {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  padding: 0.65rem 1rem !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
+
+.permit-tag {
+  background: #facc15 !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.8px !important;
+  border-radius: 6px !important;
+  padding: 4px 14px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  text-transform: uppercase !important;
+}
+
+.truck-slogans-bar {
+  display: grid !important;
+  grid-template-columns: 1fr 1.25fr 1fr !important;
+  background: #ffffff !important;
+  border-bottom: 2.5px solid #f97316 !important;
+  padding: 0.5rem 0.6rem !important;
+  gap: 0.4rem !important;
+}
+
+.slogan-col {
+  background: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  border-radius: 8px !important;
+  padding: 0.35rem 0.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  line-height: 1.25 !important;
+}
+
+.slogan-col.slogan-center {
+  border-color: #fdba74 !important;
+  background: #fffaf5 !important;
+}
+
+.slogan-emoji { font-size: 0.95rem !important; margin-bottom: 2px !important; line-height: 1 !important; }
+.slogan-green { color: #15803d !important; font-size: 0.76rem !important; font-weight: 800 !important; }
+.slogan-orange { color: #ea580c !important; font-size: 0.76rem !important; font-weight: 800 !important; }
+.slogan-dark { color: #0f172a !important; font-size: 0.76rem !important; font-weight: 800 !important; }
+.slogan-red { color: #dc2626 !important; font-size: 0.76rem !important; font-weight: 800 !important; }
+
+.truck-card-content {
+  padding: 1.15rem 1.15rem 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.85rem !important;
+  background: #ffffff !important;
+  flex: 1 1 auto !important;
+  justify-content: space-between !important;
+}
+
+.location-row {
+  background: #ffffff !important;
+  border: 1.5px solid #fed7aa !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 0.85rem !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 0.5rem !important;
+  min-height: 74px !important;
+  box-sizing: border-box !important;
+}
+
+.truck-cell { flex: 1 1 0 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; }
+.truck-cell.text-right { text-align: right !important; align-items: flex-end !important; }
+.truck-label { font-size: 0.68rem !important; font-weight: 800 !important; color: #ea580c !important; text-transform: uppercase !important; margin-bottom: 2px !important; white-space: nowrap !important; }
+.truck-val { font-size: 1.05rem !important; font-weight: 800 !important; color: #0f172a !important; line-height: 1.25 !important; word-break: break-word !important; }
+
+.btn-read-more {
+  background: none !important; border: none !important; padding: 2px 0 0 0 !important; margin: 0 !important;
+  color: #ea580c !important; font-size: 0.75rem !important; font-weight: 800 !important; cursor: pointer !important;
+  text-decoration: underline !important; display: inline-block !important; line-height: 1 !important;
+}
+.btn-read-more:hover { color: #9a3412 !important; }
+.short-addr, .full-addr { display: inline; }
+
+.truck-stationed-badge {
+  display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important;
+  color: #ea580c !important; font-size: 0.7rem !important; font-weight: 800 !important; padding: 0 0.4rem !important; flex-shrink: 0 !important;
+}
+.truck-stationed-badge i { font-size: 1.1rem !important; color: #ea580c !important; margin-bottom: 2px !important; }
+.truck-stationed-badge span { font-size: 0.65rem !important; color: #64748b !important; font-weight: 700 !important; }
+
+.specs-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.75rem !important; }
+.truck-spec-card { background: #ffffff !important; border: 1.5px solid #fed7aa !important; border-radius: 12px !important; padding: 0.65rem 0.85rem !important; display: flex !important; align-items: center !important; gap: 0.65rem !important; min-height: 52px !important; }
+.spec-icon { width: 34px !important; height: 34px !important; border-radius: 8px !important; background: #fff7ed !important; display: flex !important; align-items: center !important; justify-content: center !important; color: #ea580c !important; font-size: 1.1rem !important; flex-shrink: 0 !important; }
+.spec-info { display: flex !important; flex-direction: column !important; overflow: hidden !important; }
+.spec-info .truck-val { font-size: 1rem !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+
+.truck-owner-row { display: flex !important; align-items: center !important; justify-content: space-between !important; padding-top: 0.6rem !important; border-top: 1.5px dashed #fed7aa !important; min-height: 38px !important; }
+.owner-info { display: flex !important; flex-direction: column !important; }
+.owner-info .owner-name { font-size: 1.1rem !important; }
+
+.truck-status-pill { padding: 4px 14px !important; border-radius: 999px !important; font-size: 0.75rem !important; font-weight: 800 !important; text-transform: uppercase !important; }
+.truck-status-pill.available { border: 2px solid #16a34a !important; background: #f0fdf4 !important; color: #16a34a !important; }
+.truck-status-pill.busy, .truck-status-pill.in-transit { border: 2px solid #2563eb !important; background: #eff6ff !important; color: #2563eb !important; }
+.truck-status-pill.maintenance, .truck-status-pill.pending { border: 2px solid #f59e0b !important; background: #fefce8 !important; color: #d97706 !important; }
+
+.truck-back-graphic { background: #ffffff !important; border: 2px solid #ea580c !important; border-radius: 10px !important; overflow: hidden !important; margin-top: auto !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; }
+.truck-horn-bar { background: #facc15 !important; padding: 0.45rem 0.75rem !important; display: flex !important; align-items: center !important; justify-content: space-between !important; border-bottom: 2px solid #ea580c !important; }
+.truck-horn-bar .flag { font-size: 1.1rem !important; }
+.truck-horn-bar .horn-text { font-size: 1.45rem !important; font-weight: 900 !important; letter-spacing: 2px !important; color: #1e3a8a !important; text-shadow: 1.5px 1.5px 0 #fbbf24, 2.5px 2.5px 0 #ea580c !important; font-family: 'Impact', 'Arial Black', sans-serif !important; }
+.truck-horn-bar .lotus-flower { font-size: 1.35rem !important; }
+.truck-dipper-bar { background: #ffffff !important; padding: 0.35rem 0.5rem !important; display: flex !important; align-items: center !important; justify-content: center !important; gap: 0.6rem !important; border-bottom: 2px solid #0f172a !important; }
+.truck-dipper-bar .arrow-left, .truck-dipper-bar .arrow-right { color: #dc2626 !important; font-size: 0.85rem !important; }
+.truck-dipper-bar .dipper-text { color: #1e3a8a !important; font-size: 0.82rem !important; font-weight: 900 !important; font-family: sans-serif !important; }
+.truck-bumper-bar { background: #0f172a !important; padding: 0.5rem 0.75rem !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 0.5rem !important; }
+.bumper-left, .bumper-right { display: flex !important; align-items: center !important; gap: 0.4rem !important; }
+.tail-lights { display: flex !important; gap: 4px !important; }
+.tail-lights .light { width: 10px !important; height: 10px !important; border-radius: 50% !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; }
+.tail-lights .light.yellow { background: #facc15 !important; box-shadow: 0 0 4px #facc15 !important; }
+.tail-lights .light.red { background: #ef4444 !important; box-shadow: 0 0 4px #ef4444 !important; }
+.speed-badge { background: #facc15 !important; color: #0f172a !important; font-size: 0.65rem !important; font-weight: 900 !important; padding: 2px 5px !important; border-radius: 3px !important; white-space: nowrap !important; }
+.bumper-plate-recess { height: 14px !important; flex: 1 !important; background: #000000 !important; border-radius: 3px !important; border: 1px solid #334155 !important; margin: 0 4px !important; }
+.ind-plate { background: #facc15 !important; color: #0f172a !important; padding: 2px 6px !important; border-radius: 3px !important; display: flex !important; align-items: center !important; gap: 4px !important; }
+.ind-plate .ind-text { font-size: 0.6rem !important; font-weight: 900 !important; }
+.ind-plate .ind-num { font-size: 0.72rem !important; font-weight: 900 !important; font-family: 'Courier New', Courier, monospace, sans-serif !important; }
+.truck-hazard-stripes { height: 12px !important; background: repeating-linear-gradient(-45deg, #facc15, #facc15 10px, #dc2626 10px, #dc2626 20px) !important; border-top: 1px solid #991b1b !important; border-bottom: 1.5px solid #0f172a !important; }
+.truck-mudflaps-container { background: #f8fafc !important; display: flex !important; justify-content: space-between !important; padding: 0 1.25rem 0.25rem !important; }
+.mudflap { background: #0f172a !important; border: 1.5px solid #334155 !important; border-bottom-left-radius: 6px !important; border-bottom-right-radius: 6px !important; padding: 4px 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+.mudflap-ribs { display: flex !important; align-items: center !important; gap: 5px !important; }
+.flap-flower { font-size: 0.75rem !important; }
+.flap-text { color: #ffffff !important; font-size: 0.65rem !important; font-weight: 900 !important; }
+
+.truck-card-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1.35fr !important;
+  gap: 0.65rem !important;
+  margin-top: 0.65rem !important;
+  width: 100% !important;
+}
+
+.btn-truck-specs, .btn-truck-book {
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.4rem !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  border-radius: 12px !important;
+  padding: 0.65rem 0.75rem !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+.btn-truck-specs { background: #ffffff !important; border: 2px solid #ea580c !important; color: #ea580c !important; }
+.btn-truck-specs:hover { background: #fff7ed !important; }
+.btn-truck-book { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important; border: 2px solid #ea580c !important; color: #ffffff !important; }
+.btn-truck-book:hover { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #ffffff !important; }
+
+/* Empty Search State */
+.empty-search-card {
+  background: #ffffff;
+  border: 2px dashed #fed7aa;
+  border-radius: 24px;
+  padding: 3.5rem 2rem;
+  text-align: center;
+  margin: 1rem 0 3.5rem;
+  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.05);
+}
+
+.empty-search-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  border: 2px solid #fed7aa;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+}
+
+.empty-search-card h3 {
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+}
+
+.empty-search-card p {
+  color: #64748b;
+  font-size: 1rem;
+  max-width: 580px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.empty-suggestions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .search-form { flex-direction: column; }
+  .search-btn-primary { width: 100%; justify-content: center; }
+  .search-header-bar { flex-direction: column; align-items: flex-start; }
+  .card-container { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<script>
+function toggleReadMore(btn, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  const cell = btn.closest('.truck-cell');
+  if (!cell) return;
+  const shortEl = cell.querySelector('.short-addr');
+  const fullEl = cell.querySelector('.full-addr');
+  if (!shortEl || !fullEl) return;
+  
+  if (fullEl.style.display === 'none') {
+    fullEl.style.display = 'inline';
+    shortEl.style.display = 'none';
+    btn.textContent = 'Read Less';
+  } else {
+    fullEl.style.display = 'none';
+    shortEl.style.display = 'inline';
+    btn.textContent = 'Read More';
+  }
+}
+</script>
+
+<%
+function renderSearchAddrCell(label, text, isRight) {
+  const addr = (text || 'N/A').trim();
+  const isLong = addr.length > 25;
+  const shortAddr = isLong ? addr.substring(0, 24) + '...' : addr;
+%>
+  <div class="truck-cell <%= isRight ? 'text-right' : '' %>">
+    <span class="truck-label"><%= label %></span>
+    <strong class="truck-val">
+      <% if (isLong) { %>
+        <span class="short-addr"><%= shortAddr %></span>
+        <span class="full-addr" style="display: none;"><%= addr %></span>
+        <button type="button" class="btn-read-more" onclick="toggleReadMore(this, event)">Read More</button>
+      <% } else { %>
+        <span><%= addr %></span>
+      <% } %>
+    </strong>
+  </div>
+<% } %>
+
+<!-- ==========================================
+     SEARCH BAR & HEADER
+     ========================================== -->
+<div class="search-results-top">
+  <!-- Search input bar -->
+  <div class="search-container">
+    <form action="/search" method="get" class="search-form">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          name="query" 
+          value="<%= typeof query !== 'undefined' ? query : '' %>" 
+          placeholder="Search by city, route, vehicle type (e.g., Open Body, Nanded, Mumbai)..." 
+          required
+        >
+      </div>
+      <button type="submit" class="search-btn-primary"><i class="fas fa-search"></i> Search</button>
+      <% if (typeof query !== 'undefined' && query) { %>
+        <a href="/search" class="btn btn-outline" style="white-space: nowrap;"><i class="fas fa-times"></i> Clear</a>
+      <% } %>
+    </form>
+
+    <div class="quick-tags-row">
+      <span class="quick-tags-label"><i class="fas fa-bolt"></i> Popular Searches:</span>
+      <a href="/search?query=Open+Body" class="quick-tag-btn">🚛 Open Body</a>
+      <a href="/search?query=Container" class="quick-tag-btn">📦 Container</a>
+      <a href="/search?query=Trailer" class="quick-tag-btn">🚚 Trailer</a>
+      <a href="/search?query=Mumbai" class="quick-tag-btn">📍 Mumbai</a>
+      <a href="/search?query=Pune" class="quick-tag-btn">📍 Pune</a>
+      <a href="/search?query=Delhi" class="quick-tag-btn">📍 Delhi</a>
+      <a href="/search?query=Nanded" class="quick-tag-btn">📍 Nanded</a>
+    </div>
+  </div>
+
+  <!-- Header with query and filter tabs -->
+  <div class="search-header-bar">
+    <div class="search-title-meta">
+      <h1><i class="fas fa-truck-moving" style="color: #ea580c;"></i> Search Results</h1>
+      <p>
+        <% if (typeof query !== 'undefined' && query) { %>
+          Found <strong><%= results ? results.length : 0 %></strong> result<%= (results && results.length === 1) ? '' : 's' %> for "<strong><%= query %></strong>"
+        <% } else { %>
+          Showing all available marketplace fleets & deliveries (<%= results ? results.length : 0 %> active)
+        <% } %>
+      </p>
+    </div>
+
+    <!-- Filter Tabs (All, Lorries, Deliveries) -->
+    <div class="search-filter-pills">
+      <a href="/search?query=<%= encodeURIComponent(typeof query !== 'undefined' ? query : '') %>&type=all" 
+         class="filter-pill <%= (!filterType || filterType === 'all') ? 'active' : '' %>">
+        <i class="fas fa-th-large"></i> All (<%= typeof totalCount !== 'undefined' ? totalCount : results.length %>)
+      </a>
+      <a href="/search?query=<%= encodeURIComponent(typeof query !== 'undefined' ? query : '') %>&type=lorry" 
+         class="filter-pill <%= (filterType === 'lorry' || filterType === 'lorries') ? 'active' : '' %>">
+        <i class="fas fa-truck"></i> Lorries (<%= typeof lorryCount !== 'undefined' ? lorryCount : results.filter(r => !r.goodsType).length %>)
+      </a>
+      <a href="/search?query=<%= encodeURIComponent(typeof query !== 'undefined' ? query : '') %>&type=delivery" 
+         class="filter-pill <%= (filterType === 'delivery' || filterType === 'deliveries') ? 'active' : '' %>">
+        <i class="fas fa-box"></i> Deliveries (<%= typeof deliveryCount !== 'undefined' ? deliveryCount : results.filter(r => r.goodsType).length %>)
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Errors if any -->
 <% if (typeof error !== 'undefined' && error) { %>
-  <div class="alert alert-error">
+  <div class="alert alert-error" style="margin-bottom: 2rem;">
     <i class="fas fa-exclamation-circle"></i>
     <%= error %>
   </div>
-<% } else if (results && results.length > 0) { %>
+<% } %>
+
+<!-- ==========================================
+     SEARCH RESULTS GRID (TRUCK CARDS)
+     ========================================== -->
+<% if (results && results.length > 0) { %>
   <div class="card-container">
     <% results.forEach(item => { %>
-      <div class="card">
-        <div class="card-header">
-          <%= item.truckType || item.goodsType || 'Result' %>
+      <div class="truck-card">
+        <!-- Top Orange Header -->
+        <div class="truck-card-topbar">
+          <div class="permit-tag"><%= item.goodsType ? 'EXPRESS FREIGHT' : 'NATIONAL PERMIT' %></div>
         </div>
-        <div class="card-body">
-          <div class="card-item">
-            <i class="fas fa-map-pin"></i>
-            <span><strong>Origin:</strong> <%= item.origin || item.pickupLocation %></span>
+
+        <!-- Slogans Bar -->
+        <div class="truck-slogans-bar">
+          <div class="slogan-col">
+            <span class="slogan-green">धीरे चलो</span>
+            <span class="slogan-orange">सुरक्षित चलो</span>
           </div>
-          <div class="card-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <span><strong>Destination:</strong> <%= item.destination || item.dropLocation %></span>
+          <div class="slogan-col slogan-center">
+            <span class="slogan-emoji">☀️⛰️</span>
+            <span class="slogan-dark">सफ़र लम्बा है</span>
+            <span class="slogan-orange">मंज़िल जरूर मिलेगी</span>
           </div>
-          <div class="card-item">
-            <i class="fas fa-calendar-alt"></i>
-            <span><strong>Date:</strong> <%= item.date ? new Date(item.date).toLocaleDateString() : (item.pickupDate || 'Flexible') %></span>
-          </div>
-          <div class="card-item">
-            <i class="fas fa-weight-hanging"></i>
-            <span><strong>Capacity:</strong> <%= item.capacity ? item.capacity + ' tons' : (item.weight ? item.weight + ' kg' : 'N/A') %></span>
-          </div>
-          <div class="card-item">
-            <i class="fas fa-user"></i>
-            <span><strong>Owner:</strong> <%= item.ownerName || item.shipperName %></span>
+          <div class="slogan-col">
+            <span class="slogan-red">रुकावट नहीं</span>
+            <span class="slogan-dark">तजुर्बा है</span>
           </div>
         </div>
-        <div class="card-footer" style="display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem;">
-          <% if (item.goodsType) { %>
-            <% if (user && user.role === 'transporter') { %>
-              <a href="/bid/<%= item._id %>" class="btn btn-primary"><i class="fas fa-handshake"></i> Book Delivery</a>
+
+        <!-- Card Body Info -->
+        <div class="truck-card-content">
+          <!-- Row 1: Location with Read More -->
+          <div class="truck-info-row location-row">
+            <% renderSearchAddrCell(item.goodsType ? 'FROM' : 'BASE LOCATION', item.origin || item.pickupLocation || item.location || 'N/A', false); %>
+            <div class="truck-stationed-badge">
+              <i class="fas fa-<%= item.goodsType ? 'route' : 'crosshairs' %>"></i>
+              <span><%= item.goodsType ? 'ROUTE' : 'STATIONED' %></span>
+            </div>
+            <% renderSearchAddrCell(item.goodsType ? 'DESTINATION' : 'VEHICLE PLATE', item.destination || item.dropLocation || item.vehicleNumber || 'AVAILABLE', true); %>
+          </div>
+
+          <!-- Row 2: Specs -->
+          <div class="truck-info-row specs-row">
+            <div class="truck-spec-card">
+              <div class="spec-icon"><i class="fas fa-<%= item.goodsType ? 'box-open' : 'truck' %>"></i></div>
+              <div class="spec-info">
+                <span class="truck-label"><%= item.goodsType ? 'GOODS TYPE' : 'CHASSIS TYPE' %></span>
+                <strong class="truck-val"><%= item.truckType || item.vehicleType || item.goodsType || 'Freight' %></strong>
+              </div>
+            </div>
+            <div class="truck-spec-card">
+              <div class="spec-icon"><i class="fas fa-weight-hanging"></i></div>
+              <div class="spec-info">
+                <span class="truck-label">CAPACITY</span>
+                <strong class="truck-val"><%= item.capacity ? item.capacity + ' Tons' : (item.weight ? item.weight + ' kg' : 'N/A') %></strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Owner -->
+          <div class="truck-owner-row">
+            <div class="owner-info">
+              <span class="truck-label">POSTED BY</span>
+              <strong class="truck-val owner-name"><%= item.ownerName || item.shipperName || 'Verified Partner' %></strong>
+            </div>
+            <div class="status-wrapper">
+              <span class="truck-status-pill <%= item.status || 'available' %>">
+                <%= (item.status || 'available').toUpperCase() %>
+              </span>
+            </div>
+          </div>
+
+          <!-- The Iconic Indian Truck Back Graphic -->
+          <div class="truck-back-graphic">
+            <div class="truck-horn-bar">
+              <span class="flag">🇮🇳</span>
+              <span class="horn-text">BLOW</span>
+              <span class="lotus-flower">🌸</span>
+              <span class="horn-text">HORN</span>
+              <span class="flag">🇮🇳</span>
+            </div>
+
+            <div class="truck-dipper-bar">
+              <span class="arrow-left">◀◀</span>
+              <span class="dipper-text">USE DIPPER AT NIGHT</span>
+              <span class="arrow-right">▶▶</span>
+            </div>
+
+            <div class="truck-bumper-bar">
+              <div class="bumper-left">
+                <div class="tail-lights">
+                  <span class="light yellow"></span>
+                  <span class="light red"></span>
+                  <span class="light red"></span>
+                </div>
+                <span class="speed-badge">SPEED 40 KM</span>
+              </div>
+              <div class="bumper-plate-recess"></div>
+              <div class="bumper-right">
+                <div class="ind-plate">
+                  <span class="ind-text">IND</span>
+                  <span class="ind-num"><%= item.vehicleNumber || 'MH-T2YD-01' %></span>
+                </div>
+                <div class="tail-lights">
+                  <span class="light red"></span>
+                  <span class="light red"></span>
+                  <span class="light yellow"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="truck-hazard-stripes"></div>
+
+            <div class="truck-mudflaps-container">
+              <div class="mudflap mudflap-left">
+                <div class="mudflap-ribs">
+                  <span class="flap-flower">🏵️</span>
+                  <span class="flap-text">T2YD</span>
+                </div>
+              </div>
+              <div class="mudflap mudflap-right">
+                <div class="mudflap-ribs">
+                  <span class="flap-flower">🏵️</span>
+                  <span class="flap-text">BHARAT</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons - NO OVERLAP -->
+          <div class="truck-card-actions">
+            <% if (item.goodsType) { %>
+              <a href="/deliveries/<%= item._id %>" class="btn-truck-specs"><i class="fas fa-eye"></i> Specs</a>
+              <% if (user && user.role === 'transporter') { %>
+                <a href="/bid/<%= item._id %>" class="btn-truck-book"><i class="fas fa-handshake"></i> Book Delivery</a>
+              <% } else { %>
+                <a href="/deliveries/<%= item._id %>" class="btn-truck-book"><i class="fas fa-handshake"></i> View Delivery</a>
+              <% } %>
             <% } else { %>
-              <a href="/deliveries/<%= item._id %>" class="btn btn-outline"><i class="fas fa-eye"></i> View</a>
+              <a href="/lorries/<%= item._id %>" class="btn-truck-specs"><i class="fas fa-eye"></i> Specs</a>
+              <% if (user && user.role === 'shipper') { %>
+                <form action="/dashboard/send-request" method="POST" style="margin: 0; width: 100%; display: flex;">
+                  <input type="hidden" name="lorryId" value="<%= item._id %>" />
+                  <button type="submit" class="btn-truck-book" style="width: 100%; border: none;"><i class="fas fa-handshake"></i> Book Truck</button>
+                </form>
+              <% } else { %>
+                <a href="/lorries/<%= item._id %>" class="btn-truck-book"><i class="fas fa-handshake"></i> View Truck</a>
+              <% } %>
             <% } %>
-          <% } else { %>
-            <% if (user && user.role === 'shipper') { %>
-              <form action="/dashboard/send-request" method="POST" style="display:inline-block;">
-                <input type="hidden" name="lorryId" value="<%= item._id %>" />
-                <button type="submit" class="btn btn-primary"><i class="fas fa-truck-moving"></i> Assign Lorry</button>
-              </form>
-            <% } else { %>
-              <a href="/lorry/<%= item._id %>" class="btn btn-outline"><i class="fas fa-eye"></i> View</a>
-            <% } %>
-          <% } %>
+          </div>
         </div>
       </div>
     <% }) %>
   </div>
 <% } else { %>
-  <p>No results found matching your search.</p>
+  <!-- Rich Empty State with Clickable Suggestions -->
+  <div class="empty-search-card">
+    <div class="empty-search-icon">
+      <i class="fas fa-search-location"></i>
+    </div>
+    <h3>No fleets or deliveries found <%= (typeof query !== 'undefined' && query) ? ('for "' + query + '"') : '' %></h3>
+    <p>We couldn't find any lorries or delivery requests matching your search. Try checking your spelling or search using different keywords or chassis types below.</p>
+    
+    <div class="empty-suggestions">
+      <a href="/search?query=Open+Body" class="quick-tag-btn">🚛 Open Body</a>
+      <a href="/search?query=Container" class="quick-tag-btn">📦 Container</a>
+      <a href="/search?query=Trailer" class="quick-tag-btn">🚚 Trailer</a>
+      <a href="/search?query=Mumbai" class="quick-tag-btn">📍 Mumbai</a>
+      <a href="/search?query=Pune" class="quick-tag-btn">📍 Pune</a>
+      <a href="/search?query=Delhi" class="quick-tag-btn">📍 Delhi</a>
+      <a href="/search?query=Nanded" class="quick-tag-btn">📍 Nanded</a>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+      <a href="/search" class="btn btn-primary" style="display: inline-flex;"><i class="fas fa-globe"></i> Browse All Available Fleets</a>
+      <a href="/" class="btn btn-outline" style="display: inline-flex;"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+  </div>
 <% } %>
