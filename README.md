@@ -20,8 +20,37 @@ A modern, multilingual transport platform built with Node.js/Express backend and
 - 🎯 **SEO Optimized**: Comprehensive meta tags, Open Graph, and Twitter Card support
 - ⚡ **Smooth Scrolling**: Enhanced user experience with smooth page transitions and scrolling
 - 🚀 **Performance Optimized**: Preconnect, DNS prefetch, and optimized asset loading
+- 🎨 **Brand Identity**: High-resolution T2YD truck & highway logo with responsive navigation
+- 🔍 **Smart Marketplace Search**: Multi-field search engine matching cities, vehicle types, license plates, routes, and capacities
+- 🚛 **Indian Truck Desi Art Cards**: Culturally authentic truck cards with slogans, back graphics, equal-height layouts, and inline address expansion
+- 📍 **Exact GPS Pinning & Directions**: Interactive Leaflet map pinning for exact pickup/drop locations with one-click Google Maps turn-by-turn navigation
 
 ## 🆕 Recent Updates
+
+### v3.0.0 - Authentic Indian Truck UI, Smart Search & Exact GPS Pinning
+- **🎨 Brand Identity & Logo**:
+  - Integrated official high-resolution T2YD "Transport to Your Destination" truck & highway brand logo in the desktop and mobile navigation bars.
+  - Added responsive scaling (`52px` desktop, `42px` tablet, `35px` mobile) and hover drop-shadow glow.
+- **🔍 Advanced Multi-Field Marketplace Search Engine**:
+  - Full support for both `?query=...` and `?q=...` with automatic regex sanitization.
+  - Multi-token cross-field matching (e.g. `"Mumbai Open Body"`, `"Pune to Delhi"`, `"Nanded 10 Ton"`).
+  - Alphanumeric vehicle registration plate matching without space sensitivity (e.g. `"MH26"`, `"MH 26"`).
+  - Numerical capacity and weight matching with tolerance thresholds.
+  - Active interactive search bar directly on the search results page with filter pills (`All`, `Lorries`, `Deliveries`) and popular quick search tag chips (`Open Body`, `Container`, `Trailer`, `Mumbai`, `Pune`, `Delhi`, `Nanded`).
+  - Discovery fallback feed for empty searches and user-friendly empty state with recommendations.
+- **🚛 Authentic Indian Truck Desi Art UI Cards**:
+  - Authentic Indian highway truck aesthetic: `NATIONAL PERMIT` / `EXPRESS FREIGHT` banners, Hindi truck shayari slogans (`धीरे चलो सुरक्षित चलो`, `सफ़र लम्बा है मंज़िल जरूर मिलेगी`, `रुकावट नहीं तजुर्बा है`), stationed/route badges, payload capacity in tons.
+  - Iconic Indian Truck Back Graphic: `"BLOW 🌸 HORN"`, `"USE DIPPER AT NIGHT"`, speed badge (`SPEED 40 KM`), embossed IND plates, chevron hazard stripes, and `T2YD BHARAT` mudflaps.
+  - Equal-height flexbox stretch grid across all viewport sizes (`card-container` with `align-items: stretch`).
+  - Interactive inline `"Read More"` / `"Read Less"` address truncation for long addresses (>25 characters).
+  - Global button and action overlap prevention across all dashboard action bars.
+- **📍 Exact Map Location Pinning & Google Maps Navigation**:
+  - Interactive Leaflet map allowing shippers to set exact pickup and drop coordinates and precise street addresses after a booking request is accepted.
+  - Transporters and drivers can view the updated route on map and launch turn-by-turn navigation directly in Google Maps.
+- **🛣️ Animated Highway Stage & Hero Section**:
+  - Panoramic hero banner showcasing T2YD logistics.
+  - Animated highway stage with moving road markings, truck cruiser animation with road shadow, and highway milestone counter (`100 KM`).
+  - Modern skeleton loading animation screen replacing old loading animations.
 
 ### v2.8.0 - Enhanced Voice Response System
 - **🎤 Website Interaction Voice**: Added voice feedback for all website interactions (form submissions, button clicks, navigation)
