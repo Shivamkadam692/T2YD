@@ -126,6 +126,9 @@ app.use(async (req, res, next) => {
 // Routes
 app.get('/', homeController.getHome);
 app.get('/search', homeController.search);
+app.get('/explore', homeController.getExplore);
+app.get('/discover', homeController.getExplore);
+app.get('/reels', homeController.getExplore);
 
 app.use('/lorries', lorryRoutes);
 app.use('/deliveries', deliveryRoutes);
@@ -140,6 +143,7 @@ app.use('/chatbot', chatBotRoutes);
 app.use('/gemini', geminiRoutes);
 
 // Public static pages used by the footer
+app.get('/how-it-works', (req, res) => res.render('howItWorks', { user: res.locals.user }));
 app.get('/about', (req, res) => res.render('about'));
 app.get('/terms', (req, res) => res.render('terms'));
 app.get('/privacy', (req, res) => res.render('privacy'));
@@ -189,27 +193,32 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('locationUpdate', async ({ requestId, role, lat, lng }) => {
+  socket.on('locationUpdate', async ({ requestId, role, lat, lng, heading, speed }) => {
     try {
-      
       if (!requestId || lat == null || lng == null) {
-        console.log('Invalid location update data:', { requestId, role, lat, lng });
         return;
       }
       
       // Import Request model inside the function to ensure it's available
       const Request = require('./models/Request');
       
+      const locData = { lat, lng, updatedAt: new Date() };
       const update = role === 'shipper'
-        ? { shipperLocation: { lat, lng, updatedAt: new Date() }, trackingActiveShipper: true }
-        : { transporterLocation: { lat, lng, updatedAt: new Date() }, trackingActiveTransporter: true };
+        ? { shipperLocation: locData, trackingActiveShipper: true }
+        : { transporterLocation: locData, trackingActiveTransporter: true };
       const updatedRequest = await Request.findByIdAndUpdate(requestId, update, { new: true });
       if (!updatedRequest) {
-        console.log('Request not found for ID:', requestId);
         return;
       }
-      console.log('Emitting location update to room:', requestId, { role, lat, lng });
-      io.to(requestId).emit('locationUpdate', { role, lat, lng, updatedAt: Date.now() });
+      io.to(requestId).emit('locationUpdate', {
+        requestId,
+        role,
+        lat,
+        lng,
+        heading: heading != null ? heading : null,
+        speed: speed != null ? speed : null,
+        updatedAt: Date.now()
+      });
     } catch (e) {
       console.error('Location update error:', e);
     }

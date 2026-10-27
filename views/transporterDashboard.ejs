@@ -3,7 +3,7 @@
     <p><i class="fas fa-hand-wave"></i> Welcome back, <%= user.name %>! Manage your lorries and find delivery opportunities.</p>
 </div>
 
-        <!-- My Lorries Section -->
+<!-- My Lorries Section -->
 <section class="dashboard-section">
     <div class="section-header">
         <h2><i class="fas fa-truck"></i> My Lorries</h2>
@@ -48,14 +48,231 @@
     </div>
 </section>
 
-        <!-- Available Deliveries Section -->
-<section class="dashboard-section">
-    <h2><i class="fas fa-box-open"></i> Available Deliveries</h2>
+<!-- My Bids & Transport Requests Section -->
+<section class="dashboard-section" style="margin-top: 2rem;">
+    <div class="bids-header-bar">
+        <div>
+            <h2><i class="fas fa-gavel"></i> My Bids & Transport Requests</h2>
+            <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.88rem;">Track status, route assignments, pickups, and payments for your submitted bids.</p>
+        </div>
+
+        <div class="bids-filter-tabs" id="transporterBidTabs">
+            <button class="bid-tab-btn active" data-filter="active">
+                <i class="fas fa-clock"></i> Active & Pending
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'pending' || r.status === 'accepted').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="accepted">
+                <i class="fas fa-check-circle"></i> Won & Assigned
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'accepted').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="pending">
+                <i class="fas fa-hourglass-half"></i> Pending
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'pending').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="rejected">
+                <i class="fas fa-times-circle"></i> Rejected
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'rejected').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="all">
+                <i class="fas fa-list"></i> All Bids (<%= requests.length %>)
+            </button>
+        </div>
+    </div>
+    
+    <div class="bids-marketplace-grid" id="transporterBidsGrid">
+        <% if (requests.length === 0) { %>
+            <div class="bid-empty-state">
+                <i class="fas fa-truck-loading"></i>
+                <h3>No Bids Sent Yet</h3>
+                <p>Browse available loads below and submit bids to secure freight transport contracts.</p>
+                <a href="#available-deliveries" class="btn btn-primary" style="margin-top: 0.5rem;"><i class="fas fa-search"></i> View Available Deliveries</a>
+            </div>
+        <% } else { %>
+            <% requests.forEach(request => { %>
+                <% const loadShortId = request.delivery ? request.delivery._id.toString().slice(-6).toUpperCase() : request._id.toString().slice(-6).toUpperCase(); %>
+                <div class="marketplace-bid-card card-status-<%= request.status %>" data-status="<%= request.status %>">
+                    <!-- Bid Card Header -->
+                    <div class="bid-card-header">
+                        <span class="bid-load-id">
+                            <i class="fas fa-barcode"></i> Load #<%= loadShortId %>
+                        </span>
+                        <span class="bid-status-pill status-<%= request.status %>">
+                            <% if (request.status === 'pending') { %>
+                                <i class="fas fa-hourglass-half"></i> Pending Review
+                            <% } else if (request.status === 'accepted') { %>
+                                <i class="fas fa-check-circle"></i> Bid Won • Assigned
+                            <% } else if (request.status === 'rejected') { %>
+                                <i class="fas fa-times-circle"></i> Rejected
+                            <% } else { %>
+                                <i class="fas fa-flag-checkered"></i> <%= request.status %>
+                            <% } %>
+                        </span>
+                    </div>
+
+                    <!-- Bid Card Body -->
+                    <div class="bid-card-body">
+                        <!-- Price and Goods -->
+                        <div class="bid-price-goods-row">
+                            <div class="bid-price-box">
+                                <span class="bid-price-label">Your Bid Amount</span>
+                                <span class="bid-price-amount">₹<%= (request.price || 0).toLocaleString('en-IN') %></span>
+                            </div>
+                            <span class="bid-goods-pill">
+                                <i class="fas fa-box"></i> <%= request.delivery ? request.delivery.goodsType : 'General Cargo' %>
+                                <% if (request.delivery && request.delivery.weight) { %>
+                                    • <%= request.delivery.weight %> kg
+                                <% } %>
+                            </span>
+                        </div>
+
+                        <!-- Route Journey Flow -->
+                        <div class="bid-route-flow">
+                            <div class="route-stop">
+                                <span class="route-icon origin"><i class="fas fa-circle"></i></span>
+                                <div class="route-text">
+                                    <span class="route-type">Pickup Location</span>
+                                    <span class="route-city"><%= request.delivery ? request.delivery.pickupLocation : 'Origin' %></span>
+                                </div>
+                            </div>
+                            <div class="route-stop">
+                                <span class="route-icon destination"><i class="fas fa-map-marker-alt"></i></span>
+                                <div class="route-text">
+                                    <span class="route-type">Delivery Destination</span>
+                                    <span class="route-city"><%= request.delivery ? request.delivery.dropLocation : 'Destination' %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipper & Assigned Lorry Grid -->
+                        <div class="bid-meta-grid">
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-building"></i> Shipper</span>
+                                <span class="meta-value" title="<%= request.shipper ? request.shipper.name : 'Unknown' %>">
+                                    <%= request.shipper ? request.shipper.name : 'Unknown' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-truck"></i> Vehicle</span>
+                                <span class="meta-value" title="<%= request.lorry ? request.lorry.vehicleNumber : 'N/A' %>">
+                                    <%= request.lorry ? request.lorry.vehicleNumber : 'Assigned Truck' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-truck-moving"></i> Truck Type</span>
+                                <span class="meta-value">
+                                    <%= request.lorry ? request.lorry.vehicleType : 'Standard' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-weight-hanging"></i> Capacity</span>
+                                <span class="meta-value">
+                                    <%= request.lorry && request.lorry.capacity ? `${request.lorry.capacity} tons` : 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <% if (request.message) { %>
+                            <div class="bid-message-callout">
+                                <i class="fas fa-comment-dots"></i> "<%= request.message %>"
+                            </div>
+                        <% } %>
+
+                        <% if (request.exactPickup && request.exactPickup.lat) { %>
+                            <div style="background: rgba(22, 163, 74, 0.08); padding: 0.5rem 0.75rem; border-radius: 8px; border-left: 3px solid #16a34a; font-size: 0.8rem; color: #15803d;">
+                                <i class="fas fa-map-marked-alt"></i> <strong>Shipper Pinned Route:</strong>
+                                <%= request.exactPickup.address || 'Exact GPS coordinates pinned' %>
+                            </div>
+                        <% } %>
+
+                        <% if (request.status === 'rejected') { %>
+                            <div class="bid-rejection-box">
+                                <div class="bid-rejection-title">
+                                    <i class="fas fa-info-circle"></i> Bid Not Selected
+                                </div>
+                                <p class="bid-rejection-desc">
+                                    Your bid for Load #<%= loadShortId %> was rejected because another bid was accepted by the load owner. You can explore other available loads and submit new bids.
+                                </p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Bid Card Footer & Role-based Actions -->
+                    <div class="bid-card-footer">
+                        <div class="bid-submission-time">
+                            <i class="far fa-clock"></i> Sent on: <%= new Date(request.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
+                        </div>
+
+                        <div class="bid-actions-group">
+                            <% if (request.status === 'accepted') { %>
+                                <% const gmapsOrigin = (request.exactPickup && request.exactPickup.lat) ? (request.exactPickup.lat + ',' + request.exactPickup.lng) : (request.delivery ? encodeURIComponent(request.delivery.pickupLocation) : ''); %>
+                                <% const gmapsDest = (request.exactDrop && request.exactDrop.lat) ? (request.exactDrop.lat + ',' + request.exactDrop.lng) : (request.delivery ? encodeURIComponent(request.delivery.dropLocation) : ''); %>
+
+                                <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary">
+                                    <i class="fas fa-location-arrow"></i> Track Live
+                                </a>
+
+                                <% if (gmapsOrigin && gmapsDest) { %>
+                                    <a href="https://www.google.com/maps/dir/?api=1&origin=<%= gmapsOrigin %>&destination=<%= gmapsDest %>&travelmode=driving" target="_blank" rel="noopener noreferrer" class="btn" style="background:#1a73e8; color:white;">
+                                        <i class="fab fa-google"></i> Directions
+                                    </a>
+                                <% } %>
+
+                                <!-- Mark Pickup Action with Single-Click / Concurrency Guard -->
+                                <% if (!request.loadedAt) { %>
+                                    <button type="button" class="btn btn-success mark-pickup-btn" onclick="handleDashboardMarkPickup(this, '<%= request._id %>')">
+                                        <i class="fas fa-box-check"></i> Mark Pickup
+                                    </button>
+                                <% } else { %>
+                                    <button type="button" class="btn btn-pickup-marked" disabled title="Pickup was marked on <%= new Date(request.loadedAt).toLocaleString() %>">
+                                        <i class="fas fa-check-circle"></i> Pickup Marked
+                                    </button>
+                                <% } %>
+
+                                <form action="/dashboard/complete-delivery/<%= request._id %>" method="POST" onsubmit="return confirm('Confirm delivery completion for Load #<%= loadShortId %>?');">
+                                    <button type="submit" class="btn btn-outline" style="border-color:#16a34a; color:#15803d;">
+                                        <i class="fas fa-check-double"></i> Mark Delivered
+                                    </button>
+                                </form>
+
+                                <a href="/payments/request/<%= request._id %>" class="btn btn-outline">
+                                    <i class="fas fa-receipt"></i> Payments
+                                </a>
+                            <% } else if (request.status === 'pending') { %>
+                                <span style="font-size: 0.82rem; color: #b45309; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i class="fas fa-hourglass-half"></i> Awaiting shipper acceptance
+                                </span>
+                            <% } else if (request.status === 'rejected') { %>
+                                <a href="#available-deliveries" class="btn btn-primary" onclick="document.getElementById('available-deliveries').scrollIntoView({behavior: 'smooth'})">
+                                    <i class="fas fa-search"></i> Browse Other Loads
+                                </a>
+                            <% } else if (request.status === 'completed') { %>
+                                <span style="font-size: 0.82rem; color: #16a34a; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                    <i class="fas fa-check-circle"></i> Successfully Delivered
+                                </span>
+                                <a href="/payments/request/<%= request._id %>" class="btn btn-outline">
+                                    <i class="fas fa-receipt"></i> Payments
+                                </a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
+</section>
+
+<!-- Available Deliveries Section -->
+<section class="dashboard-section" id="available-deliveries" style="margin-top: 2rem;">
+    <div class="section-header">
+        <h2><i class="fas fa-box-open"></i> Available Deliveries for Bidding</h2>
+        <span style="font-size: 0.88rem; color: #64748b;">Loads open for transporter bids across all corridors.</span>
+    </div>
     
     <div class="deliveries-container">
         <% if (availableDeliveries.length === 0) { %>
             <div class="empty-state">
-                <p>No available deliveries at the moment. Check back later for new opportunities!</p>
+                <i class="fas fa-check-circle" style="font-size: 2rem; color: #16a34a; margin-bottom: 0.5rem;"></i>
+                <p>No open deliveries at the moment. All active loads are currently assigned or in transit. Check back soon!</p>
             </div>
         <% } else { %>
             <% availableDeliveries.forEach(delivery => { %>
@@ -67,19 +284,19 @@
                     
                     <div class="delivery-details">
                         <div class="detail-group">
-                            <label>Shipper:</label>
-                            <span><%= delivery.shipper.name %></span>
+                            <label><i class="fas fa-user"></i> Shipper:</label>
+                            <span><%= delivery.shipper ? delivery.shipper.name : 'Verified Shipper' %></span>
                         </div>
                         <div class="detail-group">
-                            <label>Weight:</label>
+                            <label><i class="fas fa-weight-hanging"></i> Weight:</label>
                             <span><%= delivery.weight %> kg</span>
                         </div>
                         <div class="detail-group">
-                            <label>Route:</label>
+                            <label><i class="fas fa-route"></i> Route:</label>
                             <span><%= delivery.pickupLocation %> → <%= delivery.dropLocation %></span>
                         </div>
                         <div class="detail-group">
-                            <label>Posted:</label>
+                            <label><i class="far fa-calendar-alt"></i> Posted:</label>
                             <span><%= new Date(delivery.createdAt).toLocaleDateString() %></span>
                         </div>
                     </div>
@@ -87,18 +304,16 @@
                     <div class="delivery-actions">
                         <% if (delivery.bidStatus) { %>
                             <% if (delivery.bidStatus.status === 'pending') { %>
-                                <span class="bid-status pending">Bid Sent (₹<%= delivery.bidStatus.price %>)</span>
+                                <span class="bid-status pending">Bid Sent (₹<%= (delivery.bidStatus.price || 0).toLocaleString('en-IN') %>)</span>
                                 <small class="bid-date">Sent on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
                             <% } else if (delivery.bidStatus.status === 'rejected') { %>
-                                <span class="bid-status rejected">Bid Rejected (₹<%= delivery.bidStatus.price %>)</span>
-                                <small class="bid-date">Rejected on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
+                                <span class="bid-status rejected">Bid Rejected</span>
                                 <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Send New Bid</a>
                             <% } else if (delivery.bidStatus.status === 'accepted') { %>
-                                <span class="bid-status accepted">Bid Accepted (₹<%= delivery.bidStatus.price %>)</span>
-                                <small class="bid-date">Accepted on <%= new Date(delivery.bidStatus.createdAt).toLocaleDateString() %></small>
+                                <span class="bid-status accepted">Bid Accepted</span>
                             <% } %>
                         <% } else { %>
-                            <a href="/bid/<%= delivery._id %>" class="btn btn-primary">Send Bid</a>
+                            <a href="/bid/<%= delivery._id %>" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit Bid</a>
                         <% } %>
                     </div>
                 </div>
@@ -107,133 +322,113 @@
     </div>
 </section>
 
-        <!-- My Requests Section -->
-<section class="dashboard-section">
-    <h2>My Requests</h2>
+<script>
+// Interactive Client-Side Tab Filtering for Transporter Dashboard Bids
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('#transporterBidTabs .bid-tab-btn');
+    const cards = document.querySelectorAll('#transporterBidsGrid .marketplace-bid-card');
     
-    <div class="requests-container">
-        <% if (requests.length === 0) { %>
-            <div class="empty-state">
-                <p>No requests sent yet. Start bidding on deliveries to see your requests here.</p>
-            </div>
-        <% } else { %>
-            <% requests.forEach(request => { %>
-                <div class="request-card">
-                    <div class="request-header">
-                        <h3>Request for <%= request.delivery ? request.delivery.goodsType : 'Unknown Goods' %></h3>
-                        <span class="status <%= request.status %>"><%= request.status %></span>
-                    </div>
-                    
-                    <div class="request-details">
-                        <div class="detail-group">
-                            <label>Shipper:</label>
-                            <span><%= request.shipper ? request.shipper.name : 'Unknown' %></span>
-                        </div>
-                        <div class="detail-group">
-                            <label>Vehicle:</label>
-                            <span><%= request.lorry ? `${request.lorry.vehicleNumber} (${request.lorry.vehicleType})` : 'Unknown Vehicle' %></span>
-                        </div>
-                        <div class="detail-group">
-                            <label>Price:</label>
-                            <span class="price">₹<%= request.price || 'Not set' %></span>
-                        </div>
-                        <% if (request.delivery) { %>
-                            <div class="detail-group">
-                                <label>Route:</label>
-                                <span><%= request.delivery.pickupLocation %> → <%= request.delivery.dropLocation %></span>
-                            </div>
-                        <% } %>
-                        <div class="detail-group">
-                            <label>Sent:</label>
-                            <span><%= new Date(request.createdAt).toLocaleDateString() %></span>
-                        </div>
-                        <% if (request.exactPickup && request.exactPickup.lat) { %>
-                            <div class="detail-group" style="background: rgba(22, 163, 74, 0.08); padding: 0.6rem 0.8rem; border-radius: 10px; border-left: 3px solid #16a34a; margin-top: 0.5rem;">
-                                <label style="color: #15803d; font-weight: 700;">📍 Selected Route on Map (From Shipper):</label>
-                                <span><strong>Pickup:</strong> <%= request.exactPickup.address || (request.exactPickup.lat.toFixed(4) + ', ' + request.exactPickup.lng.toFixed(4)) %><br>
-                                <strong>Drop:</strong> <%= request.exactDrop ? (request.exactDrop.address || (request.exactDrop.lat.toFixed(4) + ', ' + request.exactDrop.lng.toFixed(4))) : 'Pending' %></span>
-                            </div>
-                        <% } %>
-                    </div>
-                    
-                    <% if (request.status === 'accepted') { %>
-                        <% const gmapsOrigin = (request.exactPickup && request.exactPickup.lat) ? (request.exactPickup.lat + ',' + request.exactPickup.lng) : (request.delivery ? encodeURIComponent(request.delivery.pickupLocation) : ''); %>
-                        <% const gmapsDest = (request.exactDrop && request.exactDrop.lat) ? (request.exactDrop.lat + ',' + request.exactDrop.lng) : (request.delivery ? encodeURIComponent(request.delivery.dropLocation) : ''); %>
-                        <div class="request-actions">
-                            <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary"><i class="fas fa-location-arrow"></i> Track Live</a>
-                            <% if (gmapsOrigin && gmapsDest) { %>
-                              <a href="https://www.google.com/maps/dir/?api=1&origin=<%= gmapsOrigin %>&destination=<%= gmapsDest %>&travelmode=driving" target="_blank" rel="noopener noreferrer" class="btn" style="background:#1a73e8; color:white;">
-                                <i class="fab fa-google"></i> Google Maps Directions
-                              </a>
-                            <% } %>
-                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
-                            <form action="/dashboard/mark-loaded/<%= request._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-outline">Mark Loaded</button>
-                            </form>
-                            <form action="/dashboard/complete-delivery/<%= request._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-success">Mark as Delivered</button>
-                            </form>
-                        </div>
-                    <% } else if (request.status === 'completed') { %>
-                        <div class="request-actions">
-                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
-                        </div>
-                    <% } else if (request.status === 'rejected' && request.delivery) { %>
-                        <div class="request-actions">
-                            <a href="/bid/<%= request.delivery._id %>" class="btn btn-primary">Send New Bid</a>
-                            <span class="rejection-note">Your bid was rejected. You can send a new bid with different terms.</span>
-                        </div>
-                    <% } %>
-                </div>
-            <% }) %>
-        <% } %>
-    </div>
-</section>
+    // Set default view to active & pending
+    filterCards('active');
 
-<!-- Old inline bid modal removed; use standalone /bid/:id page -->
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            filterCards(this.dataset.filter);
+        });
+    });
 
-<style>
-  .rejection-note {
-    display: block;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #e74c3c;
-    font-style: italic;
-  }
-  
-  .status.rejected {
-    background-color: #e74c3c;
-    color: white;
-  }
-  
-  .bid-status {
-    display: inline-block;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  
-  .bid-status.pending {
-    background-color: #f39c12;
-    color: white;
-  }
-  
-  .bid-status.rejected {
-    background-color: #e74c3c;
-    color: white;
-  }
-  
-  .bid-status.accepted {
-    background-color: #27ae60;
-    color: white;
-  }
-  
-  .bid-date {
-    display: block;
-    font-size: 0.7rem;
-    color: #666;
-    margin-bottom: 0.5rem;
-  }
-</style>
+    function filterCards(filter) {
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const status = card.dataset.status;
+            let show = false;
+            
+            if (filter === 'all') {
+                show = true;
+            } else if (filter === 'active') {
+                show = (status === 'pending' || status === 'accepted');
+            } else {
+                show = (status === filter);
+            }
+            
+            if (show) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        let existingEmpty = document.getElementById('transporterFilterEmptyState');
+        if (visibleCount === 0 && cards.length > 0) {
+            if (!existingEmpty) {
+                existingEmpty = document.createElement('div');
+                existingEmpty.id = 'transporterFilterEmptyState';
+                existingEmpty.className = 'bid-empty-state';
+                existingEmpty.innerHTML = `
+                    <i class="fas fa-filter"></i>
+                    <h3>No Bids in this View</h3>
+                    <p>No bids found matching the selected filter.</p>
+                `;
+                document.getElementById('transporterBidsGrid').appendChild(existingEmpty);
+            }
+            existingEmpty.style.display = 'flex';
+        } else if (existingEmpty) {
+            existingEmpty.style.display = 'none';
+        }
+    }
+});
+
+// Robust, Duplicate-Proof Mark Pickup Handler for Dashboard
+async function handleDashboardMarkPickup(buttonEl, requestId) {
+    if (buttonEl.disabled || buttonEl.dataset.busy === 'true') {
+        return;
+    }
+
+    if (!confirm('Are you sure you want to mark pickup for this load? This updates status to in-transit and notifies the shipper.')) {
+        return;
+    }
+
+    const originalHtml = buttonEl.innerHTML;
+    buttonEl.dataset.busy = 'true';
+    buttonEl.disabled = true;
+    buttonEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Pickup...';
+
+    try {
+        const response = await fetch(`/dashboard/mark-pickup/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok || response.status === 409) {
+            // Either newly marked or already marked
+            buttonEl.disabled = true;
+            buttonEl.dataset.busy = 'false';
+            buttonEl.className = 'btn btn-pickup-marked';
+            buttonEl.innerHTML = '<i class="fas fa-check-circle"></i> Pickup Marked';
+            buttonEl.removeAttribute('onclick');
+            buttonEl.title = 'Pickup confirmed';
+            alert(data.message || 'Pickup marked successfully! Delivery is now in transit.');
+        } else {
+            // Failure: re-enable button and show error allowing safe retry
+            buttonEl.disabled = false;
+            buttonEl.dataset.busy = 'false';
+            buttonEl.innerHTML = originalHtml;
+            alert(data.error || data.message || 'Failed to mark pickup. Please try again.');
+        }
+    } catch (err) {
+        console.error('Error marking pickup from dashboard:', err);
+        buttonEl.disabled = false;
+        buttonEl.dataset.busy = 'false';
+        buttonEl.innerHTML = originalHtml;
+        alert('Network error while marking pickup. Please check your connection and try again.');
+    }
+}
+</script>

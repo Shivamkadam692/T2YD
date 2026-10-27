@@ -337,6 +337,10 @@
                 <button class="reject-btn" onclick="rejectBid('${typeof notification.relatedRequest === 'object' ? notification.relatedRequest._id : notification.relatedRequest}')">Reject Bid</button>` : 
                ''
              }
+             ${notification.type === 'request_rejected' ? 
+               `<a href="/dashboard/transporter#available-deliveries" class="accept-btn" style="background:#2563eb; color:white; text-decoration:none; display:inline-block; margin-right:0.5rem;"><i class="fas fa-search"></i> Browse Other Loads</a>` : 
+               ''
+             }
             ${!notification.isRead ? 
               `<button class="mark-read-btn" onclick="markAsRead('${notification._id}')">Mark Read</button>` : 
               ''

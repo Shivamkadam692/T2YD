@@ -24,6 +24,39 @@ exports.getHome = async (req, res) => {
 };
 
 /**
+ * Render Reels-Style Explore & Discovery Feed
+ */
+exports.getExplore = async (req, res) => {
+  try {
+    const isTransporter = req.session?.userId && req.session.userRole === 'transporter';
+    const lorryQuery = isTransporter 
+      ? Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 }).lean() 
+      : Lorry.find({ status: { $ne: 'offline' } }).sort({ createdAt: -1 }).lean();
+    
+    const [lorries, deliveries] = await Promise.all([
+      lorryQuery,
+      Delivery.find({ status: { $ne: 'cancelled' } }).sort({ createdAt: -1 }).lean()
+    ]);
+
+    const initialTab = (req.query.tab === 'loads' || req.query.tab === 'deliveries') ? 'loads' : 'trucks';
+    const initialView = req.query.view === 'grid' ? 'grid' : 'reels';
+    const initialQuery = (req.query.query || req.query.q || '').trim();
+    
+    res.render('explore', { 
+      lorries: lorries || [], 
+      deliveries: deliveries || [],
+      initialTab,
+      initialView,
+      initialQuery,
+      title: 'Explore Transport | T2YD Reels Discovery'
+    });
+  } catch (error) {
+    console.error('Error in getExplore:', error);
+    res.status(500).render('error', { message: 'Unable to load explore page' });
+  }
+};
+
+/**
  * Helper to escape regex special characters
  */
 function escapeRegex(str) {

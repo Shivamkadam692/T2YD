@@ -1,0 +1,2024 @@
+<style>
+/* ==========================================================================
+   HOW T2YD WORKS — DEDICATED SHOWCASE PAGE
+   LAPTOP VIEW ALIGNMENT PERFECTION (1024px - 1600px)
+   ========================================================================== */
+
+.how-page-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem 0 3.5rem;
+  box-sizing: border-box;
+}
+
+/* Breadcrumbs */
+.how-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1.25rem;
+}
+
+.how-breadcrumb a {
+  color: #ea580c;
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.how-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.how-breadcrumb .sep {
+  color: #cbd5e1;
+}
+
+/* Page Hero Card */
+.how-hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fffaf5 60%, #fff7ed 100%);
+  border-radius: 28px;
+  border: 1.5px solid rgba(249, 115, 22, 0.22);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.06), 0 6px 18px -4px rgba(249, 115, 22, 0.1);
+  padding: 2.75rem 2rem 2.25rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.how-hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(234, 88, 12, 0.08) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.how-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.how-badge-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.how-badge-pill {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1.5px solid rgba(249, 115, 22, 0.35);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08);
+}
+
+.how-desi-pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.flag-dot.orange { background: #f97316; }
+.flag-dot.white { background: #ffffff; border: 1px solid #cbd5e1; }
+.flag-dot.green { background: #16a34a; }
+
+.how-main-title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.5px;
+  font-family: 'Outfit', -apple-system, sans-serif;
+}
+
+.how-main-subtitle {
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  color: #64748b;
+  line-height: 1.65;
+  margin: 0 auto 1.75rem auto;
+  max-width: 740px;
+}
+
+/* Trust Pill Grid */
+.how-trust-grid {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.how-trust-pill {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ea580c;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Persona Role Tabs */
+.how-role-tabs {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 5px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.how-role-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.how-role-btn:hover {
+  color: #ea580c;
+}
+
+.how-role-btn.active {
+  background: #ffffff;
+  color: #ea580c;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   MATHEMATICALLY PERFECT LAPTOP GRID (1024px to 1600px)
+   ========================================================================== */
+
+.how-grid-laptop {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+  position: relative;
+  margin-bottom: 3.5rem;
+}
+
+/* Card Container Equal Alignment */
+.how-step-card {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 22px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  box-sizing: border-box;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  position: relative;
+  overflow: visible;
+}
+
+.how-step-card:hover {
+  transform: translateY(-6px);
+  border-color: #ea580c;
+  box-shadow: 0 16px 36px -8px rgba(234, 88, 12, 0.22), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Standardized Card Header */
+.step-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 42px;
+  margin-bottom: 1rem;
+}
+
+.step-num-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.step-num-pill.ai-num-pill {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
+}
+
+.step-dot {
+  width: 6px;
+  height: 6px;
+  background: #ea580c;
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes dotPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+.step-role-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-role-tag.shipper-tag {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.step-role-tag.all-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.step-role-tag.bid-tag {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.step-role-tag.confirm-tag {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.step-role-tag.track-tag {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+.step-role-tag.ai-tag {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  border: none;
+}
+
+/* Standardized Middle Graphic Stage */
+.step-visual-stage {
+  height: 126px;
+  min-height: 126px;
+  max-height: 126px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.how-step-card:hover .step-visual-stage {
+  background: #fffaf5;
+  border-color: #fed7aa;
+}
+
+/* Graphic 1: Account */
+.account-visual-box {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.avatar-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+  color: #c2410c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.2);
+  flex-shrink: 0;
+}
+
+.avatar-verified-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  border: 2px solid #ffffff;
+}
+
+.account-id-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.id-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.id-brand {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ea580c;
+  letter-spacing: 0.5px;
+}
+
+.id-status-chip {
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.id-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 5px;
+}
+
+.id-line {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.id-line.full { width: 85%; }
+.id-line.half { width: 50%; }
+
+.id-permit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* Graphic 2: Load & Map */
+.map-mini-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.map-grid-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px),
+                    linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.8;
+}
+
+.map-pin-pulse {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-marker {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+  animation: pinBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.pin-ring {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  animation: rippleRing 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes rippleRing {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.cargo-crate-box {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cargo-crate-body {
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  border: 1px solid #d97706;
+}
+
+.crate-shadow {
+  width: 80%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  margin-top: 3px;
+}
+
+.route-preview-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #334155;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 3;
+}
+
+/* Graphic 3: Bidding Deck */
+.bid-deck-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.mini-bid-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 4px 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.mini-bid-card:hover,
+.mini-bid-card.highlight {
+  border-color: #ea580c;
+  background: #fff7ed;
+  box-shadow: 0 3px 8px rgba(249, 115, 22, 0.15);
+  transform: scale(1.02);
+}
+
+.mini-transporter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.t-name {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.t-rating {
+  color: #f59e0b;
+  font-weight: 800;
+  font-size: 0.68rem;
+}
+
+.mini-price-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.best-pill {
+  background: #16a34a;
+  color: white;
+  font-size: 0.55rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.4px;
+}
+
+.mini-price {
+  font-weight: 800;
+  color: #475569;
+}
+
+.mini-price.best {
+  color: #ea580c;
+  font-size: 0.85rem;
+}
+
+/* Graphic 4: Confirmation */
+.deal-confirmed-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 6px;
+}
+
+.deal-badge-stamp {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.15);
+}
+
+.assigned-truck-plate {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 5px 9px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.plate-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.plate-flag {
+  background: #facc15;
+  color: #0f172a;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.plate-no {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 0.8rem;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.assigned-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.driver-ready {
+  color: #16a34a;
+}
+
+/* Graphic 5: 2D Route */
+.track-2d-canvas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.track-route-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.point-a i { color: #16a34a; }
+.point-b i { color: #ea580c; }
+
+.track-svg-wrap {
+  position: relative;
+  width: 100%;
+  height: 38px;
+}
+
+.track-path-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.track-road-progress {
+  animation: roadDashes 2s linear infinite;
+}
+
+@keyframes roadDashes {
+  from { stroke-dashoffset: 28; }
+  to { stroke-dashoffset: 0; }
+}
+
+.moving-route-truck {
+  position: absolute;
+  top: 6px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ea580c;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 8px rgba(234, 88, 12, 0.4);
+  animation: truckCruise 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes truckCruise {
+  0% { left: 25%; }
+  100% { left: 78%; }
+}
+
+.truck-gps-ping {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(234, 88, 12, 0.6);
+  animation: gpsPing 1.6s ease-out infinite;
+}
+
+@keyframes gpsPing {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.track-status-pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.status-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 5px #16a34a;
+}
+
+/* Graphic 6: AI Bot */
+.step-card-ai {
+  background: linear-gradient(135deg, #fffaf5 0%, #fff7ed 60%, #ffedd5 100%) !important;
+  border: 2px solid #ea580c !important;
+  box-shadow: 0 12px 32px -6px rgba(234, 88, 12, 0.25), 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.step-card-ai:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 40px -8px rgba(234, 88, 12, 0.35), 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+.ai-hero-widget {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  position: relative;
+}
+
+.ai-bot-avatar-stage {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-avatar-core {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.ai-avatar-core:hover {
+  transform: scale(1.1);
+}
+
+.ai-pulse-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(249, 115, 22, 0.4);
+}
+
+.ai-pulse-ring.ring-1 {
+  width: 60px;
+  height: 60px;
+  animation: aiPulse 2.2s ease-out infinite;
+}
+
+.ai-pulse-ring.ring-2 {
+  width: 72px;
+  height: 72px;
+  animation: aiPulse 2.2s ease-out infinite 0.7s;
+}
+
+@keyframes aiPulse {
+  0% { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.ai-speech-bubble {
+  background: #ffffff;
+  border: 1px solid #fdba74;
+  border-radius: 12px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.12);
+  position: relative;
+  max-width: 165px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bubble-arrow {
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-left: 1px solid #fdba74;
+  border-bottom: 1px solid #fdba74;
+}
+
+.bubble-text {
+  font-size: 0.73rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 3px;
+}
+
+.typing-indicator span {
+  width: 4px;
+  height: 4px;
+  background: #ea580c;
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Card Content Standardized */
+.step-content {
+  min-height: 78px;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+
+.step-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.3;
+  font-family: 'Outfit', sans-serif;
+}
+
+.step-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* Action Wraps Pinned to Baseline */
+.step-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.step-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.step-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  border: 1.5px solid #ea580c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+}
+
+.step-btn-primary:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.35);
+  color: #ffffff !important;
+}
+
+.step-btn-outline {
+  background: #ffffff;
+  color: #ea580c !important;
+  border: 1.5px solid #ea580c;
+}
+
+.step-btn-outline:hover {
+  background: #fff7ed;
+  transform: translateY(-1px);
+}
+
+.step-btn-success {
+  background: #16a34a;
+  color: #ffffff !important;
+  border: 1.5px solid #15803d;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.2);
+}
+
+.step-btn-ai {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  border: none;
+  padding: 0.72rem 1.15rem;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+  font-size: 0.92rem;
+}
+
+.step-btn-ai:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #9a3412 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(234, 88, 12, 0.45);
+}
+
+.step-sublink {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-align: center;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.step-sublink:hover {
+  color: #ea580c;
+}
+
+.step-action-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.step-action-dual .step-btn {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Floating Inter-Card Connector Arrows for Laptop */
+.card-connector-badge {
+  position: absolute;
+  top: 42%;
+  right: -1.35rem;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #ea580c;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  z-index: 6;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.2);
+  animation: arrowPulseRight 1.5s ease-in-out infinite;
+}
+
+.card-connector-badge.ai-badge {
+  border-color: #f59e0b;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+@keyframes arrowPulseRight {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(3px); }
+}
+
+/* Row Wrap Connector Indicator */
+.row-turn-indicator {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: -0.75rem 0;
+  color: #ea580c;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.turn-line {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #fed7aa 0, #fed7aa 6px, transparent 6px, transparent 12px);
+}
+
+.turn-badge {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 4px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   ROLE COMPARISON MATRIX SECTION
+   ========================================================================== */
+.role-matrix-section {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  margin-bottom: 3.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+}
+
+.role-matrix-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 2rem auto;
+}
+
+.role-matrix-header h3 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.role-matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.matrix-col-card {
+  border-radius: 18px;
+  padding: 1.5rem;
+  border: 1.5px solid #e2e8f0;
+}
+
+.matrix-col-card.shipper {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.matrix-col-card.transporter {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.matrix-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matrix-col-card.shipper .matrix-title { color: #166534; }
+.matrix-col-card.transporter .matrix-title { color: #9a3412; }
+
+.matrix-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.matrix-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.matrix-col-card.shipper .matrix-list li i { color: #16a34a; margin-top: 3px; }
+.matrix-col-card.transporter .matrix-list li i { color: #ea580c; margin-top: 3px; }
+
+/* ==========================================================================
+   FAQ ACCORDION SECTION
+   ========================================================================== */
+.how-faq-section {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  margin-bottom: 3.5rem;
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.05);
+}
+
+.how-faq-header {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 2rem auto;
+}
+
+.how-faq-header h3 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #0f172a;
+  margin: 0 0 0.5rem 0;
+}
+
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.faq-item.active {
+  border-color: #ea580c;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.faq-question:hover {
+  background: #fffaf5;
+}
+
+.faq-question i {
+  color: #ea580c;
+  transition: transform 0.25s ease;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 1.25rem 1rem 1.25rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.faq-item.active .faq-answer {
+  display: block;
+}
+
+/* ==========================================================================
+   FINAL BOTTOM CTA BANNER
+   ========================================================================== */
+.how-bottom-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #ea580c;
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.25);
+}
+
+.how-bottom-banner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to right, #ea580c, #facc15, #16a34a);
+}
+
+.how-bottom-banner h3 {
+  font-size: 1.85rem;
+  font-weight: 900;
+  margin: 0 0 0.65rem 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+.how-bottom-banner p {
+  font-size: 1rem;
+  color: #cbd5e1;
+  max-width: 650px;
+  margin: 0 auto 1.75rem auto;
+  line-height: 1.55;
+}
+
+.how-bottom-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.banner-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  font-weight: 800;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.banner-btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.banner-btn-outline {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff !important;
+  font-weight: 800;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.banner-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (TABLET & MOBILE)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .how-grid-laptop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+  .card-connector-badge {
+    display: none;
+  }
+  .row-turn-indicator {
+    display: none;
+  }
+  .role-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .how-grid-laptop {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .how-hero-card {
+    padding: 2rem 1.25rem;
+  }
+  .how-bottom-banner {
+    padding: 2rem 1.25rem;
+  }
+  .how-bottom-actions {
+    flex-direction: column;
+  }
+  .how-bottom-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .how-step-card, .card-connector-badge, .pin-marker, .moving-route-truck, .ai-pulse-ring {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+
+<div class="how-page-wrapper">
+  
+  <!-- Breadcrumbs -->
+  <div class="how-breadcrumb">
+    <a href="/"><i class="fas fa-home"></i> <span>Home</span></a>
+    <span class="sep">/</span>
+    <span>How T2YD Works</span>
+  </div>
+
+  <!-- Page Hero Header -->
+  <div class="how-hero-card">
+    <div class="how-hero-inner">
+      <div class="how-badge-pills">
+        <span class="how-badge-pill" data-translate="howItWorksBadge">
+          <i class="fas fa-route"></i> HOW T2YD WORKS • 5-STEP JOURNEY
+        </span>
+        <span class="how-desi-pill">
+          <span class="flag-dot orange"></span>
+          <span class="flag-dot white"></span>
+          <span class="flag-dot green"></span>
+          <span>DESI LOGISTICS MADE DIGITAL</span>
+        </span>
+      </div>
+
+      <h1 class="how-main-title" data-translate="howItWorksHeading">
+        Your Goods. Your Truck. Your Destination.
+      </h1>
+
+      <p class="how-main-subtitle" data-translate="howItWorksSubtitle">
+        Get started with T2YD in a few simple steps. Find transport, connect with truck owners, and track your shipment — all in one place.
+      </p>
+
+      <!-- Trust Highlights Bar -->
+      <div class="how-trust-grid">
+        <span class="how-trust-pill"><i class="fas fa-shield-alt"></i> 100% KYC Verified Fleets</span>
+        <span class="how-trust-pill"><i class="fas fa-handshake"></i> Direct Transporter Bids</span>
+        <span class="how-trust-pill"><i class="fas fa-map-marked-alt"></i> Gate-to-Gate Live GPS</span>
+        <span class="how-trust-pill"><i class="fas fa-robot"></i> 24/7 T2YD AI Assistant</span>
+      </div>
+
+      <!-- Persona Role Tabs -->
+      <div class="how-role-tabs" role="tablist" aria-label="Select user view">
+        <button type="button" class="how-role-btn active" data-role="all" role="tab" aria-selected="true">
+          <i class="fas fa-layer-group"></i> All Users (पूरा सफ़र)
+        </button>
+        <button type="button" class="how-role-btn" data-role="shipper" role="tab" aria-selected="false">
+          <i class="fas fa-box"></i> For Shippers (माल मालिक)
+        </button>
+        <button type="button" class="how-role-btn" data-role="transporter" role="tab" aria-selected="false">
+          <i class="fas fa-truck"></i> For Transporters (ट्रक मालिक / चालक)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       THE 6 STEPS (PROPER LAPTOP ALIGNMENT)
+       ======================================================================== -->
+  <div class="how-grid-laptop" id="howStepsGrid">
+    
+    <!-- STEP 1 -->
+    <div class="how-step-card" data-step="1" id="step-1">
+      <div class="card-connector-badge" aria-hidden="true">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+
+      <div class="step-card-header">
+        <div class="step-num-pill">
+          <span class="step-idx">01</span>
+          <span class="step-dot"></span>
+        </div>
+        <span class="step-role-tag shipper-tag"><i class="fas fa-shield-alt"></i> KYC Verified</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="account-visual-box">
+          <div class="avatar-circle">
+            <i class="fas fa-user-tie"></i>
+            <div class="avatar-verified-badge"><i class="fas fa-check"></i></div>
+          </div>
+          <div class="account-id-card">
+            <div class="id-header">
+              <span class="id-brand">T2YD ID</span>
+              <span class="id-status-chip">ACTIVE</span>
+            </div>
+            <div class="id-lines">
+              <span class="id-line full"></span>
+              <span class="id-line half"></span>
+            </div>
+            <div class="id-permit">
+              <i class="fas fa-qrcode"></i>
+              <span>PAN-INDIA PERMIT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="step1Title">Create Your Account</h3>
+        <p class="step-desc" data-translate="step1Desc">
+          Sign up or log in to access the T2YD transport marketplace and its features.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <% if (!locals.user) { %>
+          <a href="/auth/signup" class="step-btn step-btn-primary">
+            <i class="fas fa-user-plus"></i> <span data-translate="step1Btn">Get Started</span>
+          </a>
+          <a href="/auth/login" class="step-sublink">Already a member? Log in</a>
+        <% } else { %>
+          <a href="/profile" class="step-btn step-btn-success">
+            <i class="fas fa-user-check"></i> <span>Profile Active (<%= locals.user.name.split(' ')[0] %>)</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="how-step-card" data-step="2" id="step-2">
+      <div class="card-connector-badge" aria-hidden="true">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+
+      <div class="step-card-header">
+        <div class="step-num-pill">
+          <span class="step-idx">02</span>
+          <span class="step-dot"></span>
+        </div>
+        <span class="step-role-tag all-tag"><i class="fas fa-map-pin"></i> Load &amp; Fleet</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="map-mini-stage">
+          <div class="map-grid-bg"></div>
+          <div class="map-pin-pulse">
+            <div class="pin-ring"></div>
+            <div class="pin-marker"><i class="fas fa-map-marker-alt"></i></div>
+          </div>
+          <div class="cargo-crate-box">
+            <div class="cargo-crate-body">
+              <i class="fas fa-box-open"></i>
+              <span class="crate-label">15 TONS</span>
+            </div>
+            <div class="crate-shadow"></div>
+          </div>
+          <div class="route-preview-badge">
+            <span>Mumbai</span> <i class="fas fa-arrow-right"></i> <span>Delhi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="step2Title">Find Your Transport</h3>
+        <p class="step-desc" data-translate="step2Desc">
+          Load owners can post their goods transport requirements, while truck owners and transporters can explore available loads.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <% if (!locals.user) { %>
+          <div class="step-action-dual">
+            <a href="/auth/login?redirect=/deliveries/add" class="step-btn step-btn-primary">
+              <i class="fas fa-plus-circle"></i> <span>Post Load</span>
+            </a>
+            <a href="/search" class="step-btn step-btn-outline">
+              <i class="fas fa-search"></i> <span>Find Loads</span>
+            </a>
+          </div>
+        <% } else if (locals.user.role === 'shipper') { %>
+          <a href="/deliveries/add" class="step-btn step-btn-primary">
+            <i class="fas fa-plus-circle"></i> <span data-translate="step2Btn">Post Delivery Request</span>
+          </a>
+        <% } else { %>
+          <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+            <i class="fas fa-truck-loading"></i> <span data-translate="step2Btn">Browse Available Loads</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="how-step-card" data-step="3" id="step-3">
+      <div class="step-card-header">
+        <div class="step-num-pill">
+          <span class="step-idx">03</span>
+          <span class="step-dot"></span>
+        </div>
+        <span class="step-role-tag bid-tag"><i class="fas fa-handshake"></i> Direct Bidding</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="bid-deck-container">
+          <div class="mini-bid-card card-a">
+            <div class="mini-transporter">
+              <span class="t-name">Sharma Roadlines</span>
+              <span class="t-rating">★ 4.9</span>
+            </div>
+            <div class="mini-price">₹18,500</div>
+          </div>
+          <div class="mini-bid-card card-b highlight">
+            <div class="mini-transporter">
+              <span class="t-name">Bharat Express</span>
+              <span class="t-rating">★ 4.8</span>
+            </div>
+            <div class="mini-price-group">
+              <span class="best-pill">BEST DEAL</span>
+              <div class="mini-price best">₹17,200</div>
+            </div>
+          </div>
+          <div class="mini-bid-card card-c">
+            <div class="mini-transporter">
+              <span class="t-name">Kadam Trans</span>
+              <span class="t-rating">★ 4.7</span>
+            </div>
+            <div class="mini-price">₹19,000</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="step3Title">Compare Transport Bids</h3>
+        <p class="step-desc" data-translate="step3Desc">
+          Review available bids, compare prices and transporter details, and choose the most suitable offer.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <% if (!locals.user) { %>
+          <a href="/auth/login" class="step-btn step-btn-primary">
+            <i class="fas fa-balance-scale"></i> <span data-translate="step3Btn">Compare Bids</span>
+          </a>
+        <% } else if (locals.user.role === 'shipper') { %>
+          <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+            <i class="fas fa-tags"></i> <span data-translate="step3Btn">Review Received Bids</span>
+          </a>
+        <% } else { %>
+          <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+            <i class="fas fa-gavel"></i> <span data-translate="step3Btn">Manage My Quotes</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Row Turn Indicator (Guides the eye from Row 1 to Row 2) -->
+    <div class="row-turn-indicator" aria-hidden="true">
+      <span class="turn-line"></span>
+      <span class="turn-badge"><i class="fas fa-level-down-alt"></i> NEXT STEPS: BOOKING, TRACKING &amp; AI HELP</span>
+      <span class="turn-line"></span>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="how-step-card" data-step="4" id="step-4">
+      <div class="card-connector-badge" aria-hidden="true">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+
+      <div class="step-card-header">
+        <div class="step-num-pill">
+          <span class="step-idx">04</span>
+          <span class="step-dot"></span>
+        </div>
+        <span class="step-role-tag confirm-tag"><i class="fas fa-check-circle"></i> Confirmed Deal</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="deal-confirmed-box">
+          <div class="deal-badge-stamp">
+            <i class="fas fa-check-circle"></i>
+            <span>BID ACCEPTED</span>
+          </div>
+          <div class="assigned-truck-plate">
+            <div class="plate-top">
+              <span class="plate-flag">IND</span>
+              <span class="plate-no">MH-12-Q-4521</span>
+            </div>
+            <div class="assigned-details">
+              <span class="truck-type"><i class="fas fa-truck"></i> Tata 28T Open Body</span>
+              <span class="driver-ready"><i class="fas fa-phone-alt"></i> Driver Assigned</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="step4Title">Confirm Your Transport</h3>
+        <p class="step-desc" data-translate="step4Desc">
+          Accept your preferred bid and coordinate the transport assignment through the platform.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <% if (!locals.user) { %>
+          <a href="/auth/signup" class="step-btn step-btn-primary">
+            <i class="fas fa-handshake"></i> <span data-translate="step4Btn">Confirm Transport</span>
+          </a>
+        <% } else if (locals.user.role === 'shipper') { %>
+          <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+            <i class="fas fa-clipboard-check"></i> <span data-translate="step4Btn">View Active Orders</span>
+          </a>
+        <% } else { %>
+          <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+            <i class="fas fa-truck-moving"></i> <span data-translate="step4Btn">View Booked Lorries</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="how-step-card" data-step="5" id="step-5">
+      <div class="card-connector-badge ai-badge" aria-hidden="true">
+        <i class="fas fa-chevron-right"></i>
+      </div>
+
+      <div class="step-card-header">
+        <div class="step-num-pill">
+          <span class="step-idx">05</span>
+          <span class="step-dot"></span>
+        </div>
+        <span class="step-role-tag track-tag"><i class="fas fa-satellite-dish"></i> GPS Tracking</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="track-2d-canvas">
+          <div class="track-route-labels">
+            <span class="point-a"><i class="fas fa-warehouse"></i> Mumbai Hub</span>
+            <span class="point-b"><i class="fas fa-flag-checkered"></i> Pune Unload</span>
+          </div>
+          <div class="track-svg-wrap">
+            <svg class="track-path-svg" viewBox="0 0 240 40" fill="none">
+              <path class="track-road-base" d="M 15,20 C 70,5 110,35 170,20 L 225,20" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+              <path class="track-road-progress" d="M 15,20 C 70,5 110,35 170,20 L 225,20" stroke="#f97316" stroke-width="4" stroke-dasharray="8,6" stroke-linecap="round"/>
+            </svg>
+            <div class="moving-route-truck" title="In Transit (NH-48)">
+              <i class="fas fa-truck"></i>
+              <div class="truck-gps-ping"></div>
+            </div>
+          </div>
+          <div class="track-status-pill">
+            <span class="status-live-dot"></span>
+            <span class="status-text">In Transit • NH 48 • On Schedule</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="step5Title">Track Your Delivery</h3>
+        <p class="step-desc" data-translate="step5Desc">
+          Follow your shipment's progress and view available pickup, transit, and delivery status updates.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <% if (!locals.user) { %>
+          <a href="/auth/login" class="step-btn step-btn-primary">
+            <i class="fas fa-map-marked-alt"></i> <span data-translate="step5Btn">Track Delivery</span>
+          </a>
+        <% } else if (locals.user.role === 'shipper') { %>
+          <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+            <i class="fas fa-satellite-dish"></i> <span data-translate="step5Btn">Open Shipment GPS</span>
+          </a>
+        <% } else { %>
+          <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+            <i class="fas fa-location-arrow"></i> <span data-translate="step5Btn">Driver Route Status</span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- STEP 6: AI BOT -->
+    <div class="how-step-card step-card-ai" data-step="6" id="step-6">
+      <div class="step-card-header">
+        <div class="step-num-pill ai-num-pill">
+          <i class="fas fa-robot"></i>
+          <span class="step-idx">AI</span>
+        </div>
+        <span class="step-role-tag ai-tag"><i class="fas fa-sparkles"></i> 24/7 Smart Sahayak</span>
+      </div>
+
+      <div class="step-visual-stage">
+        <div class="ai-hero-widget">
+          <div class="ai-bot-avatar-stage">
+            <div class="ai-pulse-ring ring-1"></div>
+            <div class="ai-pulse-ring ring-2"></div>
+            <div class="ai-avatar-core" id="pageAiBotIcon" role="button" tabindex="0" title="Click to ask T2YD AI">
+              <i class="fas fa-robot"></i>
+            </div>
+          </div>
+          <div class="ai-speech-bubble">
+            <div class="bubble-arrow"></div>
+            <span class="bubble-text" data-translate="stepAiBubble">Stuck anywhere? I'm here to help!</span>
+            <div class="typing-indicator" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-content">
+        <h3 class="step-title" data-translate="stepAiTitle">Need Help? Ask T2YD AI</h3>
+        <p class="step-desc" data-translate="stepAiDesc">
+          Have questions about posting loads, placing bids, transport tracking, payments, or how the platform works? Click the T2YD AI Bot icon to get assistance.
+        </p>
+      </div>
+
+      <div class="step-action-wrap">
+        <button type="button" class="step-btn step-btn-ai" id="pageAiCtaBtn" aria-label="Open T2YD AI Chatbot">
+          <i class="fas fa-robot"></i>
+          <span data-translate="stepAiBtn">Ask T2YD AI</span>
+          <i class="fas fa-comment-dots"></i>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /.how-grid-laptop -->
+
+  <!-- ========================================================================
+       ROLE MATRIX COMPARISON SECTION
+       ======================================================================== -->
+  <div class="role-matrix-section">
+    <div class="role-matrix-header">
+      <span class="how-badge-pill" style="margin-bottom: 0.5rem;"><i class="fas fa-users-cog"></i> ROLE-SPECIFIC WORKFLOWS</span>
+      <h3>How T2YD Empowers Shippers &amp; Transporters</h3>
+      <p style="color: #64748b; margin: 0;">Tailored digital freight management for every partner on our transport network.</p>
+    </div>
+
+    <div class="role-matrix-grid">
+      <div class="matrix-col-card shipper">
+        <h4 class="matrix-title"><i class="fas fa-boxes"></i> For Load Owners &amp; Shippers (माल मालिक)</h4>
+        <ul class="matrix-list">
+          <li><i class="fas fa-check-circle"></i> <span><strong>Free Load Posting:</strong> Publish goods requirements with exact weight, tonnage, and pickup/drop points in under 60 seconds.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Transparent Competitive Bids:</strong> Compare live bids from verified fleet owners without middleman margins.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Instant Assignment:</strong> Accept your preferred quote and receive verified driver and lorry details immediately.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Gate-to-Gate Live GPS:</strong> Real-time map tracking from warehouse dispatch to final gate unloading.</span></li>
+        </ul>
+      </div>
+
+      <div class="matrix-col-card transporter">
+        <h4 class="matrix-title"><i class="fas fa-truck-moving"></i> For Fleet Owners &amp; Transporters (ट्रक मालिक)</h4>
+        <ul class="matrix-list">
+          <li><i class="fas fa-check-circle"></i> <span><strong>Return Trip Loads:</strong> Never drive empty lorries. Discover freight loads along your primary and return routes.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Direct Quoting per KM:</strong> Submit your direct transport bids transparently based on your vehicle specifications.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Quick Payment Processing:</strong> Built-in advance payment milestones and direct shipper settlement receipts.</span></li>
+          <li><i class="fas fa-check-circle"></i> <span><strong>Turn-by-Turn GPS Navigation:</strong> In-app route guidance directly to the shipper's warehouse gate.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FAQ ACCORDION SECTION
+       ======================================================================== -->
+  <div class="how-faq-section">
+    <div class="how-faq-header">
+      <span class="how-badge-pill" style="margin-bottom: 0.5rem;"><i class="fas fa-question-circle"></i> FREQUENTLY ASKED QUESTIONS</span>
+      <h3>Common Questions About T2YD</h3>
+      <p style="color: #64748b; margin: 0;">Everything you need to know about getting started on India's premier logistics platform.</p>
+    </div>
+
+    <div class="faq-accordion">
+      <div class="faq-item active">
+        <button type="button" class="faq-question">
+          <span>Is registering on T2YD free for both shippers and transporters?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Yes! Creating an account on T2YD is 100% free. Shippers can post load transport requirements without any upfront listing fee, and truck owners can explore available loads and submit transport bids freely.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          <span>How does the bidding system work?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          When a shipper posts a delivery request, verified transporters on that route receive an alert and submit their best rates. The shipper compares quotes based on price, truck specs, and transporter ratings, then accepts the deal that fits their budget.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          <span>How does real-time live GPS tracking function?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          Once a transport request is accepted, the platform initiates live coordinate tracking. Shippers can monitor the truck's exact movement on an interactive Leaflet map, while drivers receive one-tap Google Maps navigation directly to the pickup and delivery bays.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          <span>What can the T2YD AI Assistant help me with?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-answer">
+          The T2YD AI Assistant (available 24/7 in English, Hindi, and Marathi) helps you understand transport rates, draft load postings, troubleshoot bidding questions, navigate platform features, and answer logistics questions instantly.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       FINAL BOTTOM CALL TO ACTION
+       ======================================================================== -->
+  <div class="how-bottom-banner">
+    <h3>Ready to Experience Smarter Freight Transport?</h3>
+    <p>Join thousands of verified shippers and transporters across India moving goods faster and safer every day.</p>
+    <div class="how-bottom-actions">
+      <% if (!locals.user) { %>
+        <a href="/auth/signup" class="banner-btn-primary">
+          <i class="fas fa-user-plus"></i> Create Free Account
+        </a>
+        <a href="/search" class="banner-btn-outline">
+          <i class="fas fa-search"></i> Search Available Fleets
+        </a>
+      <% } else if (locals.user.role === 'shipper') { %>
+        <a href="/deliveries/add" class="banner-btn-primary">
+          <i class="fas fa-plus-circle"></i> Post a Load Now
+        </a>
+        <a href="/dashboard/shipper" class="banner-btn-outline">
+          <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+        </a>
+      <% } else { %>
+        <a href="/dashboard/transporter" class="banner-btn-primary">
+          <i class="fas fa-truck"></i> Explore Available Deliveries
+        </a>
+        <a href="/lorries/add" class="banner-btn-outline">
+          <i class="fas fa-plus-circle"></i> Add Your Lorry
+        </a>
+      <% } %>
+    </div>
+  </div>
+
+</div>
+
+<!-- Page Controller Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const roleButtons = document.querySelectorAll('.how-role-btn');
+  const cards = document.querySelectorAll('.how-step-card');
+  const pageAiCta = document.getElementById('pageAiCtaBtn');
+  const pageAiIcon = document.getElementById('pageAiBotIcon');
+  const floatingBotBtn = document.getElementById('chatBotButton');
+
+  // 1. Role Filter Logic
+  roleButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      roleButtons.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
+
+      const role = this.getAttribute('data-role');
+
+      cards.forEach(card => {
+        const step = card.getAttribute('data-step');
+        const roleTag = card.querySelector('.step-role-tag');
+
+        if (role === 'shipper') {
+          if (step === '2' && roleTag) roleTag.innerHTML = '<i class="fas fa-boxes"></i> Post Goods Load';
+          if (step === '3' && roleTag) roleTag.innerHTML = '<i class="fas fa-tags"></i> Receive Best Rates';
+          if (step === '4' && roleTag) roleTag.innerHTML = '<i class="fas fa-check-double"></i> Book Truck Driver';
+          if (step === '5' && roleTag) roleTag.innerHTML = '<i class="fas fa-map-marked-alt"></i> Live Gate Tracking';
+        } else if (role === 'transporter') {
+          if (step === '2' && roleTag) roleTag.innerHTML = '<i class="fas fa-search-location"></i> Find Load Returns';
+          if (step === '3' && roleTag) roleTag.innerHTML = '<i class="fas fa-gavel"></i> Bid Your Rate/KM';
+          if (step === '4' && roleTag) roleTag.innerHTML = '<i class="fas fa-truck-loading"></i> Assign Your Lorry';
+          if (step === '5' && roleTag) roleTag.innerHTML = '<i class="fas fa-route"></i> Turn-by-Turn GPS';
+        } else {
+          if (step === '1' && roleTag) roleTag.innerHTML = '<i class="fas fa-shield-alt"></i> KYC Verified';
+          if (step === '2' && roleTag) roleTag.innerHTML = '<i class="fas fa-map-pin"></i> Load &amp; Fleet';
+          if (step === '3' && roleTag) roleTag.innerHTML = '<i class="fas fa-handshake"></i> Direct Bidding';
+          if (step === '4' && roleTag) roleTag.innerHTML = '<i class="fas fa-check-circle"></i> Confirmed Deal';
+          if (step === '5' && roleTag) roleTag.innerHTML = '<i class="fas fa-satellite-dish"></i> GPS Tracking';
+          if (step === '6' && roleTag) roleTag.innerHTML = '<i class="fas fa-sparkles"></i> 24/7 Smart Sahayak';
+        }
+      });
+    });
+  });
+
+  // 2. FAQ Accordion Toggle
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const q = item.querySelector('.faq-question');
+    q.addEventListener('click', () => {
+      const isActive = item.classList.contains('active');
+      faqItems.forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
+    });
+  });
+
+  // 3. AI Bot Integration
+  function triggerAiBot(e) {
+    if (e) e.preventDefault();
+    if (floatingBotBtn) {
+      floatingBotBtn.classList.remove('chat-bot-highlight-burst');
+      void floatingBotBtn.offsetWidth;
+      floatingBotBtn.classList.add('chat-bot-highlight-burst');
+      setTimeout(() => floatingBotBtn.click(), 300);
+    } else {
+      window.location.href = '/chatbot';
+    }
+  }
+
+  if (pageAiCta) pageAiCta.addEventListener('click', triggerAiBot);
+  if (pageAiIcon) {
+    pageAiIcon.addEventListener('click', triggerAiBot);
+    pageAiIcon.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        triggerAiBot(e);
+      }
+    });
+  }
+
+  // 4. Interactive Bid Deck
+  const miniBids = document.querySelectorAll('.mini-bid-card');
+  miniBids.forEach(b => {
+    b.addEventListener('click', function() {
+      miniBids.forEach(x => x.classList.remove('highlight'));
+      this.classList.add('highlight');
+    });
+  });
+});
+</script>

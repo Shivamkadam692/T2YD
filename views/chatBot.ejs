@@ -11,19 +11,19 @@
     <div class="card">
       <div class="card-header">
         <h3>Chat with Assistant</h3>
-        <button id="clearChat" class="btn btn-outline" style="float: right; padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+        <button id="clearChat" type="button" class="btn btn-outline no-loading" data-no-loading="true" style="float: right; padding: 0.3rem 0.6rem; font-size: 0.8rem;">
           <i class="fas fa-trash"></i> Clear Chat
         </button>
       </div>
       <div class="card-body">
-        <div id="chatContainer">
+        <div id="chatContainer" class="no-loading" data-no-loading="true">
           <div id="chatHistory">
             <!-- Chat messages will be loaded here -->
           </div>
-          <div id="chatInputContainer">
+          <div id="chatInputContainer" class="no-loading" data-no-loading="true">
             <div class="input-group">
               <input type="text" id="chatInput" placeholder="Type your message here..." autocomplete="off">
-              <button id="sendButton" class="btn btn-primary">
+              <button id="sendButton" type="button" class="btn btn-primary no-loading" data-no-loading="true">
                 <i class="fas fa-paper-plane"></i> Send
               </button>
             </div>
@@ -33,14 +33,14 @@
             <div class="quick-help">
               <h4>Quick Help Topics:</h4>
               <div class="help-topics">
-                <button class="help-topic-btn" data-topic="account">Account</button>
-                <button class="help-topic-btn" data-topic="lorry">Add Lorry</button>
-                <button class="help-topic-btn" data-topic="delivery">Add Delivery</button>
-                <button class="help-topic-btn" data-topic="payment">Payments</button>
-                <button class="help-topic-btn" data-topic="track">Tracking</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="account">Account</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="lorry">Add Lorry</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="delivery">Add Delivery</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="payment">Payments</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="track">Tracking</button>
                 <% if (!user) { %>
-                <button class="help-topic-btn" data-topic="login">Login</button>
-                <button class="help-topic-btn" data-topic="register">Register</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="login">Login</button>
+                <button type="button" class="help-topic-btn no-loading" data-no-loading="true" data-topic="register">Register</button>
                 <% } %>
               </div>
             </div>
@@ -148,6 +148,7 @@
 
   // Send message to bot
   async function sendMessage() {
+    if (typeof hideLoading === 'function') hideLoading();
     const message = chatInput.value.trim();
     
     if (!message) return;
@@ -182,6 +183,7 @@
 
   // Clear chat history
   async function clearChat() {
+    if (typeof hideLoading === 'function') hideLoading();
     if (!confirm('Are you sure you want to clear the chat history?')) {
       return;
     }
@@ -206,19 +208,35 @@
   }
 
   // Event listeners
-  sendButton.addEventListener('click', sendMessage);
+  sendButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof hideLoading === 'function') hideLoading();
+    sendMessage();
+  });
   
   chatInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof hideLoading === 'function') hideLoading();
       sendMessage();
     }
   });
   
-  clearChatButton.addEventListener('click', clearChat);
+  clearChatButton.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof hideLoading === 'function') hideLoading();
+    clearChat();
+  });
   
   // Quick help buttons
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('help-topic-btn')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof hideLoading === 'function') hideLoading();
       const topic = e.target.getAttribute('data-topic');
       let message = '';
       

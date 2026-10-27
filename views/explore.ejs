@@ -1,0 +1,1673 @@
+<link rel="stylesheet" href="/card-styles.css?v=<%= Date.now() %>">
+
+<!-- Helper function for rendering location cell with Read More -->
+<%
+function renderAddrCell(label, text, isRight, translateKey) {
+  const addr = (text || 'N/A').trim();
+  const isLong = addr.length > 25;
+  const shortAddr = isLong ? addr.substring(0, 24) + '...' : addr;
+%>
+  <div class="truck-cell <%= isRight ? 'text-right' : '' %>">
+    <span class="truck-label" <%= translateKey ? ('data-translate="' + translateKey + '"') : '' %>><%= label %></span>
+    <strong class="truck-val <%= isRight && !isLong && addr.toLowerCase().includes('mh') ? 'plate-val' : '' %>">
+      <% if (isLong) { %>
+        <span class="short-addr"><%= shortAddr %></span>
+        <span class="full-addr" style="display: none;"><%= addr %></span>
+        <button type="button" class="btn-read-more" onclick="toggleReadMore(this, event)">Read More</button>
+      <% } else { %>
+        <span><%= addr %></span>
+      <% } %>
+    </strong>
+  </div>
+<% } %>
+
+<style>
+/* ==========================================================================
+   T2YD REELS DISCOVERY FEED — MODERN VERTICAL LOGISTICS BROWSING
+   ========================================================================== */
+
+:root {
+  --reels-primary: #ea580c;
+  --reels-primary-dark: #c2410c;
+  --reels-amber: #f59e0b;
+  --reels-slate: #0f172a;
+  --reels-slate-light: #1e293b;
+  --reels-border: #fed7aa;
+  --reels-card-bg: #ffffff;
+  --reels-bg: #fffbf7;
+}
+
+.explore-page-wrapper {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0.5rem 0.75rem 2rem;
+  box-sizing: border-box;
+}
+
+/* 1. COMPACT TOP HEADER & CONTROLS */
+.explore-top-bar {
+  background: #ffffff;
+  border: 1.5px solid var(--reels-border);
+  border-radius: 20px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 20px -4px rgba(234, 88, 12, 0.08);
+}
+
+.explore-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.explore-branding {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.explore-logo-badge {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.35rem;
+  box-shadow: 0 6px 14px rgba(234, 88, 12, 0.35);
+  animation: pulseGlow 2.5s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); box-shadow: 0 6px 14px rgba(234, 88, 12, 0.35); }
+  50% { transform: scale(1.05); box-shadow: 0 8px 22px rgba(234, 88, 12, 0.5); }
+}
+
+.explore-title-group h1 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--reels-slate);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.3px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.explore-title-group p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Category Segmented Tab Switcher (Find Trucks vs Find Loads) */
+.category-tab-switcher {
+  display: flex;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.cat-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-decoration: none;
+}
+
+.cat-tab-btn:hover {
+  color: var(--reels-primary);
+  background: rgba(234, 88, 12, 0.06);
+}
+
+.cat-tab-btn.active {
+  background: #ffffff;
+  color: var(--reels-primary);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+  border: 1px solid var(--reels-border);
+}
+
+.cat-tab-badge {
+  background: #fff7ed;
+  color: var(--reels-primary);
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 900;
+  border: 1px solid var(--reels-border);
+}
+
+.cat-tab-btn.active .cat-tab-badge {
+  background: var(--reels-primary);
+  color: #ffffff;
+  border-color: var(--reels-primary);
+}
+
+/* View Mode Switcher (Reels vs Grid) */
+.view-mode-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.view-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.view-btn.active {
+  background: #ffffff;
+  color: var(--reels-slate);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Search & Quick Filter Row */
+.explore-filter-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #fed7aa;
+}
+
+.explore-search-box {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.explore-search-box i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--reels-primary);
+  font-size: 0.95rem;
+}
+
+.explore-search-input {
+  width: 100%;
+  padding: 9px 14px 9px 38px;
+  border-radius: 12px;
+  border: 1.5px solid #fed7aa;
+  font-size: 0.88rem;
+  background: #fffaf5;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.explore-search-input:focus {
+  outline: none;
+  border-color: var(--reels-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.explore-chips-scroll {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.explore-chips-scroll::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  border-color: var(--reels-primary);
+  color: var(--reels-primary);
+  background: #fff7ed;
+}
+
+.filter-chip.active {
+  background: var(--reels-primary);
+  color: #ffffff;
+  border-color: var(--reels-primary);
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.25);
+}
+
+/* ==========================================================================
+   2. REELS VERTICAL BROWSING STAGE
+   ========================================================================== */
+
+.reels-stage-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 490px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Progress Bar at the top of the Reels container */
+.reels-progress-track {
+  width: 100%;
+  height: 4px;
+  background: #fed7aa;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.reels-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ea580c, #f59e0b);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Reels Main Scroll Snap Container */
+.reels-container {
+  height: calc(100vh - 210px);
+  min-height: 590px;
+  max-height: 820px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  border-radius: 24px;
+  position: relative;
+  background: #fffaf5;
+  border: 2px solid var(--reels-border);
+  box-shadow: 0 16px 40px -10px rgba(234, 88, 12, 0.14), inset 0 2px 6px rgba(0, 0, 0, 0.02);
+  scrollbar-width: thin;
+  scrollbar-color: #fdba74 #fffaf5;
+}
+
+.reels-container::-webkit-scrollbar {
+  width: 5px;
+}
+.reels-container::-webkit-scrollbar-thumb {
+  background: #fdba74;
+  border-radius: 10px;
+}
+
+/* Each Individual Reel Slide */
+.reel-slide {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0.85rem;
+  box-sizing: border-box;
+  position: relative;
+  opacity: 0.82;
+  transform: scale(0.96) translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reel-slide.is-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Nested Original Truck Card within Reel Slide */
+.reel-slide .truck-card {
+  width: 100% !important;
+  max-width: 440px !important;
+  margin: 0 !important;
+  box-shadow: 0 16px 36px -8px rgba(234, 88, 12, 0.22), 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+  border: 2px solid var(--reels-border) !important;
+  background: #ffffff !important;
+  position: relative;
+  border-radius: 22px !important;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.reel-slide.is-active .truck-card {
+  border-color: #ea580c !important;
+  box-shadow: 0 22px 48px -10px rgba(234, 88, 12, 0.3), 0 6px 18px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Reels Side Interaction Rail (Desi Transport Specific) */
+.reel-action-rail {
+  position: absolute;
+  right: 14px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 20;
+}
+
+.rail-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid #fed7aa;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  text-decoration: none;
+  position: relative;
+}
+
+.rail-btn:hover {
+  transform: scale(1.15) translateY(-2px);
+  background: var(--reels-primary);
+  color: #ffffff !important;
+  border-color: var(--reels-primary);
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+}
+
+.rail-btn.active-saved {
+  background: #fff7ed;
+  color: var(--reels-primary);
+  border-color: var(--reels-primary);
+}
+
+.rail-btn-label {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: var(--reels-slate);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rail-btn:hover .rail-btn-label {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Floating Navigation Tools around the Reels viewport */
+.reels-floating-badge {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.reels-floating-badge .badge-pulse {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Desktop Scroll Trigger Buttons (Left & Right of Reels Column) */
+.reels-desktop-controls {
+  position: absolute;
+  top: 50%;
+  left: -65px;
+  right: -65px;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.desktop-nav-btn {
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--reels-border);
+  color: var(--reels-primary);
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.18);
+  transition: all 0.2s ease;
+}
+
+.desktop-nav-btn:hover {
+  background: var(--reels-primary);
+  color: #ffffff;
+  transform: scale(1.12);
+  box-shadow: 0 10px 28px rgba(234, 88, 12, 0.35);
+}
+
+/* Micro Swipe-Up Cue on the First Reel */
+.reels-swipe-cue {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--reels-border);
+  color: #ea580c;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  animation: bounceCue 2s infinite;
+  pointer-events: none;
+  z-index: 15;
+}
+
+@keyframes bounceCue {
+  0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+  40% { transform: translateX(-50%) translateY(-6px); }
+  60% { transform: translateX(-50%) translateY(-3px); }
+}
+
+/* 3. GRID BROWSING STAGE (TRADITIONAL VIEW ALTERNATIVE) */
+.grid-stage-wrapper {
+  display: none; /* Shown when view mode is toggled to 'grid' */
+}
+
+/* Empty State */
+.explore-empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+  border: 1.5px dashed var(--reels-border);
+  border-radius: 20px;
+  margin: 1.5rem auto;
+  max-width: 500px;
+}
+
+.explore-empty-state i {
+  font-size: 3rem;
+  color: #ea580c;
+  margin-bottom: 1rem;
+}
+
+.explore-empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--reels-slate);
+  margin-bottom: 0.5rem;
+}
+
+.explore-empty-state p {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+
+.btn-reset-explore {
+  background: var(--reels-primary);
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-explore:hover {
+  background: var(--reels-primary-dark);
+}
+
+/* Quick Toast Feedback */
+.reels-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(30px);
+  background: var(--reels-slate);
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 9999;
+}
+
+.reels-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .explore-page-wrapper {
+    padding: 0.25rem 0.25rem 1.5rem;
+  }
+  .reels-container {
+    height: calc(100vh - 180px);
+    border-radius: 18px;
+  }
+  .reels-desktop-controls {
+    display: none; /* Use touch swipe on mobile */
+  }
+  .reels-stage-wrapper {
+    max-width: 100%;
+  }
+  .explore-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .category-tab-switcher {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .cat-tab-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel-slide {
+    transition: none !important;
+  }
+  .reels-container {
+    scroll-behavior: auto !important;
+  }
+  .explore-logo-badge,
+  .reels-swipe-cue {
+    animation: none !important;
+  }
+}
+</style>
+
+<div class="explore-page-wrapper">
+  
+  <!-- 1. TOP HEADER & BROWSING CONTROLS -->
+  <header class="explore-top-bar" role="banner">
+    <div class="explore-header-row">
+      <!-- Title & Branding -->
+      <div class="explore-branding">
+        <div class="explore-logo-badge">
+          <i class="fas fa-play"></i>
+        </div>
+        <div class="explore-title-group">
+          <h1>
+            <span>T2YD Discovery Feed</span>
+            <span style="font-size: 0.72rem; background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; padding: 2px 8px; border-radius: 999px; font-weight: 800;">REELS MODE</span>
+          </h1>
+          <p>Swipe vertically through verified trucks and active goods deliveries across India</p>
+        </div>
+      </div>
+
+      <!-- Category Tab Switcher (Find Trucks vs Find Loads) -->
+      <div class="category-tab-switcher" role="tablist" aria-label="Browse Categories">
+        <button type="button" 
+                class="cat-tab-btn <%= (initialTab !== 'loads') ? 'active' : '' %>" 
+                id="tabBtnTrucks" 
+                role="tab" 
+                aria-selected="<%= (initialTab !== 'loads') ? 'true' : 'false' %>"
+                data-tab="trucks">
+          <i class="fas fa-truck"></i>
+          <span>Find Trucks</span>
+          <span class="cat-tab-badge" id="badgeCountTrucks"><%= lorries.length %></span>
+        </button>
+
+        <button type="button" 
+                class="cat-tab-btn <%= (initialTab === 'loads') ? 'active' : '' %>" 
+                id="tabBtnLoads" 
+                role="tab" 
+                aria-selected="<%= (initialTab === 'loads') ? 'true' : 'false' %>"
+                data-tab="loads">
+          <i class="fas fa-box"></i>
+          <span>Find Loads</span>
+          <span class="cat-tab-badge" id="badgeCountLoads"><%= deliveries.length %></span>
+        </button>
+      </div>
+
+      <!-- View Switcher (Reels vs Standard Grid) -->
+      <div class="view-mode-toggle" role="group" aria-label="View Layout">
+        <button type="button" class="view-btn <%= (initialView !== 'grid') ? 'active' : '' %>" id="btnViewReels" title="Vertical Reels Feed">
+          <i class="fas fa-mobile-alt"></i> Reels
+        </button>
+        <button type="button" class="view-btn <%= (initialView === 'grid') ? 'active' : '' %>" id="btnViewGrid" title="Traditional Grid View">
+          <i class="fas fa-th-large"></i> Grid
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Search & Filter Bar -->
+    <div class="explore-filter-row">
+      <div class="explore-search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" 
+               id="exploreSearchInput" 
+               class="explore-search-input" 
+               placeholder="Filter by city, route, truck type, capacity, goods..." 
+               value="<%= initialQuery || '' %>"
+               autocomplete="off">
+      </div>
+
+      <!-- Dynamic Filter Chips -->
+      <div class="explore-chips-scroll" id="filterChipsContainer">
+        <button type="button" class="filter-chip active" data-filter="all">All Available</button>
+        <button type="button" class="filter-chip" data-filter="open body">🚛 Open Body</button>
+        <button type="button" class="filter-chip" data-filter="container">📦 Container</button>
+        <button type="button" class="filter-chip" data-filter="trailer">🚚 Trailer</button>
+        <button type="button" class="filter-chip" data-filter="tanker">🛢️ Tanker</button>
+        <button type="button" class="filter-chip" data-filter="10+ tons">⚖️ 10+ Tons</button>
+        <button type="button" class="filter-chip" data-filter="mumbai">📍 Mumbai</button>
+        <button type="button" class="filter-chip" data-filter="pune">📍 Pune</button>
+        <button type="button" class="filter-chip" data-filter="delhi">📍 Delhi</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. REELS VERTICAL BROWSING CONTAINER -->
+  <main class="reels-stage-wrapper" id="reelsStage">
+    
+    <!-- Top Progress Bar -->
+    <div class="reels-progress-track">
+      <div class="reels-progress-fill" id="reelsProgressBar"></div>
+    </div>
+
+    <!-- Live Counter Floating Badge -->
+    <div class="reels-floating-badge" id="reelsCounterBadge">
+      <span class="badge-pulse"></span>
+      <span id="reelsCounterText">Truck 1 of <%= lorries.length %></span>
+    </div>
+
+    <!-- Desktop Up/Down Click Controls -->
+    <div class="reels-desktop-controls" aria-hidden="true">
+      <button type="button" class="desktop-nav-btn" id="btnReelUp" title="Previous Listing (Up Arrow)">
+        <i class="fas fa-chevron-up"></i>
+      </button>
+      <button type="button" class="desktop-nav-btn" id="btnReelDown" title="Next Listing (Down Arrow)">
+        <i class="fas fa-chevron-down"></i>
+      </button>
+    </div>
+
+    <!-- Scroll-Snap Reels Viewport -->
+    <div class="reels-container" id="reelsContainer" tabindex="0" role="region" aria-label="Logistics Reels Feed">
+      
+      <!-- ==============================================
+           A. TRUCKS REEL FEED (AVAILABLE LORRIES)
+           ============================================== -->
+      <div class="reels-feed-group" id="reelsFeedTrucks" style="<%= (initialTab === 'loads') ? 'display: none;' : '' %>">
+        <% if (lorries && lorries.length > 0) { %>
+          <% lorries.forEach((lorry, index) => { %>
+            <article class="reel-slide <%= (index === 0) ? 'is-active' : '' %>" 
+                     data-index="<%= index + 1 %>"
+                     data-id="<%= lorry._id %>"
+                     data-type="truck"
+                     data-vehicle-type="<%= (lorry.vehicleType || '').toLowerCase() %>"
+                     data-location="<%= (lorry.location || '').toLowerCase() %>"
+                     data-capacity="<%= lorry.capacity || 0 %>"
+                     data-search-text="<%= (lorry.location + ' ' + lorry.vehicleType + ' ' + lorry.vehicleNumber + ' ' + lorry.ownerName).toLowerCase() %>">
+              
+              <!-- Original Authentic Indian Truck Art Card -->
+              <div class="truck-card">
+                <!-- Top Orange Header -->
+                <div class="truck-card-topbar">
+                  <div class="permit-tag">NATIONAL PERMIT</div>
+                </div>
+
+                <!-- Slogans Bar -->
+                <div class="truck-slogans-bar">
+                  <div class="slogan-col">
+                    <span class="slogan-green">धीरे चलो</span>
+                    <span class="slogan-orange">सुरक्षित चलो</span>
+                  </div>
+                  <div class="slogan-col slogan-center">
+                    <span class="slogan-emoji">☀️⛰️</span>
+                    <span class="slogan-dark">सफ़र लम्बा है</span>
+                    <span class="slogan-orange">मंज़िल जरूर मिलेगी</span>
+                  </div>
+                  <div class="slogan-col">
+                    <span class="slogan-red">रुकावट नहीं</span>
+                    <span class="slogan-dark">तजुर्बा है</span>
+                  </div>
+                </div>
+
+                <!-- Card Body Info -->
+                <div class="truck-card-content">
+                  <!-- Row 1: Base Location & Vehicle Plate -->
+                  <div class="truck-info-row location-row">
+                    <% renderAddrCell('BASE LOCATION', lorry.location, false, 'location'); %>
+                    <div class="truck-stationed-badge">
+                      <i class="fas fa-crosshairs"></i>
+                      <span>STATIONED</span>
+                    </div>
+                    <% renderAddrCell('VEHICLE PLATE', lorry.vehicleNumber, true, null); %>
+                  </div>
+
+                  <!-- Row 2: Chassis Type & Payload Capacity -->
+                  <div class="truck-info-row specs-row">
+                    <div class="truck-spec-card">
+                      <div class="spec-icon"><i class="fas fa-truck"></i></div>
+                      <div class="spec-info">
+                        <span class="truck-label">CHASSIS TYPE</span>
+                        <strong class="truck-val"><%= lorry.vehicleType || 'Open Body' %></strong>
+                      </div>
+                    </div>
+                    <div class="truck-spec-card">
+                      <div class="spec-icon"><i class="fas fa-weight-hanging"></i></div>
+                      <div class="spec-info">
+                        <span class="truck-label" data-translate="capacity">PAYLOAD CAPACITY</span>
+                        <strong class="truck-val"><%= lorry.capacity || 'N/A' %> Tons</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Row 3: Fleet Owner & Status -->
+                  <div class="truck-owner-row">
+                    <div class="owner-info">
+                      <span class="truck-label" data-translate="owner">FLEET OWNER</span>
+                      <strong class="truck-val owner-name"><%= lorry.ownerName %></strong>
+                    </div>
+                    <div class="status-wrapper">
+                      <span class="truck-status-pill <%= lorry.status || 'available' %>">
+                        <%= (lorry.status || 'available').toUpperCase() %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- The Iconic Indian Truck Back Graphic -->
+                  <div class="truck-back-graphic">
+                    <div class="truck-horn-bar">
+                      <span class="flag">🇮🇳</span>
+                      <span class="horn-text">BLOW</span>
+                      <span class="lotus-flower">🌸</span>
+                      <span class="horn-text">HORN</span>
+                      <span class="flag">🇮🇳</span>
+                    </div>
+
+                    <div class="truck-dipper-bar">
+                      <span class="arrow-left">◀◀</span>
+                      <span class="dipper-text">USE DIPPER AT NIGHT</span>
+                      <span class="arrow-right">▶▶</span>
+                    </div>
+
+                    <div class="truck-bumper-bar">
+                      <div class="bumper-left">
+                        <div class="tail-lights">
+                          <span class="light yellow"></span>
+                          <span class="light red"></span>
+                          <span class="light red"></span>
+                        </div>
+                        <span class="speed-badge">SPEED 40 KM</span>
+                      </div>
+                      <div class="bumper-plate-recess"></div>
+                      <div class="bumper-right">
+                        <div class="ind-plate">
+                          <span class="ind-text">IND</span>
+                          <span class="ind-num"><%= lorry.vehicleNumber %></span>
+                        </div>
+                        <div class="tail-lights">
+                          <span class="light red"></span>
+                          <span class="light red"></span>
+                          <span class="light yellow"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="truck-hazard-stripes"></div>
+
+                    <div class="truck-mudflaps-container">
+                      <div class="mudflap mudflap-left">
+                        <div class="mudflap-ribs">
+                          <span class="flap-flower">🏵️</span>
+                          <span class="flap-text">T2YD</span>
+                        </div>
+                      </div>
+                      <div class="mudflap mudflap-right">
+                        <div class="mudflap-ribs">
+                          <span class="flap-flower">🏵️</span>
+                          <span class="flap-text">BHARAT</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Action Buttons -->
+                  <div class="truck-card-actions">
+                    <a href="/lorries/<%= lorry._id %>" class="btn-truck-specs" data-translate="viewDetails">
+                      <i class="fas fa-eye"></i> Details
+                    </a>
+                    <% if (!locals.user) { %>
+                      <a href="/auth/login" class="btn-truck-book" data-translate="assignLorry">
+                        <i class="fas fa-handshake"></i> Book Truck
+                      </a>
+                    <% } else { %>
+                      <a href="/lorries/<%= lorry._id %>" class="btn-truck-book" data-translate="assignLorry">
+                        <i class="fas fa-handshake"></i> Book Truck
+                      </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div><!-- /.truck-card -->
+
+              <!-- Reels Floating Desi Action Rail -->
+              <aside class="reel-action-rail" aria-label="Quick Actions">
+                <% if (lorry.contact) { %>
+                  <a href="tel:<%= lorry.contact %>" class="rail-btn" title="Call Transporter">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="rail-btn-label">Call Owner</span>
+                  </a>
+                <% } %>
+                <button type="button" class="rail-btn btn-share-reel" data-title="<%= lorry.vehicleType %> - <%= lorry.location %>" data-url="/lorries/<%= lorry._id %>" title="Share Truck">
+                  <i class="fas fa-share-alt"></i>
+                  <span class="rail-btn-label">Share</span>
+                </button>
+                <button type="button" class="rail-btn btn-save-reel" data-id="<%= lorry._id %>" data-title="<%= lorry.vehicleNumber %>" title="Save Listing">
+                  <i class="far fa-bookmark"></i>
+                  <span class="rail-btn-label">Save</span>
+                </button>
+                <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(lorry.location || 'India') %>" target="_blank" rel="noopener" class="rail-btn" title="View Location Map">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span class="rail-btn-label">Map Pin</span>
+                </a>
+              </aside>
+
+              <% if (index === 0) { %>
+                <div class="reels-swipe-cue" id="swipeUpCue">
+                  <i class="fas fa-chevron-up"></i>
+                  <span>Scroll or Swipe up for next truck</span>
+                </div>
+              <% } %>
+
+            </article>
+          <% }) %>
+        <% } else { %>
+          <div class="explore-empty-state">
+            <i class="fas fa-truck"></i>
+            <h3>No Trucks Currently Available</h3>
+            <p>Check back shortly or switch to Find Loads to discover active shipments.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- ==============================================
+           B. LOADS REEL FEED (AVAILABLE DELIVERIES)
+           ============================================== -->
+      <div class="reels-feed-group" id="reelsFeedLoads" style="<%= (initialTab !== 'loads') ? 'display: none;' : '' %>">
+        <% if (deliveries && deliveries.length > 0) { %>
+          <% deliveries.forEach((delivery, index) => { %>
+            <article class="reel-slide <%= (index === 0 && initialTab === 'loads') ? 'is-active' : '' %>" 
+                     data-index="<%= index + 1 %>"
+                     data-id="<%= delivery._id %>"
+                     data-type="load"
+                     data-goods-type="<%= (delivery.goodsType || '').toLowerCase() %>"
+                     data-pickup="<%= (delivery.pickupLocation || '').toLowerCase() %>"
+                     data-drop="<%= (delivery.dropLocation || '').toLowerCase() %>"
+                     data-weight="<%= delivery.weight || 0 %>"
+                     data-search-text="<%= (delivery.goodsType + ' ' + delivery.pickupLocation + ' ' + delivery.dropLocation + ' ' + (delivery.shipperName || '')).toLowerCase() %>">
+              
+              <!-- Original Authentic Indian Truck Art Delivery Card -->
+              <div class="truck-card delivery-truck-card">
+                <!-- Top Orange Header -->
+                <div class="truck-card-topbar">
+                  <div class="permit-tag">EXPRESS FREIGHT</div>
+                </div>
+
+                <!-- Slogans Bar -->
+                <div class="truck-slogans-bar">
+                  <div class="slogan-col">
+                    <span class="slogan-green">समय पर</span>
+                    <span class="slogan-orange">डिलीवरी</span>
+                  </div>
+                  <div class="slogan-col slogan-center">
+                    <span class="slogan-emoji">☀️⛰️</span>
+                    <span class="slogan-dark">सफ़र लम्बा है</span>
+                    <span class="slogan-orange">मंज़िल जरूर मिलेगी</span>
+                  </div>
+                  <div class="slogan-col">
+                    <span class="slogan-red">रुकावट नहीं</span>
+                    <span class="slogan-dark">तजुर्बा है</span>
+                  </div>
+                </div>
+
+                <!-- Card Body Info -->
+                <div class="truck-card-content">
+                  <!-- Row 1: Pickup & Drop Location -->
+                  <div class="truck-info-row location-row">
+                    <% renderAddrCell('PICKUP FROM', delivery.pickupLocation, false, 'from'); %>
+                    <div class="truck-stationed-badge">
+                      <i class="fas fa-route"></i>
+                      <span>ROUTE</span>
+                    </div>
+                    <% renderAddrCell('DESTINATION', delivery.dropLocation, true, 'to'); %>
+                  </div>
+
+                  <!-- Row 2: Goods Type & Cargo Weight -->
+                  <div class="truck-info-row specs-row">
+                    <div class="truck-spec-card">
+                      <div class="spec-icon"><i class="fas fa-box-open"></i></div>
+                      <div class="spec-info">
+                        <span class="truck-label" data-translate="goods">GOODS TYPE</span>
+                        <strong class="truck-val"><%= delivery.goodsType %></strong>
+                      </div>
+                    </div>
+                    <div class="truck-spec-card">
+                      <div class="spec-icon"><i class="fas fa-weight-hanging"></i></div>
+                      <div class="spec-info">
+                        <span class="truck-label" data-translate="weight">CARGO WEIGHT</span>
+                        <strong class="truck-val"><%= delivery.weight || 'N/A' %> kg</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Row 3: Pickup Date & Status -->
+                  <div class="truck-owner-row">
+                    <div class="owner-info">
+                      <span class="truck-label" data-translate="date">PICKUP DATE</span>
+                      <strong class="truck-val"><%= delivery.pickupDate || 'Flexible' %></strong>
+                    </div>
+                    <div class="status-wrapper">
+                      <span class="truck-status-pill available">
+                        <%= (delivery.status === 'pending' ? 'READY TO SHIP' : delivery.status).toUpperCase() %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- The Iconic Indian Truck Back Graphic -->
+                  <div class="truck-back-graphic">
+                    <div class="truck-horn-bar">
+                      <span class="flag">🇮🇳</span>
+                      <span class="horn-text">BLOW</span>
+                      <span class="lotus-flower">🌸</span>
+                      <span class="horn-text">HORN</span>
+                      <span class="flag">🇮🇳</span>
+                    </div>
+
+                    <div class="truck-dipper-bar">
+                      <span class="arrow-left">◀◀</span>
+                      <span class="dipper-text">USE DIPPER AT NIGHT</span>
+                      <span class="arrow-right">▶▶</span>
+                    </div>
+
+                    <div class="truck-bumper-bar">
+                      <div class="bumper-left">
+                        <div class="tail-lights">
+                          <span class="light yellow"></span>
+                          <span class="light red"></span>
+                          <span class="light red"></span>
+                        </div>
+                        <span class="speed-badge">SPEED 40 KM</span>
+                      </div>
+                      <div class="bumper-plate-recess"></div>
+                      <div class="bumper-right">
+                        <div class="ind-plate">
+                          <span class="ind-text">IND</span>
+                          <span class="ind-num">T2YD-EXPRESS</span>
+                        </div>
+                        <div class="tail-lights">
+                          <span class="light red"></span>
+                          <span class="light red"></span>
+                          <span class="light yellow"></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="truck-hazard-stripes"></div>
+
+                    <div class="truck-mudflaps-container">
+                      <div class="mudflap mudflap-left">
+                        <div class="mudflap-ribs">
+                          <span class="flap-flower">🏵️</span>
+                          <span class="flap-text">T2YD</span>
+                        </div>
+                      </div>
+                      <div class="mudflap mudflap-right">
+                        <div class="mudflap-ribs">
+                          <span class="flap-flower">🏵️</span>
+                          <span class="flap-text">BHARAT</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Action Buttons -->
+                  <div class="truck-card-actions">
+                    <a href="/deliveries/<%= delivery._id %>" class="btn-truck-specs" data-translate="viewDetails">
+                      <i class="fas fa-eye"></i> Specs
+                    </a>
+                    <% if (!locals.user) { %>
+                      <a href="/auth/login" class="btn-truck-book" data-translate="bookDelivery">
+                        <i class="fas fa-handshake"></i> Book Delivery
+                      </a>
+                    <% } else if (locals.user.role === 'transporter' && delivery.status === 'pending') { %>
+                      <a href="/bid/<%= delivery._id %>" class="btn-truck-book" data-translate="bookDelivery">
+                        <i class="fas fa-handshake"></i> Book Delivery
+                      </a>
+                    <% } else { %>
+                      <a href="/deliveries/<%= delivery._id %>" class="btn-truck-book" data-translate="bookDelivery">
+                        <i class="fas fa-handshake"></i> Book Delivery
+                      </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div><!-- /.truck-card -->
+
+              <!-- Reels Floating Action Rail -->
+              <aside class="reel-action-rail" aria-label="Quick Actions">
+                <% if (delivery.contact) { %>
+                  <a href="tel:<%= delivery.contact %>" class="rail-btn" title="Call Shipper">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="rail-btn-label">Call Shipper</span>
+                  </a>
+                <% } %>
+                <button type="button" class="rail-btn btn-share-reel" data-title="<%= delivery.goodsType %> - <%= delivery.pickupLocation %> to <%= delivery.dropLocation %>" data-url="/deliveries/<%= delivery._id %>" title="Share Load">
+                  <i class="fas fa-share-alt"></i>
+                  <span class="rail-btn-label">Share</span>
+                </button>
+                <button type="button" class="rail-btn btn-save-reel" data-id="<%= delivery._id %>" data-title="<%= delivery.goodsType %>" title="Save Load">
+                  <i class="far fa-bookmark"></i>
+                  <span class="rail-btn-label">Save</span>
+                </button>
+                <a href="https://www.google.com/maps/dir/?api=1&origin=<%= encodeURIComponent(delivery.pickupLocation || '') %>&destination=<%= encodeURIComponent(delivery.dropLocation || '') %>" target="_blank" rel="noopener" class="rail-btn" title="View Route on Google Maps">
+                  <i class="fas fa-route"></i>
+                  <span class="rail-btn-label">Route</span>
+                </a>
+              </aside>
+
+            </article>
+          <% }) %>
+        <% } else { %>
+          <div class="explore-empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>No Delivery Loads Available</h3>
+            <p>There are no open freight shipments right now. Switch to Find Trucks to see available vehicles.</p>
+          </div>
+        <% } %>
+      </div>
+
+    </div><!-- /.reels-container -->
+
+  </main><!-- /.reels-stage-wrapper -->
+
+  <!-- 3. TRADITIONAL GRID VIEW ALTERNATIVE (WHEN TOGGLED) -->
+  <section class="grid-stage-wrapper" id="gridStage" aria-label="Traditional Marketplace Grid">
+    
+    <!-- Trucks Grid Container -->
+    <div id="gridFeedTrucks" style="<%= (initialTab === 'loads') ? 'display: none;' : '' %>">
+      <h2 class="section-title"><i class="fas fa-truck"></i> Available Lorries (<span id="gridCountTrucks"><%= lorries.length %></span>)</h2>
+      <div class="card-container">
+        <% lorries.forEach(lorry => { %>
+          <!-- Reuse Card in Grid -->
+          <div class="truck-card grid-card-item" data-search-text="<%= (lorry.location + ' ' + lorry.vehicleType + ' ' + lorry.vehicleNumber + ' ' + lorry.ownerName).toLowerCase() %>">
+            <div class="truck-card-topbar">
+              <div class="permit-tag">NATIONAL PERMIT</div>
+            </div>
+            <div class="truck-slogans-bar">
+              <div class="slogan-col"><span class="slogan-green">धीरे चलो</span><span class="slogan-orange">सुरक्षित चलो</span></div>
+              <div class="slogan-col slogan-center"><span class="slogan-emoji">☀️⛰️</span><span class="slogan-dark">सफ़र लम्बा है</span><span class="slogan-orange">मंज़िल जरूर मिलेगी</span></div>
+              <div class="slogan-col"><span class="slogan-red">रुकावट नहीं</span><span class="slogan-dark">तजुर्बा है</span></div>
+            </div>
+            <div class="truck-card-content">
+              <div class="truck-info-row location-row">
+                <% renderAddrCell('BASE LOCATION', lorry.location, false, 'location'); %>
+                <div class="truck-stationed-badge"><i class="fas fa-crosshairs"></i><span>STATIONED</span></div>
+                <% renderAddrCell('VEHICLE PLATE', lorry.vehicleNumber, true, null); %>
+              </div>
+              <div class="truck-info-row specs-row">
+                <div class="truck-spec-card"><div class="spec-icon"><i class="fas fa-truck"></i></div><div class="spec-info"><span class="truck-label">CHASSIS TYPE</span><strong class="truck-val"><%= lorry.vehicleType || 'Open Body' %></strong></div></div>
+                <div class="truck-spec-card"><div class="spec-icon"><i class="fas fa-weight-hanging"></i></div><div class="spec-info"><span class="truck-label">PAYLOAD CAPACITY</span><strong class="truck-val"><%= lorry.capacity || 'N/A' %> Tons</strong></div></div>
+              </div>
+              <div class="truck-owner-row">
+                <div class="owner-info"><span class="truck-label">FLEET OWNER</span><strong class="truck-val owner-name"><%= lorry.ownerName %></strong></div>
+                <div class="status-wrapper"><span class="truck-status-pill <%= lorry.status || 'available' %>"><%= (lorry.status || 'available').toUpperCase() %></span></div>
+              </div>
+              <div class="truck-card-actions">
+                <a href="/lorries/<%= lorry._id %>" class="btn-truck-specs"><i class="fas fa-eye"></i> Details</a>
+                <a href="<%= locals.user ? ('/lorries/' + lorry._id) : '/auth/login' %>" class="btn-truck-book"><i class="fas fa-handshake"></i> Book Truck</a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Loads Grid Container -->
+    <div id="gridFeedLoads" style="<%= (initialTab !== 'loads') ? 'display: none;' : '' %>">
+      <h2 class="section-title"><i class="fas fa-box-open"></i> Available Deliveries (<span id="gridCountLoads"><%= deliveries.length %></span>)</h2>
+      <div class="card-container">
+        <% deliveries.forEach(delivery => { %>
+          <div class="truck-card delivery-truck-card grid-card-item" data-search-text="<%= (delivery.goodsType + ' ' + delivery.pickupLocation + ' ' + delivery.dropLocation + ' ' + (delivery.shipperName || '')).toLowerCase() %>">
+            <div class="truck-card-topbar">
+              <div class="permit-tag">EXPRESS FREIGHT</div>
+            </div>
+            <div class="truck-slogans-bar">
+              <div class="slogan-col"><span class="slogan-green">समय पर</span><span class="slogan-orange">डिलीवरी</span></div>
+              <div class="slogan-col slogan-center"><span class="slogan-emoji">☀️⛰️</span><span class="slogan-dark">सफ़र लम्बा है</span><span class="slogan-orange">मंज़िल जरूर मिलेगी</span></div>
+              <div class="slogan-col"><span class="slogan-red">रुकावट नहीं</span><span class="slogan-dark">तजुर्बा है</span></div>
+            </div>
+            <div class="truck-card-content">
+              <div class="truck-info-row location-row">
+                <% renderAddrCell('PICKUP FROM', delivery.pickupLocation, false, 'from'); %>
+                <div class="truck-stationed-badge"><i class="fas fa-route"></i><span>ROUTE</span></div>
+                <% renderAddrCell('DESTINATION', delivery.dropLocation, true, 'to'); %>
+              </div>
+              <div class="truck-info-row specs-row">
+                <div class="truck-spec-card"><div class="spec-icon"><i class="fas fa-box-open"></i></div><div class="spec-info"><span class="truck-label">GOODS TYPE</span><strong class="truck-val"><%= delivery.goodsType %></strong></div></div>
+                <div class="truck-spec-card"><div class="spec-icon"><i class="fas fa-weight-hanging"></i></div><div class="spec-info"><span class="truck-label">CARGO WEIGHT</span><strong class="truck-val"><%= delivery.weight || 'N/A' %> kg</strong></div></div>
+              </div>
+              <div class="truck-owner-row">
+                <div class="owner-info"><span class="truck-label">PICKUP DATE</span><strong class="truck-val"><%= delivery.pickupDate || 'Flexible' %></strong></div>
+                <div class="status-wrapper"><span class="truck-status-pill available"><%= (delivery.status === 'pending' ? 'READY TO SHIP' : delivery.status).toUpperCase() %></span></div>
+              </div>
+              <div class="truck-card-actions">
+                <a href="/deliveries/<%= delivery._id %>" class="btn-truck-specs"><i class="fas fa-eye"></i> Specs</a>
+                <% if (!locals.user) { %>
+                  <a href="/auth/login" class="btn-truck-book"><i class="fas fa-handshake"></i> Book Delivery</a>
+                <% } else if (locals.user.role === 'transporter' && delivery.status === 'pending') { %>
+                  <a href="/bid/<%= delivery._id %>" class="btn-truck-book"><i class="fas fa-handshake"></i> Book Delivery</a>
+                <% } else { %>
+                  <a href="/deliveries/<%= delivery._id %>" class="btn-truck-book"><i class="fas fa-handshake"></i> Book Delivery</a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+  </section>
+
+</div><!-- /.explore-page-wrapper -->
+
+<!-- Floating Toast Notification -->
+<div class="reels-toast" id="reelsToast" role="alert" aria-live="polite">
+  <i class="fas fa-info-circle"></i>
+  <span id="reelsToastText">Notification</span>
+</div>
+
+<!-- ==========================================================================
+     REELS INTERACTION & DISCOVERY JAVASCRIPT ENGINE
+     ========================================================================== -->
+<script>
+(function() {
+  'use strict';
+
+  // DOM Elements
+  const tabBtnTrucks = document.getElementById('tabBtnTrucks');
+  const tabBtnLoads = document.getElementById('tabBtnLoads');
+  const reelsFeedTrucks = document.getElementById('reelsFeedTrucks');
+  const reelsFeedLoads = document.getElementById('reelsFeedLoads');
+  const gridFeedTrucks = document.getElementById('gridFeedTrucks');
+  const gridFeedLoads = document.getElementById('gridFeedLoads');
+  
+  const btnViewReels = document.getElementById('btnViewReels');
+  const btnViewGrid = document.getElementById('btnViewGrid');
+  const reelsStage = document.getElementById('reelsStage');
+  const gridStage = document.getElementById('gridStage');
+  
+  const reelsContainer = document.getElementById('reelsContainer');
+  const reelsProgressBar = document.getElementById('reelsProgressBar');
+  const reelsCounterText = document.getElementById('reelsCounterText');
+  const btnReelUp = document.getElementById('btnReelUp');
+  const btnReelDown = document.getElementById('btnReelDown');
+  const swipeUpCue = document.getElementById('swipeUpCue');
+  const exploreSearchInput = document.getElementById('exploreSearchInput');
+  const filterChipsContainer = document.getElementById('filterChipsContainer');
+  const reelsToast = document.getElementById('reelsToast');
+  const reelsToastText = document.getElementById('reelsToastText');
+
+  let currentTab = '<%= initialTab || "trucks" %>';
+  let currentView = '<%= initialView || "reels" %>';
+  let activeSlideIndex = 0;
+  let toastTimer = null;
+
+  function showToast(text, iconClass = 'fa-check-circle') {
+    if (!reelsToast || !reelsToastText) return;
+    reelsToastText.textContent = text;
+    const icon = reelsToast.querySelector('i');
+    if (icon) icon.className = `fas ${iconClass}`;
+    reelsToast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      reelsToast.classList.remove('show');
+    }, 2500);
+  }
+
+  // 1. Category Switcher (Trucks vs Loads)
+  function setCategory(tabName) {
+    currentTab = tabName;
+    const isTrucks = tabName === 'trucks';
+
+    tabBtnTrucks.classList.toggle('active', isTrucks);
+    tabBtnTrucks.setAttribute('aria-selected', isTrucks ? 'true' : 'false');
+    tabBtnLoads.classList.toggle('active', !isTrucks);
+    tabBtnLoads.setAttribute('aria-selected', !isTrucks ? 'true' : 'false');
+
+    if (reelsFeedTrucks) reelsFeedTrucks.style.display = isTrucks ? '' : 'none';
+    if (reelsFeedLoads) reelsFeedLoads.style.display = !isTrucks ? '' : 'none';
+    if (gridFeedTrucks) gridFeedTrucks.style.display = isTrucks ? '' : 'none';
+    if (gridFeedLoads) gridFeedLoads.style.display = !isTrucks ? '' : 'none';
+
+    // Reset scroll to top
+    if (reelsContainer) reelsContainer.scrollTop = 0;
+
+    // Update URL without reload
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.replaceState({}, '', url);
+
+    updateTelemetry();
+  }
+
+  tabBtnTrucks.addEventListener('click', () => setCategory('trucks'));
+  tabBtnLoads.addEventListener('click', () => setCategory('loads'));
+
+  // 2. View Mode Switcher (Reels vs Grid)
+  function setViewMode(mode) {
+    currentView = mode;
+    const isReels = mode === 'reels';
+    
+    btnViewReels.classList.toggle('active', isReels);
+    btnViewGrid.classList.toggle('active', !isReels);
+
+    if (reelsStage) reelsStage.style.display = isReels ? 'block' : 'none';
+    if (gridStage) gridStage.style.display = !isReels ? 'block' : 'none';
+
+    try {
+      localStorage.setItem('t2yd_explore_view_mode', mode);
+    } catch (e) {}
+
+    const url = new URL(window.location);
+    url.searchParams.set('view', mode);
+    window.history.replaceState({}, '', url);
+  }
+
+  btnViewReels.addEventListener('click', () => setViewMode('reels'));
+  btnViewGrid.addEventListener('click', () => setViewMode('grid'));
+
+  // Restore saved view preference if any
+  try {
+    const savedMode = localStorage.getItem('t2yd_explore_view_mode');
+    if (savedMode && (savedMode === 'reels' || savedMode === 'grid') && !'<%= initialView %>') {
+      setViewMode(savedMode);
+    }
+  } catch (e) {}
+
+  // 3. Reels Scroll Snap & Active Slide Observer
+  const activeFeedSelector = () => currentTab === 'trucks' ? '#reelsFeedTrucks' : '#reelsFeedLoads';
+  
+  function getVisibleSlides() {
+    const parent = document.querySelector(activeFeedSelector());
+    if (!parent) return [];
+    return Array.from(parent.querySelectorAll('.reel-slide')).filter(s => s.style.display !== 'none');
+  }
+
+  function updateTelemetry() {
+    const slides = getVisibleSlides();
+    const total = slides.length;
+    if (total === 0) {
+      if (reelsCounterText) reelsCounterText.textContent = '0 Available';
+      if (reelsProgressBar) reelsProgressBar.style.width = '0%';
+      return;
+    }
+
+    const currentSlide = slides[activeSlideIndex] || slides[0];
+    const displayNum = Math.min(activeSlideIndex + 1, total);
+    const label = currentTab === 'trucks' ? 'Truck' : 'Load';
+    
+    if (reelsCounterText) {
+      reelsCounterText.textContent = `${label} ${displayNum} of ${total}`;
+    }
+    if (reelsProgressBar) {
+      reelsProgressBar.style.width = `${(displayNum / total) * 100}%`;
+    }
+
+    // Dismiss swipe cue on scroll past slide 0
+    if (swipeUpCue && activeSlideIndex > 0) {
+      swipeUpCue.style.opacity = '0';
+      setTimeout(() => { if (swipeUpCue) swipeUpCue.style.display = 'none'; }, 400);
+    }
+  }
+
+  // IntersectionObserver for active reel slide detection
+  const observerOptions = {
+    root: reelsContainer,
+    threshold: 0.65
+  };
+
+  const reelObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const slide = entry.target;
+        const slides = getVisibleSlides();
+        const idx = slides.indexOf(slide);
+        
+        slides.forEach(s => s.classList.remove('is-active'));
+        slide.classList.add('is-active');
+
+        if (idx !== -1) {
+          activeSlideIndex = idx;
+          updateTelemetry();
+        }
+      }
+    });
+  }, observerOptions);
+
+  function attachObservers() {
+    reelObserver.disconnect();
+    document.querySelectorAll('.reel-slide').forEach(s => reelObserver.observe(s));
+  }
+  attachObservers();
+
+  // 4. Desktop Navigation Buttons (Up / Down)
+  function scrollToSlide(direction) {
+    const slides = getVisibleSlides();
+    if (slides.length === 0) return;
+
+    if (direction === 'down' && activeSlideIndex < slides.length - 1) {
+      activeSlideIndex++;
+    } else if (direction === 'up' && activeSlideIndex > 0) {
+      activeSlideIndex--;
+    }
+
+    const targetSlide = slides[activeSlideIndex];
+    if (targetSlide) {
+      targetSlide.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  if (btnReelDown) btnReelDown.addEventListener('click', () => scrollToSlide('down'));
+  if (btnReelUp) btnReelUp.addEventListener('click', () => scrollToSlide('up'));
+
+  // 5. Keyboard Navigation (Arrow Keys / Page Up/Down)
+  document.addEventListener('keydown', (e) => {
+    if (currentView !== 'reels') return;
+    if (e.target.matches('input, textarea, select')) return;
+
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'j') {
+      e.preventDefault();
+      scrollToSlide('down');
+    } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'k') {
+      e.preventDefault();
+      scrollToSlide('up');
+    }
+  });
+
+  // 6. Live Search & Filter Engine
+  function applyFilters() {
+    const query = (exploreSearchInput ? exploreSearchInput.value : '').toLowerCase().trim();
+    const activeChip = document.querySelector('.filter-chip.active');
+    const chipFilter = activeChip ? activeChip.dataset.filter.toLowerCase() : 'all';
+
+    let matchCountTrucks = 0;
+    let matchCountLoads = 0;
+
+    // Filter Truck Slides & Grid Cards
+    document.querySelectorAll('#reelsFeedTrucks .reel-slide, #gridFeedTrucks .grid-card-item').forEach(el => {
+      const text = el.dataset.searchText || '';
+      const vType = el.dataset.vehicleType || '';
+      const cap = parseFloat(el.dataset.capacity || '0');
+
+      let matchesQuery = !query || text.includes(query);
+      let matchesChip = true;
+
+      if (chipFilter !== 'all') {
+        if (chipFilter === '10+ tons') {
+          matchesChip = cap >= 10;
+        } else {
+          matchesChip = text.includes(chipFilter) || vType.includes(chipFilter);
+        }
+      }
+
+      const isMatch = matchesQuery && matchesChip;
+      el.style.display = isMatch ? '' : 'none';
+      if (isMatch && el.classList.contains('reel-slide')) matchCountTrucks++;
+    });
+
+    // Filter Load Slides & Grid Cards
+    document.querySelectorAll('#reelsFeedLoads .reel-slide, #gridFeedLoads .grid-card-item').forEach(el => {
+      const text = el.dataset.searchText || '';
+      const weight = parseFloat(el.dataset.weight || '0');
+
+      let matchesQuery = !query || text.includes(query);
+      let matchesChip = true;
+
+      if (chipFilter !== 'all') {
+        if (chipFilter === '10+ tons') {
+          matchesChip = weight >= 10000;
+        } else {
+          matchesChip = text.includes(chipFilter);
+        }
+      }
+
+      const isMatch = matchesQuery && matchesChip;
+      el.style.display = isMatch ? '' : 'none';
+      if (isMatch && el.classList.contains('reel-slide')) matchCountLoads++;
+    });
+
+    // Update Counts
+    const badgeTrucks = document.getElementById('badgeCountTrucks');
+    const badgeLoads = document.getElementById('badgeCountLoads');
+    const gridTrucks = document.getElementById('gridCountTrucks');
+    const gridLoads = document.getElementById('gridCountLoads');
+
+    if (badgeTrucks) badgeTrucks.textContent = matchCountTrucks;
+    if (badgeLoads) badgeLoads.textContent = matchCountLoads;
+    if (gridTrucks) gridTrucks.textContent = matchCountTrucks;
+    if (gridLoads) gridLoads.textContent = matchCountLoads;
+
+    activeSlideIndex = 0;
+    updateTelemetry();
+    attachObservers();
+  }
+
+  if (exploreSearchInput) {
+    exploreSearchInput.addEventListener('input', applyFilters);
+  }
+
+  // Filter Chips Click
+  if (filterChipsContainer) {
+    filterChipsContainer.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+        filterChipsContainer.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        applyFilters();
+      });
+    });
+  }
+
+  // 7. Save / Bookmark System (localStorage)
+  const SAVED_STORAGE_KEY = 't2yd_saved_listings';
+  function getSavedListings() {
+    try {
+      return JSON.parse(localStorage.getItem(SAVED_STORAGE_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function toggleSaveListing(id, title, btn) {
+    let saved = getSavedListings();
+    const idx = saved.indexOf(id);
+    const icon = btn.querySelector('i');
+
+    if (idx > -1) {
+      saved.splice(idx, 1);
+      btn.classList.remove('active-saved');
+      if (icon) icon.className = 'far fa-bookmark';
+      showToast('Removed from saved listings', 'fa-trash-alt');
+    } else {
+      saved.push(id);
+      btn.classList.add('active-saved');
+      if (icon) icon.className = 'fas fa-bookmark';
+      showToast('Listing saved to bookmarks! ⭐', 'fa-star');
+    }
+
+    try {
+      localStorage.setItem(SAVED_STORAGE_KEY, JSON.stringify(saved));
+    } catch (e) {}
+  }
+
+  // Initialize saved states
+  const savedIds = getSavedListings();
+  document.querySelectorAll('.btn-save-reel').forEach(btn => {
+    const id = btn.dataset.id;
+    if (savedIds.includes(id)) {
+      btn.classList.add('active-saved');
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = 'fas fa-bookmark';
+    }
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSaveListing(id, btn.dataset.title, btn);
+    });
+  });
+
+  // 8. Share System
+  document.querySelectorAll('.btn-share-reel').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const title = btn.dataset.title || 'T2YD Transport Listing';
+      const url = window.location.origin + (btn.dataset.url || '');
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: `T2YD: ${title}`, text: 'Check out this verified transport listing on T2YD:', url });
+          showToast('Shared successfully!', 'fa-share-alt');
+          return;
+        } catch (err) {
+          // Fallback to clipboard
+        }
+      }
+
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast('Link copied to clipboard! 📋', 'fa-copy');
+      } catch (err) {
+        showToast('Direct link: ' + url, 'fa-link');
+      }
+    });
+  });
+
+  // 9. Prevent accidental button clicks when dragging/swiping
+  let touchStartY = 0;
+  let isSwiping = false;
+
+  reelsContainer.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+    isSwiping = false;
+  }, { passive: true });
+
+  reelsContainer.addEventListener('touchmove', (e) => {
+    const diffY = Math.abs(e.touches[0].clientY - touchStartY);
+    if (diffY > 10) isSwiping = true;
+  }, { passive: true });
+
+  document.querySelectorAll('.reel-slide a, .reel-slide button').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (isSwiping) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  });
+
+  // 10. Initial Telemetry Update
+  updateTelemetry();
+
+})();
+
+// Global helper for card "Read More" button
+function toggleReadMore(btn, event) {
+  if (event) event.stopPropagation();
+  const parent = btn.closest('.truck-val');
+  if (!parent) return;
+  const shortAddr = parent.querySelector('.short-addr');
+  const fullAddr = parent.querySelector('.full-addr');
+  if (!shortAddr || !fullAddr) return;
+
+  const isExpanded = fullAddr.style.display !== 'none';
+  if (isExpanded) {
+    fullAddr.style.display = 'none';
+    shortAddr.style.display = 'inline';
+    btn.textContent = 'Read More';
+  } else {
+    fullAddr.style.display = 'inline';
+    shortAddr.style.display = 'none';
+    btn.textContent = 'Show Less';
+  }
+}
+</script>

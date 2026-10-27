@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const coordinateSchema = new mongoose.Schema({
   lat: Number,
   lng: Number,
+  heading: Number,
+  speed: Number,
   updatedAt: { type: Date, default: Date.now }
 }, { _id: false });
 

@@ -533,6 +533,10 @@ function renderSearchAddrCell(label, text, isRight) {
          class="filter-pill <%= (filterType === 'delivery' || filterType === 'deliveries') ? 'active' : '' %>">
         <i class="fas fa-box"></i> Deliveries (<%= typeof deliveryCount !== 'undefined' ? deliveryCount : results.filter(r => r.goodsType).length %>)
       </a>
+      <a href="/explore?query=<%= encodeURIComponent(typeof query !== 'undefined' ? query : '') %>&tab=<%= (filterType === 'delivery' || filterType === 'deliveries') ? 'loads' : 'trucks' %>" 
+         class="filter-pill" style="background: linear-gradient(135deg, #ea580c, #f97316); color: #ffffff !important; border-color: #ea580c; font-weight: 800;">
+        <i class="fas fa-play-circle"></i> Reels View 📱
+      </a>
     </div>
   </div>
 </div>

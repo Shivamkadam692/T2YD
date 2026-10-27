@@ -6,6 +6,7 @@ const Delivery = require('../models/Delivery');
 const Lorry = require('../models/Lorry');
 const User = require('../models/User');
 const NotificationService = require('../services/notificationService');
+const BidService = require('../services/bidService');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
@@ -45,9 +46,9 @@ router.get('/shipper', requireLogin, requireRole('shipper'), async (req, res) =>
         shipper: req.session.userId,
         delivery: { $exists: true, $ne: null }
       })
-        .populate('transporter', 'name email')
-        .populate('lorry', 'vehicleNumber vehicleType capacity')
-        .populate('delivery', 'goodsType pickupLocation dropLocation')
+        .populate('transporter', 'name email contact')
+        .populate('lorry', 'vehicleNumber vehicleType capacity location')
+        .populate('delivery', 'goodsType pickupLocation dropLocation weight amount status exactPickup exactDrop createdAt')
         .sort({ createdAt: -1 })
         .lean()
     ]);
@@ -68,13 +69,19 @@ router.get('/transporter', requireLogin, requireRole('transporter'), async (req,
         transporter: req.session.userId,
         delivery: { $exists: true, $ne: null }
       })
-        .populate('shipper', 'name email')
-        .populate('delivery', 'goodsType pickupLocation dropLocation weight')
-        .populate('lorry', 'vehicleNumber vehicleType capacity')
+        .populate('shipper', 'name email contact')
+        .populate('delivery', 'goodsType pickupLocation dropLocation weight amount status exactPickup exactDrop createdAt')
+        .populate('lorry', 'vehicleNumber vehicleType capacity location')
         .sort({ createdAt: -1 })
         .lean(),
-      Delivery.find({ status: 'pending' })
-        .populate('shipper', 'name')
+      Delivery.find({ 
+        status: 'pending',
+        $or: [
+          { transporter: { $exists: false } },
+          { transporter: null }
+        ]
+      })
+        .populate('shipper', 'name email')
         .sort({ createdAt: -1 })
         .lean()
     ]);
@@ -84,7 +91,7 @@ router.get('/transporter', requireLogin, requireRole('transporter'), async (req,
     const existingBids = deliveryIds.length > 0 ? await Request.find({
       delivery: { $in: deliveryIds },
       transporter: req.session.userId
-    }).select('delivery status price createdAt').lean() : [];
+    }).select('delivery status price createdAt rejectedAt acceptedAt').lean() : [];
     
     const bidsMap = new Map(existingBids.map(b => [b.delivery.toString(), b]));
     
@@ -95,7 +102,9 @@ router.get('/transporter', requireLogin, requireRole('transporter'), async (req,
         bidStatus: existingBid ? {
           status: existingBid.status,
           price: existingBid.price,
-          createdAt: existingBid.createdAt
+          createdAt: existingBid.createdAt,
+          rejectedAt: existingBid.rejectedAt,
+          acceptedAt: existingBid.acceptedAt
         } : null
       };
     });
@@ -107,14 +116,38 @@ router.get('/transporter', requireLogin, requireRole('transporter'), async (req,
   }
 });
 
+// General fleet tracking overview route
+router.get('/track', requireLogin, async (req, res) => {
+  try {
+    const userId = req.session.userId?.toString();
+    const activeRequests = await Request.find({
+      $or: [{ shipper: userId }, { transporter: userId }],
+      status: { $in: ['accepted', 'pending'] }
+    })
+      .populate('shipper', 'name phone email')
+      .populate('transporter', 'name phone email')
+      .populate('delivery', 'pickupLocation dropLocation goodsType exactPickup exactDrop weight amount description')
+      .populate('lorry', 'vehicleNumber vehicleType capacity ownerName contact status')
+      .sort({ updatedAt: -1 });
+
+    if (activeRequests && activeRequests.length > 0) {
+      return res.redirect(`/dashboard/track/${activeRequests[0]._id}`);
+    }
+
+    res.render('track', { request: null, activeRequests: [] });
+  } catch (e) {
+    res.status(500).render('error', { message: 'Error loading tracking' });
+  }
+});
+
 // Live tracking page with access rules
 router.get('/track/:requestId', requireLogin, async (req, res) => {
   try {
     const request = await Request.findById(req.params.requestId)
-      .populate('shipper', 'name')
-      .populate('transporter', 'name')
-      .populate('delivery', 'pickupLocation dropLocation goodsType exactPickup exactDrop')
-      .populate('lorry', 'vehicleNumber vehicleType');
+      .populate('shipper', 'name phone email')
+      .populate('transporter', 'name phone email')
+      .populate('delivery', 'pickupLocation dropLocation goodsType exactPickup exactDrop weight amount description')
+      .populate('lorry', 'vehicleNumber vehicleType capacity ownerName contact status');
     if (!request) return res.status(404).render('error', { message: 'Request not found' });
 
     const userId = req.session.userId?.toString();
@@ -128,17 +161,32 @@ router.get('/track/:requestId', requireLogin, async (req, res) => {
     // - Shipper: can access tracking from acceptance until completion
     // - Transporter: can access shipper location until goods loaded (loadedAt). After that, can still share own location for shipper to track
     if (isTransporter && request.loadedAt) {
-      // After loading, do not expose shipper location anymore
-      // Only remove the shipper location from the response, not the entire object
       request._doc.shipperLocation = undefined;
     }
     // Allow tracking access even after completion if there's a loaded photo to view
     if (request.status === 'completed' && !request.loadedPhoto) {
-      // After completion, no tracking access for either party (unless there's a loaded photo to view)
       return res.status(403).render('error', { message: 'Tracking is no longer available for this delivery' });
     }
 
-    res.render('track', { request });
+    // Also fetch all other active authorized requests for this user for the fleet panel
+    const activeRequests = await Request.find({
+      $or: [{ shipper: userId }, { transporter: userId }],
+      status: { $in: ['accepted', 'pending'] }
+    })
+      .populate('shipper', 'name phone email')
+      .populate('transporter', 'name phone email')
+      .populate('delivery', 'pickupLocation dropLocation goodsType exactPickup exactDrop weight amount description')
+      .populate('lorry', 'vehicleNumber vehicleType capacity ownerName contact status')
+      .sort({ updatedAt: -1 });
+
+    // Redact shipper location for transporter if goods are loaded
+    activeRequests.forEach(r => {
+      if (r.transporter && r.transporter._id.toString() === userId && r.loadedAt) {
+        r._doc.shipperLocation = undefined;
+      }
+    });
+
+    res.render('track', { request, activeRequests });
   } catch (e) {
     res.status(500).render('error', { message: 'Error loading tracking' });
   }
@@ -263,60 +311,40 @@ router.post('/send-request', requireLogin, async (req, res, next) => {
   }
 });
 
-// Accept request (shipper)
+// Accept request/bid (shipper)
 router.post('/accept-request/:requestId', requireLogin, requireRole('shipper'), async (req, res) => {
   try {
-    const request = await Request.findById(req.params.requestId);
-    if (!request) {
-      return res.status(404).render('error', { message: 'Request not found' });
-    }
-    
-    if (request.shipper.toString() !== req.session.userId) {
-      return res.status(403).render('error', { message: 'Unauthorized' });
-    }
-    
-    await Request.findByIdAndUpdate(req.params.requestId, { status: 'accepted', acceptedAt: new Date() });
-    await Delivery.findByIdAndUpdate(request.delivery, { 
-      status: 'in-transit',
-      transporter: request.transporter,
-      amount: request.price
+    const result = await BidService.acceptBid({
+      requestId: req.params.requestId,
+      shipperId: req.session.userId
     });
-    await Lorry.findByIdAndUpdate(request.lorry, { status: 'busy' });
-    await Request.updateMany(
-      { delivery: request.delivery, status: 'pending' },
-      { status: 'rejected' }
-    );
-    
-    // Delete the delivery request notification from shipper's notification panel
-    try {
-      const Notification = require('../models/Notification');
-      await Notification.deleteMany({
-        recipient: req.session.userId,
-        type: 'delivery_request',
-        relatedRequest: req.params.requestId
-      });
-    } catch (error) {
-      console.error('Error deleting delivery request notification:', error);
-    }
-    
-    // Notify transporter that request was accepted
-    try {
-      const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
-      await NotificationService.createNotification({
-        recipient: populated.transporter._id,
-        sender: populated.shipper._id,
-        type: 'request_accepted',
-        title: 'Your Request Was Accepted',
-        message: `${populated.shipper.name} accepted your request for ${populated.delivery.goodsType}.`,
-        relatedRequest: populated._id,
-        relatedDelivery: populated.delivery._id,
-        priority: 'high'
-      });
-    } catch {}
 
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+    if (isJsonRequest) {
+      return res.json({
+        success: true,
+        message: 'Bid accepted successfully and transporter assigned.',
+        redirectUrl: '/dashboard/set-locations/' + req.params.requestId,
+        rejectedCount: result.rejectedCount
+      });
+    }
+
+    req.flash('success', 'Bid accepted successfully! Competing bids have been rejected.');
     res.redirect('/dashboard/set-locations/' + req.params.requestId);
   } catch (error) {
-    res.status(500).render('error', { message: 'Error accepting request' });
+    console.error('Error accepting bid in dashboardRoutes:', error);
+    const status = error.statusCode || 500;
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+    
+    if (isJsonRequest) {
+      return res.status(status).json({
+        success: false,
+        error: error.message || 'Error accepting request'
+      });
+    }
+
+    req.flash('error', error.message || 'Error accepting request');
+    res.status(status).render('error', { message: error.message || 'Error accepting request' });
   }
 });
 
@@ -412,95 +440,98 @@ router.post('/set-locations/:requestId', requireLogin, requireRole('shipper'), a
   }
 });
 
-// Reject request (shipper)
+// Reject request/bid (shipper)
 router.post('/reject-request/:requestId', requireLogin, requireRole('shipper'), async (req, res) => {
   try {
-    const request = await Request.findById(req.params.requestId);
-    if (!request) {
-      return res.status(404).render('error', { message: 'Request not found' });
-    }
-    
-    if (request.shipper.toString() !== req.session.userId) {
-      return res.status(403).render('error', { message: 'Unauthorized' });
-    }
-    
-    if (request.status !== 'pending') {
-      return res.status(400).render('error', { message: 'Request is no longer pending' });
-    }
-    
-    await Request.findByIdAndUpdate(req.params.requestId, { status: 'rejected', rejectedAt: new Date() });
-    
-    // Delete the delivery request notification from shipper's notification panel
-    try {
-      const Notification = require('../models/Notification');
-      await Notification.deleteMany({
-        recipient: req.session.userId,
-        type: 'delivery_request',
-        relatedRequest: req.params.requestId
-      });
-    } catch (error) {
-      console.error('Error deleting delivery request notification:', error);
-    }
-    
-    // Notify transporter that request was rejected
-    try {
-      const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
-      await NotificationService.createNotification({
-        recipient: populated.transporter._id,
-        sender: populated.shipper._id,
-        type: 'request_rejected',
-        title: 'Your Request Was Rejected',
-        message: `Your request for ${populated.delivery.goodsType} was rejected. Please find another delivery.`,
-        relatedRequest: populated._id,
-        relatedDelivery: populated.delivery._id,
-        priority: 'medium'
-      });
-    } catch {}
+    await BidService.rejectBid({
+      requestId: req.params.requestId,
+      shipperId: req.session.userId,
+      reason: req.body.reason
+    });
 
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+    if (isJsonRequest) {
+      return res.json({
+        success: true,
+        message: 'Bid rejected successfully.'
+      });
+    }
+
+    req.flash('success', 'Bid rejected successfully.');
     res.redirect('/dashboard/shipper');
   } catch (error) {
-    res.status(500).render('error', { message: 'Error rejecting request' });
+    console.error('Error rejecting bid in dashboardRoutes:', error);
+    const status = error.statusCode || 500;
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+    if (isJsonRequest) {
+      return res.status(status).json({
+        success: false,
+        error: error.message || 'Error rejecting request'
+      });
+    }
+    req.flash('error', error.message || 'Error rejecting request');
+    res.status(status).render('error', { message: error.message || 'Error rejecting request' });
   }
 });
 
-// Mark goods loaded (called by transporter after reaching shipper and loading)
-router.post('/mark-loaded/:requestId', upload.single('loadedPhoto'), requireLogin, requireRole('transporter'), async (req, res) => {
+// Shared handler for Mark Pickup / Mark Loaded
+const handleMarkPickupAction = async (req, res) => {
   try {
-    const request = await Request.findById(req.params.requestId);
-    if (!request) return res.status(404).render('error', { message: 'Request not found' });
-    if (request.transporter.toString() !== req.session.userId) {
-      return res.status(403).render('error', { message: 'Unauthorized' });
+    const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
+    const result = await BidService.markPickup({
+      requestId: req.params.requestId,
+      transporterId: req.session.userId,
+      photoPath
+    });
+
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+
+    if (result.alreadyMarked) {
+      if (isJsonRequest) {
+        return res.status(409).json({
+          success: false,
+          alreadyMarked: true,
+          message: result.message,
+          loadedAt: result.loadedAt
+        });
+      }
+      req.flash('error', result.message);
+      return res.redirect('/dashboard/transporter');
     }
-    
-    // Update with loaded status and optional photo
-    const updateData = { loadedAt: new Date() };
-    
-    // If there's a photo in the request, save its path
-    if (req.file) {
-      updateData.loadedPhoto = `/uploads/${req.file.filename}`;
-    }
-    
-    await Request.findByIdAndUpdate(req.params.requestId, updateData);
-    
-    // Notify shipper that goods are loaded
-    try {
-      const populated = await Request.findById(req.params.requestId).populate('shipper transporter delivery');
-      await NotificationService.createNotification({
-        recipient: populated.shipper._id,
-        sender: populated.transporter._id,
-        type: 'loading_complete',
-        title: 'Goods Loaded',
-        message: `${populated.transporter.name} marked your goods as loaded for ${populated.delivery.goodsType}.`,
-        relatedRequest: populated._id,
-        relatedDelivery: populated.delivery._id,
-        priority: 'medium'
+
+    if (isJsonRequest) {
+      return res.json({
+        success: true,
+        message: result.message,
+        loadedAt: result.loadedAt,
+        loadedPhoto: result.loadedPhoto
       });
-    } catch {}
+    }
+
+    req.flash('success', result.message);
     res.redirect('/dashboard/transporter');
-  } catch (e) {
-    res.status(500).render('error', { message: 'Error updating status' });
+  } catch (error) {
+    console.error('Error marking pickup in dashboardRoutes:', error);
+    const status = error.statusCode || 500;
+    const isJsonRequest = req.xhr || req.headers.accept?.includes('application/json');
+
+    if (isJsonRequest) {
+      return res.status(status).json({
+        success: false,
+        error: error.message || 'Error marking pickup'
+      });
+    }
+
+    req.flash('error', error.message || 'Error updating status');
+    res.status(status).render('error', { message: error.message || 'Error updating status' });
   }
-});
+};
+
+// Mark goods picked up (canonical route)
+router.post('/mark-pickup/:requestId', upload.single('loadedPhoto'), requireLogin, requireRole('transporter'), handleMarkPickupAction);
+
+// Mark goods loaded (legacy route compatibility)
+router.post('/mark-loaded/:requestId', upload.single('loadedPhoto'), requireLogin, requireRole('transporter'), handleMarkPickupAction);
 
 // Complete delivery (transporter)
 router.post('/complete-delivery/:requestId', requireLogin, requireRole('transporter'), async (req, res) => {

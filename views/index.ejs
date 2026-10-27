@@ -30,169 +30,7 @@
   display: block;
 }
 
-/* 2. Animated Truck Highway Stage */
-.highway-stage-container {
-  max-width: 1200px;
-  margin: 0 auto 2.5rem auto;
-  background: linear-gradient(180deg, #fff7ed 0%, #fed7aa 60%, #fdba74 100%);
-  border-radius: 24px;
-  border: 2px solid rgba(249, 115, 22, 0.25);
-  box-shadow: 0 16px 36px -8px rgba(249, 115, 22, 0.18);
-  padding: 1.5rem 1.5rem 0.75rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.highway-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-  position: relative;
-  z-index: 2;
-}
-
-.highway-title-group h2 {
-  font-size: 1.65rem;
-  font-weight: 900;
-  color: #0f172a;
-  margin: 0 0 4px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.highway-title-group h2 i {
-  color: #ea580c;
-}
-
-.highway-title-group p {
-  margin: 0;
-  color: #64748b;
-  font-size: 0.95rem;
-}
-
-.highway-trust-pills {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.trust-pill {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  padding: 5px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #ea580c;
-  border: 1px solid rgba(249, 115, 22, 0.3);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Highway Road Strip */
-.highway-road {
-  background: #1e293b;
-  border-radius: 16px;
-  height: 120px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  border-top: 4px solid #f97316;
-  border-bottom: 4px solid #f97316;
-  box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.4);
-}
-
-.road-dividers {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 200%;
-  height: 4px;
-  transform: translateY(-50%);
-  background: repeating-linear-gradient(
-    to right,
-    #facc15 0,
-    #facc15 30px,
-    transparent 30px,
-    transparent 60px
-  );
-  animation: roadTravel 1.2s linear infinite;
-}
-
-@keyframes roadTravel {
-  from { transform: translateY(-50%) translateX(0); }
-  to { transform: translateY(-50%) translateX(-60px); }
-}
-
-.animated-truck-wrapper {
-  position: absolute;
-  left: 10%;
-  bottom: 12px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: truckBounce 1.8s ease-in-out infinite alternate;
-}
-
-.animated-truck-img {
-  width: 140px;
-  height: auto;
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.5));
-  user-select: none;
-}
-
-.truck-road-shadow {
-  width: 125px;
-  height: 8px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, transparent 75%);
-  margin-top: -4px;
-  border-radius: 50%;
-}
-
-@keyframes truckBounce {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
-
-.highway-milestone {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  background: #ffffff;
-  border: 2px solid #ea580c;
-  border-top: 10px solid #facc15;
-  border-radius: 8px 8px 4px 4px;
-  padding: 6px 12px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  z-index: 2;
-}
-
-.milestone-route {
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: #64748b;
-  letter-spacing: 0.5px;
-}
-
-.milestone-km {
-  font-size: 1rem;
-  font-weight: 900;
-  color: #0f172a;
-  line-height: 1.1;
-}
-
-/* 3. Search Bar */
+/* 2. Search Bar */
 .search-container {
   max-width: 1200px;
   margin: 0 auto 2.5rem auto;
@@ -310,6 +148,81 @@
 
 .section-title i {
   color: #ea580c;
+}
+
+/* Reels Discovery Promo Bar */
+.reels-discovery-promo-bar {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem auto;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1.5px solid #fed7aa;
+  border-radius: 18px;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(234, 88, 12, 0.08);
+}
+.promo-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.promo-play-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+.promo-text strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 900;
+}
+.promo-text span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+.promo-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-promo-reels {
+  background: #ea580c;
+  color: #ffffff !important;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.25);
+}
+.btn-promo-reels:hover {
+  background: #c2410c;
+  transform: translateY(-2px);
+}
+.btn-promo-reels.secondary {
+  background: #ffffff;
+  color: #ea580c !important;
+  border: 1.5px solid #fed7aa;
+  box-shadow: none;
+}
+.btn-promo-reels.secondary:hover {
+  background: #fff7ed;
+  border-color: #ea580c;
 }
 
 /* ==========================================================================
@@ -1000,6 +913,1207 @@
     width: 90px;
   }
 }
+
+/* ==========================================================================
+   HOW T2YD WORKS — ANIMATED INDIAN LOGISTICS JOURNEY
+   ========================================================================== */
+
+.how-it-works-section {
+  max-width: 1200px;
+  margin: 0 auto 3rem auto;
+  background: #ffffff;
+  border-radius: 28px;
+  border: 1.5px solid rgba(249, 115, 22, 0.22);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.05), 0 6px 18px -4px rgba(249, 115, 22, 0.1);
+  padding: 2.5rem 2rem 2.75rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.how-it-works-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(rgba(234, 88, 12, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.how-it-works-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Header */
+.how-it-works-header {
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.how-it-works-badge-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+.how-it-works-badge {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1.5px solid rgba(249, 115, 22, 0.35);
+  padding: 6px 15px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08);
+}
+
+.indian-flag-pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.flag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.flag-dot.orange { background: #f97316; }
+.flag-dot.white { background: #ffffff; border: 1px solid #cbd5e1; }
+.flag-dot.green { background: #16a34a; }
+
+.how-it-works-title {
+  font-size: clamp(1.85rem, 3.8vw, 2.5rem);
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.22;
+  margin: 0 0 0.85rem 0;
+  letter-spacing: -0.5px;
+  font-family: 'Outfit', -apple-system, sans-serif;
+}
+
+.how-it-works-subtitle {
+  font-size: clamp(0.95rem, 1.8vw, 1.12rem);
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 auto 1.6rem auto;
+  max-width: 720px;
+}
+
+/* Persona Role Tabs */
+.how-role-filter {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.role-pill-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.role-pill-btn:hover {
+  color: #ea580c;
+}
+
+.role-pill-btn.active {
+  background: #ffffff;
+  color: #ea580c;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  font-weight: 800;
+}
+
+/* Connected Steps Flow Grid — Laptop & Desktop Pixel-Perfect Alignment */
+.how-steps-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+  position: relative;
+}
+
+/* Card Connector Badges (Laptop & Desktop) */
+.card-connector-badge {
+  position: absolute;
+  top: 42%;
+  right: -1.35rem;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #ea580c;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  z-index: 6;
+  box-shadow: 0 3px 8px rgba(234, 88, 12, 0.2);
+  animation: arrowPulseRight 1.5s ease-in-out infinite;
+}
+
+.card-connector-badge.ai-badge {
+  border-color: #f59e0b;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+@keyframes arrowPulseRight {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(3px); }
+}
+
+/* Row Wrap Connector Indicator */
+.row-turn-indicator {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: -0.75rem 0;
+  color: #ea580c;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.turn-line {
+  flex: 1;
+  height: 1px;
+  background: repeating-linear-gradient(to right, #fed7aa 0, #fed7aa 6px, transparent 6px, transparent 12px);
+}
+
+.turn-badge {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 4px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hide legacy arrow cells */
+.flow-arrow-cell,
+.flow-arrow-down {
+  display: none !important;
+}
+
+/* Dedicated Guide Button in Header */
+.how-header-banner-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.how-open-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1.5px solid #ea580c;
+  color: #ea580c !important;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 8px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.12);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.how-open-guide-btn:hover {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);
+}
+
+/* Step Cards */
+.how-step-card {
+  background: #ffffff;
+  border: 1.5px solid #fed7aa;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease;
+  position: relative;
+  overflow: visible;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.how-step-card.card-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.how-step-card:hover {
+  transform: translateY(-6px);
+  border-color: #ea580c;
+  box-shadow: 0 16px 36px -8px rgba(234, 88, 12, 0.2), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Card Header */
+.step-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.step-num-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.step-num-pill.ai-num-pill {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
+}
+
+.step-dot {
+  width: 6px;
+  height: 6px;
+  background: #ea580c;
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes dotPulse {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+
+.step-role-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-role-tag.shipper-tag {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.step-role-tag.all-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.step-role-tag.bid-tag {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.step-role-tag.confirm-tag {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.step-role-tag.track-tag {
+  background: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
+}
+
+.step-role-tag.ai-tag {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #ffffff;
+  border: none;
+}
+
+/* Visual Stages (Card Middle Graphic) */
+.step-visual-stage {
+  height: 126px;
+  min-height: 126px;
+  max-height: 126px;
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.how-step-card:hover .step-visual-stage {
+  background: #fffaf5;
+  border-color: #fed7aa;
+}
+
+/* Step 1 Visual: Account & ID Card */
+.account-visual-box {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+  color: #c2410c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.2);
+  flex-shrink: 0;
+}
+
+.avatar-verified-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  border: 2px solid #ffffff;
+}
+
+.account-id-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.id-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.id-brand {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #ea580c;
+  letter-spacing: 0.5px;
+}
+
+.id-status-chip {
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.id-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 5px;
+}
+
+.id-line {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+}
+
+.id-line.full { width: 85%; }
+.id-line.half { width: 50%; }
+
+.id-permit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* Step 2 Visual: Map & Cargo Crate */
+.map-mini-stage {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.map-grid-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px),
+                    linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
+  background-size: 16px 16px;
+  opacity: 0.8;
+}
+
+.map-pin-pulse {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-marker {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35);
+  animation: pinBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.pin-ring {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  animation: rippleRing 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes rippleRing {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.cargo-crate-box {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cargo-crate-body {
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  border: 1px solid #d97706;
+}
+
+.crate-shadow {
+  width: 80%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  margin-top: 3px;
+}
+
+.route-preview-badge {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #334155;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 3;
+}
+
+/* Step 3 Visual: Bidding Deck */
+.bid-deck-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.mini-bid-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease;
+}
+
+.mini-bid-card.highlight {
+  border-color: #ea580c;
+  background: #fff7ed;
+  box-shadow: 0 3px 8px rgba(249, 115, 22, 0.15);
+  transform: scale(1.02);
+}
+
+.mini-transporter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.t-name {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.t-rating {
+  color: #f59e0b;
+  font-weight: 800;
+  font-size: 0.68rem;
+}
+
+.mini-price-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.best-pill {
+  background: #16a34a;
+  color: white;
+  font-size: 0.55rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.4px;
+}
+
+.mini-price {
+  font-weight: 800;
+  color: #475569;
+}
+
+.mini-price.best {
+  color: #ea580c;
+  font-size: 0.85rem;
+}
+
+/* Step 4 Visual: Deal Confirmation */
+.deal-confirmed-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.deal-badge-stamp {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.15);
+  animation: sealPop 0.6s ease;
+}
+
+@keyframes sealPop {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.assigned-truck-plate {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.plate-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.plate-flag {
+  background: #facc15;
+  color: #0f172a;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.plate-no {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 0.8rem;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.assigned-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.driver-ready {
+  color: #16a34a;
+}
+
+/* Step 5 Visual: Decorative 2D Route & Truck */
+.track-2d-canvas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.track-route-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.point-a i { color: #16a34a; }
+.point-b i { color: #ea580c; }
+
+.track-svg-wrap {
+  position: relative;
+  width: 100%;
+  height: 40px;
+}
+
+.track-path-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.track-road-progress {
+  animation: roadDashes 2s linear infinite;
+}
+
+@keyframes roadDashes {
+  from { stroke-dashoffset: 28; }
+  to { stroke-dashoffset: 0; }
+}
+
+.moving-route-truck {
+  position: absolute;
+  top: 8px;
+  left: 55%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ea580c;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 8px rgba(234, 88, 12, 0.4);
+  animation: truckCruise 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes truckCruise {
+  0% { left: 25%; }
+  100% { left: 78%; }
+}
+
+.truck-gps-ping {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(234, 88, 12, 0.6);
+  animation: gpsPing 1.6s ease-out infinite;
+}
+
+@keyframes gpsPing {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.track-status-pill {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.status-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 5px #16a34a;
+}
+
+/* Step 6 Visual: Final AI Bot Step */
+.step-card-ai {
+  background: linear-gradient(135deg, #fffaf5 0%, #fff7ed 60%, #ffedd5 100%) !important;
+  border: 2px solid #ea580c !important;
+  box-shadow: 0 12px 32px -6px rgba(234, 88, 12, 0.25), 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.step-card-ai:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 40px -8px rgba(234, 88, 12, 0.35), 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+.ai-hero-widget {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+}
+
+.ai-bot-avatar-stage {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-avatar-core {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.ai-avatar-core:hover {
+  transform: scale(1.1);
+}
+
+.ai-pulse-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(249, 115, 22, 0.4);
+}
+
+.ai-pulse-ring.ring-1 {
+  width: 64px;
+  height: 64px;
+  animation: aiPulse 2.2s ease-out infinite;
+}
+
+.ai-pulse-ring.ring-2 {
+  width: 76px;
+  height: 76px;
+  animation: aiPulse 2.2s ease-out infinite 0.7s;
+}
+
+@keyframes aiPulse {
+  0% { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.ai-speech-bubble {
+  background: #ffffff;
+  border: 1px solid #fdba74;
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.12);
+  position: relative;
+  max-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bubble-arrow {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border-left: 1px solid #fdba74;
+  border-bottom: 1px solid #fdba74;
+}
+
+.bubble-text {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.typing-indicator span {
+  width: 4px;
+  height: 4px;
+  background: #ea580c;
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.ai-floating-pointer-badge {
+  position: absolute;
+  bottom: -2px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ea580c;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px dashed #fdba74;
+  padding: 2px 7px;
+  border-radius: 999px;
+  animation: floatPointer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes floatPointer {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+/* Card Content */
+.step-content {
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.3;
+  font-family: 'Outfit', sans-serif;
+  min-height: 2.7rem;
+  display: flex;
+  align-items: center;
+}
+
+.step-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.55;
+  min-height: 3.8rem;
+}
+
+/* Actions */
+.step-action-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px dashed #fed7aa;
+}
+
+.step-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.step-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  border: 1.5px solid #ea580c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
+}
+
+.step-btn-primary:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.35);
+  color: #ffffff !important;
+}
+
+.step-btn-outline {
+  background: #ffffff;
+  color: #ea580c !important;
+  border: 1.5px solid #ea580c;
+}
+
+.step-btn-outline:hover {
+  background: #fff7ed;
+  transform: translateY(-1px);
+}
+
+.step-btn-success {
+  background: #16a34a;
+  color: #ffffff !important;
+  border: 1.5px solid #15803d;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.2);
+}
+
+.step-btn-ai {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff !important;
+  border: none;
+  padding: 0.72rem 1.15rem;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+  font-size: 0.92rem;
+}
+
+.step-btn-ai:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #9a3412 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(234, 88, 12, 0.45);
+}
+
+.step-sublink {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-align: center;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.step-sublink:hover {
+  color: #ea580c;
+}
+
+.step-action-dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.step-action-dual .step-btn {
+  padding: 0.6rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Floating AI Bot highlight burst animation triggered by Step 6 */
+.chat-bot-highlight-burst {
+  animation: botBurst 0.6s cubic-bezier(0.16, 1, 0.3, 1) 3 alternate !important;
+  box-shadow: 0 0 0 16px rgba(249, 115, 22, 0.45), 0 12px 35px rgba(249, 115, 22, 0.6) !important;
+}
+
+@keyframes botBurst {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.3); }
+}
+
+/* Floating bot cue bar */
+.how-floating-bot-cue {
+  display: none;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.cue-pill {
+  background: #fff7ed;
+  border: 1px dashed #ea580c;
+  color: #ea580c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1023px) {
+  .how-steps-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+  .card-connector-badge,
+  .row-turn-indicator {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .how-it-works-section {
+    padding: 1.75rem 1rem 2rem;
+    margin-bottom: 2rem;
+  }
+  .how-steps-flow {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .card-connector-badge,
+  .row-turn-indicator {
+    display: none !important;
+  }
+  .how-step-card {
+    opacity: 1 !important;
+    transform: none !important;
+    width: 100%;
+  }
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  .how-step-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .flow-path, .flow-head, .flow-path-down, .flow-head-down,
+  .pin-marker, .pin-ring, .moving-route-truck, .truck-gps-ping,
+  .ai-pulse-ring, .typing-indicator span, .ai-floating-pointer-badge,
+  .step-dot {
+    animation: none !important;
+  }
+}
 </style>
 
 <!-- Script for Interactive Address Toggle -->
@@ -1064,34 +2178,440 @@ function renderAddrCell(label, text, isRight, translateKey) {
   </div>
 </div>
 
+<% if (!locals.user) { %>
 <!-- ==========================================
-     ANIMATED TRUCK HIGHWAY STAGE
+     HOW T2YD WORKS (VISIBLE FOR NEW USERS ONLY)
      ========================================== -->
-<div class="highway-stage-container">
-  <div class="highway-header">
-    <div class="highway-title-group">
-      <h2><i class="fas fa-truck-moving"></i> Pan-India Transport Network</h2>
-      <p>Direct connectivity between verified shippers and fleet owners with live GPS tracking</p>
-    </div>
-    <div class="highway-trust-pills">
-      <span class="trust-pill"><i class="fas fa-shield-alt"></i> Verified Lorries</span>
-      <span class="trust-pill"><i class="fas fa-map-marked-alt"></i> Live Route Maps</span>
-      <span class="trust-pill"><i class="fas fa-bolt"></i> Instant Booking</span>
-    </div>
-  </div>
+<section class="how-it-works-section" id="how-it-works" aria-labelledby="how-it-works-title">
+  <div class="how-it-works-container">
+    
+    <!-- Section Header -->
+    <div class="how-it-works-header">
+      <div class="how-it-works-badge-wrap">
+        <span class="how-it-works-badge">
+          <i class="fas fa-route"></i> <span data-translate="howItWorksBadge">HOW T2YD WORKS • 5-STEP JOURNEY</span>
+        </span>
+        <span class="indian-flag-pill">
+          <span class="flag-dot orange"></span>
+          <span class="flag-dot white"></span>
+          <span class="flag-dot green"></span>
+          <span>LOGISTICS MADE DIGITAL</span>
+        </span>
+      </div>
+      <h2 id="how-it-works-title" class="how-it-works-title" data-translate="howItWorksHeading">
+        Your Goods. Your Truck. Your Destination.
+      </h2>
+      <p class="how-it-works-subtitle" data-translate="howItWorksSubtitle">
+        Get started with T2YD in a few simple steps. Find transport, connect with truck owners, and track your shipment — all in one place.
+      </p>
 
-  <div class="highway-road">
-    <div class="road-dividers"></div>
-    <div class="animated-truck-wrapper">
-      <img src="/images/truck-hero.png?v=<%= Date.now() %>" alt="T2YD Logistics Truck" class="animated-truck-img">
-      <div class="truck-road-shadow"></div>
+      <!-- Role Persona Toggle Filter -->
+      <div class="how-role-filter" role="tablist" aria-label="View transport journey by role">
+        <button type="button" class="role-pill-btn active" data-role="all" role="tab" aria-selected="true">
+          <i class="fas fa-layer-group"></i> All Users (पूरा सफ़र)
+        </button>
+        <button type="button" class="role-pill-btn" data-role="shipper" role="tab" aria-selected="false">
+          <i class="fas fa-box"></i> For Shippers (माल मालिक)
+        </button>
+        <button type="button" class="role-pill-btn" data-role="transporter" role="tab" aria-selected="false">
+          <i class="fas fa-truck"></i> For Transporters (ट्रक मालिक / चालक)
+        </button>
+      </div>
+
+      <!-- Dedicated Page CTA Link -->
+      <div class="how-header-banner-cta">
+        <a href="/how-it-works" class="how-open-guide-btn" id="openHowItWorksGuide">
+          <i class="fas fa-book-reader"></i>
+          <span>Check How T2YD Works (Detailed Full Page Guide)</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
     </div>
-    <div class="highway-milestone">
-      <div class="milestone-route">T2YD EXPRESS</div>
-      <div class="milestone-km">100 KM</div>
+
+    <!-- Connected Step Flow Grid -->
+    <div class="how-steps-flow" id="howStepsFlow">
+      
+      <!-- STEP 1 -->
+      <div class="how-step-card" data-step="1" id="step-card-1">
+        <!-- Connector to Step 2 (Laptop/Desktop) -->
+        <span class="card-connector-badge" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+
+        <div class="step-card-header">
+          <div class="step-num-pill">
+            <span class="step-idx">01</span>
+            <span class="step-dot"></span>
+          </div>
+          <span class="step-role-tag shipper-tag"><i class="fas fa-shield-alt"></i> KYC Verified</span>
+        </div>
+        
+        <!-- Step 1 Animated Graphic -->
+        <div class="step-visual-stage stage-account">
+          <div class="account-visual-box">
+            <div class="avatar-circle">
+              <i class="fas fa-user-tie"></i>
+              <div class="avatar-verified-badge"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="account-id-card">
+              <div class="id-header">
+                <span class="id-brand">T2YD ID</span>
+                <span class="id-status-chip">ACTIVE</span>
+              </div>
+              <div class="id-lines">
+                <span class="id-line full"></span>
+                <span class="id-line half"></span>
+              </div>
+              <div class="id-permit">
+                <i class="fas fa-qrcode"></i>
+                <span>PAN-INDIA PERMIT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="step1Title">Create Your Account</span></h3>
+          <p class="step-desc" data-translate="step1Desc">
+            Sign up or log in to access the T2YD transport marketplace and its features.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <% if (!locals.user) { %>
+            <a href="/auth/signup" class="step-btn step-btn-primary">
+              <i class="fas fa-user-plus"></i> <span data-translate="step1Btn">Get Started</span>
+            </a>
+            <a href="/auth/login" class="step-sublink">Already a member? Log in</a>
+          <% } else { %>
+            <a href="/profile" class="step-btn step-btn-success">
+              <i class="fas fa-user-check"></i> <span>Profile Active (<%= locals.user.name.split(' ')[0] %>)</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="how-step-card" data-step="2" id="step-card-2">
+        <!-- Connector to Step 3 (Laptop/Desktop) -->
+        <span class="card-connector-badge" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+
+        <div class="step-card-header">
+          <div class="step-num-pill">
+            <span class="step-idx">02</span>
+            <span class="step-dot"></span>
+          </div>
+          <span class="step-role-tag all-tag"><i class="fas fa-map-pin"></i> Load & Fleet</span>
+        </div>
+
+        <!-- Step 2 Animated Graphic -->
+        <div class="step-visual-stage stage-load">
+          <div class="map-mini-stage">
+            <div class="map-grid-bg"></div>
+            <div class="map-pin-pulse">
+              <div class="pin-ring"></div>
+              <div class="pin-marker"><i class="fas fa-map-marker-alt"></i></div>
+            </div>
+            <div class="cargo-crate-box">
+              <div class="cargo-crate-body">
+                <i class="fas fa-box-open"></i>
+                <span class="crate-label">15 TONS</span>
+              </div>
+              <div class="crate-shadow"></div>
+            </div>
+            <div class="route-preview-badge">
+              <span>Mumbai</span> <i class="fas fa-arrow-right"></i> <span>Delhi</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="step2Title">Find Your Transport</span></h3>
+          <p class="step-desc" data-translate="step2Desc">
+            Load owners can post their goods transport requirements, while truck owners and transporters can explore available loads.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <% if (!locals.user) { %>
+            <div class="step-action-dual">
+              <a href="/auth/login?redirect=/deliveries/add" class="step-btn step-btn-primary">
+                <i class="fas fa-plus-circle"></i> <span>Post Load</span>
+              </a>
+              <a href="/search" class="step-btn step-btn-outline">
+                <i class="fas fa-search"></i> <span>Find Loads</span>
+              </a>
+            </div>
+          <% } else if (locals.user.role === 'shipper') { %>
+            <a href="/deliveries/add" class="step-btn step-btn-primary">
+              <i class="fas fa-plus-circle"></i> <span data-translate="step2Btn">Post Delivery Request</span>
+            </a>
+          <% } else { %>
+            <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+              <i class="fas fa-truck-loading"></i> <span data-translate="step2Btn">Browse Available Loads</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="how-step-card" data-step="3" id="step-card-3">
+        <div class="step-card-header">
+          <div class="step-num-pill">
+            <span class="step-idx">03</span>
+            <span class="step-dot"></span>
+          </div>
+          <span class="step-role-tag bid-tag"><i class="fas fa-handshake"></i> Direct Bidding</span>
+        </div>
+
+        <!-- Step 3 Animated Graphic -->
+        <div class="step-visual-stage stage-bids">
+          <div class="bid-deck-container">
+            <div class="mini-bid-card card-a">
+              <div class="mini-transporter">
+                <span class="t-name">Sharma Roadlines</span>
+                <span class="t-rating">★ 4.9</span>
+              </div>
+              <div class="mini-price">₹18,500</div>
+            </div>
+            <div class="mini-bid-card card-b highlight">
+              <div class="mini-transporter">
+                <span class="t-name">Bharat Express</span>
+                <span class="t-rating">★ 4.8</span>
+              </div>
+              <div class="mini-price-group">
+                <span class="best-pill">BEST DEAL</span>
+                <div class="mini-price best">₹17,200</div>
+              </div>
+            </div>
+            <div class="mini-bid-card card-c">
+              <div class="mini-transporter">
+                <span class="t-name">Kadam Trans</span>
+                <span class="t-rating">★ 4.7</span>
+              </div>
+              <div class="mini-price">₹19,000</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="step3Title">Compare Transport Bids</span></h3>
+          <p class="step-desc" data-translate="step3Desc">
+            Review available bids, compare prices and transporter details, and choose the most suitable offer.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <% if (!locals.user) { %>
+            <a href="/auth/login" class="step-btn step-btn-primary">
+              <i class="fas fa-balance-scale"></i> <span data-translate="step3Btn">Compare Bids</span>
+            </a>
+          <% } else if (locals.user.role === 'shipper') { %>
+            <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+              <i class="fas fa-tags"></i> <span data-translate="step3Btn">Review Received Bids</span>
+            </a>
+          <% } else { %>
+            <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+              <i class="fas fa-gavel"></i> <span data-translate="step3Btn">Manage My Quotes</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Row Turn Indicator for Laptop / Desktop (Between Step 3 & 4) -->
+      <div class="row-turn-indicator" aria-hidden="true">
+        <div class="turn-line"></div>
+        <div class="turn-badge">
+          <i class="fas fa-arrow-down"></i>
+          <span>CONTINUE JOURNEY • अगला कदम</span>
+        </div>
+        <div class="turn-line"></div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="how-step-card" data-step="4" id="step-card-4">
+        <!-- Connector to Step 5 (Laptop/Desktop) -->
+        <span class="card-connector-badge" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+
+        <div class="step-card-header">
+          <div class="step-num-pill">
+            <span class="step-idx">04</span>
+            <span class="step-dot"></span>
+          </div>
+          <span class="step-role-tag confirm-tag"><i class="fas fa-check-circle"></i> Confirmed Deal</span>
+        </div>
+
+        <!-- Step 4 Animated Graphic -->
+        <div class="step-visual-stage stage-confirm">
+          <div class="deal-confirmed-box">
+            <div class="deal-badge-stamp">
+              <i class="fas fa-check-circle"></i>
+              <span>BID ACCEPTED</span>
+            </div>
+            <div class="assigned-truck-plate">
+              <div class="plate-top">
+                <span class="plate-flag">IND</span>
+                <span class="plate-no">MH-12-Q-4521</span>
+              </div>
+              <div class="assigned-details">
+                <span class="truck-type"><i class="fas fa-truck"></i> Tata 28T Open Body</span>
+                <span class="driver-ready"><i class="fas fa-phone-alt"></i> Driver Assigned</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="step4Title">Confirm Your Transport</span></h3>
+          <p class="step-desc" data-translate="step4Desc">
+            Accept your preferred bid and coordinate the transport assignment through the platform.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <% if (!locals.user) { %>
+            <a href="/auth/signup" class="step-btn step-btn-primary">
+              <i class="fas fa-handshake"></i> <span data-translate="step4Btn">Confirm Transport</span>
+            </a>
+          <% } else if (locals.user.role === 'shipper') { %>
+            <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+              <i class="fas fa-clipboard-check"></i> <span data-translate="step4Btn">View Active Orders</span>
+            </a>
+          <% } else { %>
+            <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+              <i class="fas fa-truck-moving"></i> <span data-translate="step4Btn">View Booked Lorries</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="how-step-card" data-step="5" id="step-card-5">
+        <!-- Connector to Step 6 (Laptop/Desktop AI) -->
+        <span class="card-connector-badge ai-badge" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+
+        <div class="step-card-header">
+          <div class="step-num-pill">
+            <span class="step-idx">05</span>
+            <span class="step-dot"></span>
+          </div>
+          <span class="step-role-tag track-tag"><i class="fas fa-satellite-dish"></i> GPS Tracking</span>
+        </div>
+
+        <!-- Step 5 Animated Graphic (Decorative 2D Route) -->
+        <div class="step-visual-stage stage-tracking">
+          <div class="track-2d-canvas">
+            <div class="track-route-labels">
+              <span class="point-a"><i class="fas fa-warehouse"></i> Mumbai Hub</span>
+              <span class="point-b"><i class="fas fa-flag-checkered"></i> Pune Unload</span>
+            </div>
+            <div class="track-svg-wrap">
+              <svg class="track-path-svg" viewBox="0 0 240 40" fill="none">
+                <path class="track-road-base" d="M 15,20 C 70,5 110,35 170,20 L 225,20" stroke="#cbd5e1" stroke-width="6" stroke-linecap="round"/>
+                <path class="track-road-progress" d="M 15,20 C 70,5 110,35 170,20 L 225,20" stroke="#f97316" stroke-width="4" stroke-dasharray="8,6" stroke-linecap="round"/>
+              </svg>
+              <!-- Animated Moving Truck on 2D Route -->
+              <div class="moving-route-truck" title="In Transit (NH-48)">
+                <i class="fas fa-truck"></i>
+                <div class="truck-gps-ping"></div>
+              </div>
+            </div>
+            <div class="track-status-pill">
+              <span class="status-live-dot"></span>
+              <span class="status-text">In Transit • NH 48 • On Schedule</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="step5Title">Track Your Delivery</span></h3>
+          <p class="step-desc" data-translate="step5Desc">
+            Follow your shipment's progress and view available pickup, transit, and delivery status updates.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <% if (!locals.user) { %>
+            <a href="/auth/login" class="step-btn step-btn-primary">
+              <i class="fas fa-map-marked-alt"></i> <span data-translate="step5Btn">Track Delivery</span>
+            </a>
+          <% } else if (locals.user.role === 'shipper') { %>
+            <a href="/dashboard/shipper" class="step-btn step-btn-primary">
+              <i class="fas fa-satellite-dish"></i> <span data-translate="step5Btn">Open Shipment GPS</span>
+            </a>
+          <% } else { %>
+            <a href="/dashboard/transporter" class="step-btn step-btn-primary">
+              <i class="fas fa-location-arrow"></i> <span data-translate="step5Btn">Driver Route Status</span>
+            </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- FINAL STEP — NEED HELP? ASK T2YD AI BOT -->
+      <div class="how-step-card step-card-ai" data-step="6" id="step-card-ai">
+        <div class="step-card-header">
+          <div class="step-num-pill ai-num-pill">
+            <i class="fas fa-robot"></i>
+            <span class="step-idx">AI</span>
+          </div>
+          <span class="step-role-tag ai-tag"><i class="fas fa-sparkles"></i> 24/7 Smart Sahayak</span>
+        </div>
+
+        <!-- Step 6 Animated Graphic (Floating Bot Representation + Chat Bubble) -->
+        <div class="step-visual-stage stage-ai">
+          <div class="ai-hero-widget">
+            <div class="ai-bot-avatar-stage">
+              <div class="ai-pulse-ring ring-1"></div>
+              <div class="ai-pulse-ring ring-2"></div>
+              <div class="ai-avatar-core" id="aiBotCardIcon" role="button" tabindex="0" title="Click to ask T2YD AI">
+                <i class="fas fa-robot"></i>
+              </div>
+            </div>
+            
+            <!-- Animated Chat Bubble -->
+            <div class="ai-speech-bubble" id="aiBubbleMessage">
+              <div class="bubble-arrow"></div>
+              <span class="bubble-text" data-translate="stepAiBubble">Stuck anywhere? I'm here to help!</span>
+              <div class="typing-indicator" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Directional cue pointing toward the floating AI bot icon -->
+          <div class="ai-floating-pointer-badge">
+            <span class="pointer-text">Tap here or floating bot ↘</span>
+          </div>
+        </div>
+
+        <div class="step-content">
+          <h3 class="step-title"><span data-translate="stepAiTitle">Need Help? Ask T2YD AI</span></h3>
+          <p class="step-desc" data-translate="stepAiDesc">
+            Have questions about posting loads, placing bids, transport tracking, payments, or how the platform works? Click the T2YD AI Bot icon to get assistance.
+          </p>
+        </div>
+
+        <div class="step-action-wrap">
+          <button type="button" class="step-btn step-btn-ai" id="howItWorksAiCta" aria-label="Open T2YD AI Assistant">
+            <i class="fas fa-robot"></i>
+            <span data-translate="stepAiBtn">Ask T2YD AI</span>
+            <i class="fas fa-comment-dots"></i>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /.how-steps-flow -->
+
+    <!-- Directional floating visual cue bar pointing toward the bottom-right floating widget -->
+    <div class="how-floating-bot-cue" id="floatingBotCue" aria-hidden="true">
+      <div class="cue-pill">
+        <i class="fas fa-robot"></i>
+        <span>T2YD AI Assistant is always ready in the bottom-right corner</span>
+        <i class="fas fa-arrow-down"></i>
+      </div>
     </div>
-  </div>
-</div>
+
+  </div><!-- /.how-it-works-container -->
+</section>
+<% } %>
 
 <!-- ==========================================
      SEARCH & CATEGORY BAR
@@ -1116,6 +2636,23 @@ function renderAddrCell(label, text, isRight, translateKey) {
     <a href="/search?query=Nanded" class="quick-tag-btn">📍 Nanded</a>
   </div>
 </section>
+
+<!-- ==========================================
+     REELS-STYLE DISCOVERY PROMO BAR
+     ========================================== -->
+<div class="reels-discovery-promo-bar">
+  <div class="promo-left">
+    <div class="promo-play-icon"><i class="fas fa-play"></i></div>
+    <div class="promo-text">
+      <strong>Browse in Reels Mode 📱</strong>
+      <span>Swipe vertically through verified trucks and available loads one-by-one</span>
+    </div>
+  </div>
+  <div class="promo-actions">
+    <a href="/explore?tab=trucks" class="btn-promo-reels"><i class="fas fa-truck"></i> Trucks Feed</a>
+    <a href="/explore?tab=loads" class="btn-promo-reels secondary"><i class="fas fa-box"></i> Loads Feed</a>
+  </div>
+</div>
 
 <!-- ==========================================
      AVAILABLE LORRIES SECTION (TRUCK CARDS)
@@ -1459,3 +2996,194 @@ function renderAddrCell(label, text, isRight, translateKey) {
     </div>
   </div>
 </section>
+
+<!-- ==========================================
+     HOW T2YD WORKS — INTERACTIVE CONTROLLER SCRIPT
+     ========================================== -->
+<script>
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.getElementById('how-it-works');
+    if (!section) return;
+
+    const cards = section.querySelectorAll('.how-step-card');
+    const aiCta = document.getElementById('howItWorksAiCta');
+    const aiCardIcon = document.getElementById('aiBotCardIcon');
+    const floatingBotBtn = document.getElementById('chatBotButton');
+    const floatingBotCue = document.getElementById('floatingBotCue');
+    const roleButtons = section.querySelectorAll('.role-pill-btn');
+
+    // 1. Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 2. Entrance Animation via IntersectionObserver
+    if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+      const entranceObserver = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            cards.forEach(function(card, index) {
+              setTimeout(function() {
+                card.classList.add('card-revealed');
+              }, index * 90);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      entranceObserver.observe(section);
+    } else {
+      // Immediate reveal for reduced motion or legacy browsers
+      cards.forEach(function(card) {
+        card.classList.add('card-revealed');
+      });
+    }
+
+    // 3. Highlight Current Step When Entering Viewport
+    if ('IntersectionObserver' in window) {
+      const stepObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('step-in-view');
+            
+            // If Step 6 (AI Bot) enters view, gently highlight the floating bot widget
+            if (entry.target.id === 'step-card-ai' && floatingBotBtn) {
+              floatingBotBtn.style.transform = 'scale(1.15)';
+              floatingBotBtn.style.boxShadow = '0 0 0 8px rgba(249, 115, 22, 0.35), 0 8px 24px rgba(249, 115, 22, 0.45)';
+              if (floatingBotCue) floatingBotCue.style.display = 'flex';
+              
+              setTimeout(function() {
+                floatingBotBtn.style.transform = '';
+                floatingBotBtn.style.boxShadow = '';
+              }, 2000);
+            }
+          }
+        });
+      }, { threshold: 0.4 });
+
+      cards.forEach(function(card) {
+        stepObserver.observe(card);
+      });
+    }
+
+    // 4. Final Step AI Bot Trigger Integration
+    function handleAiBotTrigger(e) {
+      if (e) e.preventDefault();
+
+      if (floatingBotBtn) {
+        // Trigger pulsing burst animation on existing floating bot
+        floatingBotBtn.classList.remove('chat-bot-highlight-burst');
+        void floatingBotBtn.offsetWidth; // Reflow to restart animation
+        floatingBotBtn.classList.add('chat-bot-highlight-burst');
+
+        // Reveal tooltip briefly
+        const tooltip = floatingBotBtn.querySelector('.chat-bot-tooltip');
+        if (tooltip) {
+          tooltip.style.opacity = '1';
+          tooltip.style.visibility = 'visible';
+          tooltip.style.transform = 'translateY(0)';
+        }
+
+        // Trigger the existing chatbot button click handler
+        setTimeout(function() {
+          floatingBotBtn.click();
+        }, 350);
+      } else {
+        // Direct navigation fallback
+        window.location.href = '/chatbot';
+      }
+    }
+
+    if (aiCta) {
+      aiCta.addEventListener('click', handleAiBotTrigger);
+    }
+
+    if (aiCardIcon) {
+      aiCardIcon.addEventListener('click', handleAiBotTrigger);
+      aiCardIcon.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleAiBotTrigger(e);
+        }
+      });
+    }
+
+    // Step 6 hover cue: highlight floating bot button on hover
+    const stepAiCard = document.getElementById('step-card-ai');
+    if (stepAiCard && floatingBotBtn) {
+      stepAiCard.addEventListener('mouseenter', function() {
+        floatingBotBtn.style.transform = 'scale(1.18)';
+        floatingBotBtn.style.boxShadow = '0 0 0 10px rgba(249, 115, 22, 0.4), 0 10px 25px rgba(249, 115, 22, 0.5)';
+        if (floatingBotCue) floatingBotCue.style.display = 'flex';
+      });
+
+      stepAiCard.addEventListener('mouseleave', function() {
+        floatingBotBtn.style.transform = '';
+        floatingBotBtn.style.boxShadow = '';
+      });
+    }
+
+    // 5. Interactive Role Persona Switcher
+    roleButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        roleButtons.forEach(function(b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+
+        this.classList.add('active');
+        this.setAttribute('aria-selected', 'true');
+
+        const role = this.getAttribute('data-role');
+
+        cards.forEach(function(card) {
+          const stepNum = card.getAttribute('data-step');
+          const roleTag = card.querySelector('.step-role-tag');
+
+          if (role === 'shipper') {
+            card.style.opacity = '1';
+            if (stepNum === '2') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-boxes"></i> Post Goods Load';
+            } else if (stepNum === '3') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-tags"></i> Receive Best Rates';
+            } else if (stepNum === '4') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-check-double"></i> Book Truck Driver';
+            } else if (stepNum === '5') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-map-marked-alt"></i> Live Gate Tracking';
+            }
+          } else if (role === 'transporter') {
+            card.style.opacity = '1';
+            if (stepNum === '2') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-search-location"></i> Find Load Returns';
+            } else if (stepNum === '3') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-gavel"></i> Bid Your Rate/KM';
+            } else if (stepNum === '4') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-truck-loading"></i> Assign Your Lorry';
+            } else if (stepNum === '5') {
+              if (roleTag) roleTag.innerHTML = '<i class="fas fa-route"></i> Turn-by-Turn GPS';
+            }
+          } else {
+            // All Users (Default)
+            if (stepNum === '1' && roleTag) roleTag.innerHTML = '<i class="fas fa-shield-alt"></i> KYC Verified';
+            if (stepNum === '2' && roleTag) roleTag.innerHTML = '<i class="fas fa-map-pin"></i> Load & Fleet';
+            if (stepNum === '3' && roleTag) roleTag.innerHTML = '<i class="fas fa-handshake"></i> Direct Bidding';
+            if (stepNum === '4' && roleTag) roleTag.innerHTML = '<i class="fas fa-check-circle"></i> Confirmed Deal';
+            if (stepNum === '5' && roleTag) roleTag.innerHTML = '<i class="fas fa-satellite-dish"></i> GPS Tracking';
+            if (stepNum === '6' && roleTag) roleTag.innerHTML = '<i class="fas fa-sparkles"></i> 24/7 Smart Sahayak';
+          }
+        });
+      });
+    });
+
+    // 6. Interactive Step 3 Miniature Bid Deck Selection
+    const miniBids = section.querySelectorAll('.mini-bid-card');
+    miniBids.forEach(function(bid) {
+      bid.addEventListener('click', function() {
+        miniBids.forEach(function(b) { b.classList.remove('highlight'); });
+        this.classList.add('highlight');
+      });
+    });
+  });
+})();
+</script>
+

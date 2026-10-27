@@ -3,8 +3,7 @@
     <p><i class="fas fa-hand-wave"></i> Welcome back, <%= user.name %>! Manage your deliveries and review transporter requests.</p>
 </div>
 
-
-        <!-- My Deliveries Section -->
+<!-- My Deliveries Section -->
 <section class="dashboard-section">
     <div class="section-header">
         <h2><i class="fas fa-box"></i> My Deliveries</h2>
@@ -49,93 +48,260 @@
     </div>
 </section>
 
-        <!-- Incoming Requests Section -->
-<section class="dashboard-section">
-    <h2><i class="fas fa-inbox"></i> Incoming Requests</h2>
+<!-- Incoming Bids & Transporter Offers Section -->
+<section class="dashboard-section" style="margin-top: 2rem;">
+    <div class="bids-header-bar">
+        <div>
+            <h2><i class="fas fa-inbox"></i> Incoming Transporter Bids</h2>
+            <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.88rem;">Review bids submitted by verified transporters for your active loads.</p>
+        </div>
+        
+        <div class="bids-filter-tabs" id="shipperBidTabs">
+            <button class="bid-tab-btn active" data-filter="active">
+                <i class="fas fa-clock"></i> Active & Pending
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'pending' || r.status === 'accepted').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="pending">
+                <i class="fas fa-hourglass-half"></i> Pending
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'pending').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="accepted">
+                <i class="fas fa-check-circle"></i> Accepted
+                <span class="bid-tab-count"><%= requests.filter(r => r.status === 'accepted').length %></span>
+            </button>
+            <button class="bid-tab-btn" data-filter="all">
+                <i class="fas fa-list"></i> All Bids (<%= requests.length %>)
+            </button>
+        </div>
+    </div>
     
-    <div class="requests-container">
+    <div class="bids-marketplace-grid" id="shipperBidsGrid">
         <% if (requests.length === 0) { %>
-            <div class="empty-state">
-                <p>No requests yet. Your deliveries will appear here when transporters make offers.</p>
+            <div class="bid-empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No Bids Received Yet</h3>
+                <p>When transporters find your posted loads and submit offers, their bid cards will appear here for your review and approval.</p>
+                <a href="/deliveries/add" class="btn btn-primary" style="margin-top: 0.5rem;"><i class="fas fa-plus-circle"></i> Post a New Delivery</a>
             </div>
         <% } else { %>
             <% requests.forEach(request => { %>
-                <div class="request-card">
-                    <div class="request-header">
-                        <h3>Request for <%= request.delivery ? request.delivery.goodsType : 'Unknown Goods' %></h3>
-                        <span class="status <%= request.status %>"><%= request.status %></span>
+                <% const loadShortId = request.delivery ? request.delivery._id.toString().slice(-6).toUpperCase() : request._id.toString().slice(-6).toUpperCase(); %>
+                <div class="marketplace-bid-card card-status-<%= request.status %>" data-status="<%= request.status %>">
+                    <!-- Bid Card Header -->
+                    <div class="bid-card-header">
+                        <span class="bid-load-id">
+                            <i class="fas fa-barcode"></i> Load #<%= loadShortId %>
+                        </span>
+                        <span class="bid-status-pill status-<%= request.status %>">
+                            <% if (request.status === 'pending') { %>
+                                <i class="fas fa-hourglass-half"></i> Pending Approval
+                            <% } else if (request.status === 'accepted') { %>
+                                <i class="fas fa-check-circle"></i> Bid Accepted
+                            <% } else if (request.status === 'rejected') { %>
+                                <i class="fas fa-times-circle"></i> Rejected
+                            <% } else { %>
+                                <i class="fas fa-flag-checkered"></i> <%= request.status %>
+                            <% } %>
+                        </span>
                     </div>
-                    
-                    <div class="request-details">
-                        <div class="detail-group">
-                            <label>Transporter:</label>
-                            <span><%= request.transporter ? request.transporter.name : 'Unknown' %></span>
+
+                    <!-- Bid Card Body -->
+                    <div class="bid-card-body">
+                        <!-- Price and Goods -->
+                        <div class="bid-price-goods-row">
+                            <div class="bid-price-box">
+                                <span class="bid-price-label">Offered Bid Amount</span>
+                                <span class="bid-price-amount">₹<%= (request.price || 0).toLocaleString('en-IN') %></span>
+                            </div>
+                            <span class="bid-goods-pill">
+                                <i class="fas fa-box"></i> <%= request.delivery ? request.delivery.goodsType : 'General Cargo' %>
+                                <% if (request.delivery && request.delivery.weight) { %>
+                                    • <%= request.delivery.weight %> kg
+                                <% } %>
+                            </span>
                         </div>
-                        <div class="detail-group">
-                            <label>Vehicle:</label>
-                            <span><%= request.lorry ? `${request.lorry.vehicleNumber} (${request.lorry.vehicleType})` : 'Unknown Vehicle' %></span>
+
+                        <!-- Route Journey Flow -->
+                        <div class="bid-route-flow">
+                            <div class="route-stop">
+                                <span class="route-icon origin"><i class="fas fa-circle"></i></span>
+                                <div class="route-text">
+                                    <span class="route-type">Pickup Location</span>
+                                    <span class="route-city"><%= request.delivery ? request.delivery.pickupLocation : 'Origin' %></span>
+                                </div>
+                            </div>
+                            <div class="route-stop">
+                                <span class="route-icon destination"><i class="fas fa-map-marker-alt"></i></span>
+                                <div class="route-text">
+                                    <span class="route-type">Delivery Destination</span>
+                                    <span class="route-city"><%= request.delivery ? request.delivery.dropLocation : 'Destination' %></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="detail-group">
-                            <label>Capacity:</label>
-                            <span><%= request.lorry ? `${request.lorry.capacity} tons` : 'Unknown' %></span>
+
+                        <!-- Transporter & Truck Specs Grid -->
+                        <div class="bid-meta-grid">
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-user-shield"></i> Transporter</span>
+                                <span class="meta-value" title="<%= request.transporter ? request.transporter.name : 'Unknown' %>">
+                                    <%= request.transporter ? request.transporter.name : 'Unknown' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-truck"></i> Vehicle</span>
+                                <span class="meta-value" title="<%= request.lorry ? request.lorry.vehicleNumber : 'N/A' %>">
+                                    <%= request.lorry ? request.lorry.vehicleNumber : 'Assigned Truck' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-truck-moving"></i> Truck Type</span>
+                                <span class="meta-value">
+                                    <%= request.lorry ? request.lorry.vehicleType : 'Standard' %>
+                                </span>
+                            </div>
+                            <div class="bid-meta-item">
+                                <span class="meta-label"><i class="fas fa-weight-hanging"></i> Capacity</span>
+                                <span class="meta-value">
+                                    <%= request.lorry && request.lorry.capacity ? `${request.lorry.capacity} tons` : 'N/A' %>
+                                </span>
+                            </div>
                         </div>
-                        <div class="detail-group">
-                            <label>Price:</label>
-                            <span class="price">₹<%= request.price || 'Not set' %></span>
-                        </div>
+
                         <% if (request.message) { %>
-                            <div class="detail-group">
-                                <label>Message:</label>
-                                <span><%= request.message %></span>
+                            <div class="bid-message-callout">
+                                <i class="fas fa-comment-dots"></i> "<%= request.message %>"
                             </div>
                         <% } %>
-                        <% if (request.delivery) { %>
-                            <div class="detail-group">
-                                <label>Route:</label>
-                                <span><%= request.delivery.pickupLocation %> → <%= request.delivery.dropLocation %></span>
-                            </div>
-                        <% } %>
+
                         <% if (request.exactPickup && request.exactPickup.lat) { %>
-                            <div class="detail-group" style="background: rgba(22, 163, 74, 0.08); padding: 0.6rem 0.8rem; border-radius: 10px; border-left: 3px solid #16a34a; margin-top: 0.5rem;">
-                                <label style="color: #15803d; font-weight: 700;">📍 Selected Locations on Map:</label>
-                                <span><strong>Pickup:</strong> <%= request.exactPickup.address || (request.exactPickup.lat.toFixed(4) + ', ' + request.exactPickup.lng.toFixed(4)) %><br>
-                                <strong>Drop:</strong> <%= request.exactDrop ? (request.exactDrop.address || (request.exactDrop.lat.toFixed(4) + ', ' + request.exactDrop.lng.toFixed(4))) : 'Pending' %></span>
+                            <div style="background: rgba(22, 163, 74, 0.08); padding: 0.5rem 0.75rem; border-radius: 8px; border-left: 3px solid #16a34a; font-size: 0.8rem; color: #15803d;">
+                                <i class="fas fa-map-marked-alt"></i> <strong>GPS Pinned:</strong> <%= request.exactPickup.address || 'Exact coordinates mapped' %>
+                            </div>
+                        <% } %>
+
+                        <% if (request.status === 'rejected') { %>
+                            <div class="bid-rejection-box">
+                                <div class="bid-rejection-title">
+                                    <i class="fas fa-ban"></i> Bid Rejected
+                                </div>
+                                <p class="bid-rejection-desc">
+                                    This bid was rejected. Competing bids for this load were automatically declined upon assignment.
+                                </p>
                             </div>
                         <% } %>
                     </div>
-                    
-                    <% if (request.status === 'pending') { %>
-                        <div class="request-actions">
-                            <form action="/dashboard/accept-request/<%= request._id %>" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-success">Accept</button>
-                            </form>
-                            <form action="/dashboard/reject-request/<%= request._id %>" method="POST" style="display: inline;">
-                                <button type="submit" class="btn btn-delete">Reject</button>
-                            </form>
+
+                    <!-- Bid Card Footer & Role-based Actions -->
+                    <div class="bid-card-footer">
+                        <div class="bid-submission-time">
+                            <i class="far fa-clock"></i> Submitted: <%= new Date(request.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %>
                         </div>
-                    <% } else if (request.status === 'accepted' || request.status === 'completed') { %>
-                        <div class="request-actions">
-                            <% if (request.status === 'accepted') { %>
-                              <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary"><i class="fas fa-location-arrow"></i> Track</a>
-                              <a href="/dashboard/set-locations/<%= request._id %>" class="btn btn-outline" style="border-color: #f97316; color: #ea580c;">
-                                📍 <%= (request.exactPickup && request.exactPickup.lat) ? 'Update Location' : 'Select Location' %>
-                              </a>
-                            <% } %>
-                            <a href="/payments/request/<%= request._id %>" class="btn btn-outline">Payments</a>
-                            <% if (request.loadedAt && !request.advancePaidAt) { %>
-                              <form action="/payments/create-advance/<%= request._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-outline">Pay Advance</button>
-                              </form>
-                            <% } %>
-                            <% if (request.status === 'completed' && !request.balancePaidAt) { %>
-                              <form action="/payments/create-balance/<%= request._id %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-outline">Pay Balance</button>
-                              </form>
+
+                        <div class="bid-actions-group">
+                            <% if (request.status === 'pending') { %>
+                                <form action="/dashboard/accept-request/<%= request._id %>" method="POST" onsubmit="return confirm('Accept this bid for ₹<%= (request.price || 0).toLocaleString('en-IN') %>? Accepting will automatically assign the transporter and reject all other pending bids for this load.');">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Accept Bid
+                                    </button>
+                                </form>
+                                <form action="/dashboard/reject-request/<%= request._id %>" method="POST" onsubmit="return confirm('Reject this transporter\'s bid?');">
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </form>
+                            <% } else if (request.status === 'accepted') { %>
+                                <a href="/dashboard/track/<%= request._id %>" class="btn btn-primary">
+                                    <i class="fas fa-location-arrow"></i> Track Live
+                                </a>
+                                <a href="/dashboard/set-locations/<%= request._id %>" class="btn btn-outline" style="border-color: #f97316; color: #ea580c;">
+                                    <i class="fas fa-map-pin"></i> <%= (request.exactPickup && request.exactPickup.lat) ? 'Update Route Pins' : 'Pin Exact Route' %>
+                                </a>
+                                <a href="/payments/request/<%= request._id %>" class="btn btn-outline">
+                                    <i class="fas fa-receipt"></i> Payments
+                                </a>
+                                <% if (request.loadedAt && !request.advancePaidAt) { %>
+                                    <form action="/payments/create-advance/<%= request._id %>" method="POST">
+                                        <button type="submit" class="btn btn-outline" style="border-color:#16a34a; color:#15803d;">
+                                            <i class="fas fa-rupee-sign"></i> Pay Advance
+                                        </button>
+                                    </form>
+                                <% } %>
+                                <% if (request.status === 'completed' && !request.balancePaidAt) { %>
+                                    <form action="/payments/create-balance/<%= request._id %>" method="POST">
+                                        <button type="submit" class="btn btn-outline" style="border-color:#16a34a; color:#15803d;">
+                                            <i class="fas fa-rupee-sign"></i> Pay Balance
+                                        </button>
+                                    </form>
+                                <% } %>
+                            <% } else if (request.status === 'completed') { %>
+                                <a href="/payments/request/<%= request._id %>" class="btn btn-outline">
+                                    <i class="fas fa-receipt"></i> View Payments
+                                </a>
                             <% } %>
                         </div>
-                    <% } %>
+                    </div>
                 </div>
             <% }) %>
         <% } %>
     </div>
 </section>
+
+<script>
+// Interactive Client-Side Tab Filtering for Shipper Dashboard Bids
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('#shipperBidTabs .bid-tab-btn');
+    const cards = document.querySelectorAll('#shipperBidsGrid .marketplace-bid-card');
+    
+    // Set default view to active & pending
+    filterCards('active');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            filterCards(this.dataset.filter);
+        });
+    });
+
+    function filterCards(filter) {
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const status = card.dataset.status;
+            let show = false;
+            
+            if (filter === 'all') {
+                show = true;
+            } else if (filter === 'active') {
+                show = (status === 'pending' || status === 'accepted');
+            } else {
+                show = (status === filter);
+            }
+            
+            if (show) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        let existingEmpty = document.getElementById('shipperFilterEmptyState');
+        if (visibleCount === 0 && cards.length > 0) {
+            if (!existingEmpty) {
+                existingEmpty = document.createElement('div');
+                existingEmpty.id = 'shipperFilterEmptyState';
+                existingEmpty.className = 'bid-empty-state';
+                existingEmpty.innerHTML = `
+                    <i class="fas fa-filter"></i>
+                    <h3>No Bids in this View</h3>
+                    <p>No bids found matching the selected filter.</p>
+                `;
+                document.getElementById('shipperBidsGrid').appendChild(existingEmpty);
+            }
+            existingEmpty.style.display = 'flex';
+        } else if (existingEmpty) {
+            existingEmpty.style.display = 'none';
+        }
+    }
+});
+</script>
