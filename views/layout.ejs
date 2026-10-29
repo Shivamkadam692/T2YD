@@ -285,7 +285,7 @@
           </li>
           <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
           <li><a href="/how-it-works"><i class="fas fa-route"></i> How It Works</a></li>
-          <li><a href="/explore"><i class="fas fa-play-circle" style="color: #ea580c;"></i> Explore Reels</a></li>
+          <li><a href="/explore"><i class="fas fa-compass" style="color: #ea580c;"></i> <span data-translate="explore">Explore</span></a></li>
           <% if (user) { %>
             <% if (user.role === 'transporter') { %>
               <li><a href="/dashboard/transporter"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
@@ -623,7 +623,7 @@
   <footer>
     <div class="footer-content">
       <ul class="footer-links">
-        <li><a href="/explore"><i class="fas fa-play-circle" style="color: #ea580c;"></i> Explore Reels</a></li>
+        <li><a href="/explore"><i class="fas fa-compass" style="color: #ea580c;"></i> <span data-translate="explore">Explore</span></a></li>
         <li><a href="/how-it-works"><i class="fas fa-route"></i> How It Works</a></li>
         <li><a href="/about"><i class="fas fa-info-circle"></i> About Us</a></li>
         <li><a href="/terms"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
@@ -1417,16 +1417,18 @@
   const progressLabelEl = loadingContainer?.querySelector('.progress-label');
   const progressStageEls = loadingContainer ? Array.from(loadingContainer.querySelectorAll('.progress-status span')) : [];
   
+  let loadingFailsafeTimer = null;
+
   const defaultLoadingContext = {
-    headline: 'Preparing your shipment',
-    label: 'Syncing transport network',
-    stages: ['Matching', 'Routing', 'Ready']
+    headline: 'Loading...',
+    label: 'Connecting to network',
+    stages: ['Connecting', 'Processing', 'Ready']
   };
   
   const loadingContextMap = [
     {
       match: path => path === '/' || path === '/home',
-      headline: 'Preparing your next shipment',
+      headline: 'Connecting to network',
       label: 'Syncing featured routes',
       stages: ['Discovering', 'Pairing', 'Ready']
     },
@@ -1439,19 +1441,31 @@
     {
       match: path => path.startsWith('/dashboard/shipper'),
       headline: 'Updating shipper dashboard',
-      label: 'Collecting live shipment data',
+      label: 'Collecting live updates',
       stages: ['Requests', 'Tracking', 'Updates']
+    },
+    {
+      match: path => path.includes('/set-locations'),
+      headline: 'Saving exact locations',
+      label: 'Updating route coordinates',
+      stages: ['Pickup', 'Drop', 'Ready']
+    },
+    {
+      match: path => path.startsWith('/explore') || path.startsWith('/discover') || path.startsWith('/reels'),
+      headline: 'Finding available transport',
+      label: 'Filtering active loads & trucks',
+      stages: ['Location', 'Matching', 'Ready']
     },
     {
       match: path => path.startsWith('/deliveries/add'),
       headline: 'Drafting delivery plan',
-      label: 'Locking shipment details',
+      label: 'Locking delivery details',
       stages: ['Pickup', 'Route', 'Drop-off']
     },
     {
       match: path => path.startsWith('/deliveries/my') || path.startsWith('/deliveries'),
       headline: 'Loading your deliveries',
-      label: 'Aggregating shipment logs',
+      label: 'Aggregating delivery logs',
       stages: ['Upcoming', 'In Transit', 'Completed']
     },
     {
@@ -1510,7 +1524,7 @@
     },
     {
       match: path => path.startsWith('/track'),
-      headline: 'Tracking your shipment',
+      headline: 'Tracking your delivery',
       label: 'Locking GPS updates',
       stages: ['Location', 'ETA', 'Status']
     },
@@ -1585,11 +1599,17 @@
     if (loadingContainer) {
       applyLoadingContext(pathname);
       loadingContainer.classList.add('show');
+      if (loadingFailsafeTimer) clearTimeout(loadingFailsafeTimer);
+      loadingFailsafeTimer = setTimeout(hideLoading, 2500);
     }
   }
   
   // Hide loading animation
   function hideLoading() {
+    if (loadingFailsafeTimer) {
+      clearTimeout(loadingFailsafeTimer);
+      loadingFailsafeTimer = null;
+    }
     if (loadingContainer) {
       loadingContainer.classList.remove('show');
     }
@@ -1598,8 +1618,8 @@
   // Show loading on page navigation
   document.addEventListener('click', function(e) {
     // If the click is anywhere inside a chat interface or message form, NEVER show loading and ensure any existing loader is hidden
-    if (e.target.closest('#chatDrawer, .chat-drawer, #chatMessageForm, .chat-input-bar, .chat-messages-scroll, #chatContainer, #chatInputContainer, #msgForm, form.message-form, .no-loading, [data-no-loading], .chat-message, .chat-box, .chat-hints, .help-topics') ||
-        e.target.closest('#sendBtn, #sendButton, .chat-send-btn, #chatSendBtn, .help-topic-btn, #clearChat, [data-no-loading]')) {
+    if (e.target.closest('#chatDrawer, .chat-drawer, #chatMessageForm, .chat-input-bar, .chat-messages-scroll, #chatContainer, #chatInputContainer, #msgForm, form.message-form, .no-loading, [data-no-loading], .chat-message, .chat-box, .chat-hints, .help-topics, #locationSelectForm, .location-modal-card, #locationModalBackdrop') ||
+        e.target.closest('#sendBtn, #sendButton, .chat-send-btn, #chatSendBtn, .help-topic-btn, #clearChat, #btnConfirmLocation, .btn-confirm-location, [data-no-loading]')) {
       hideLoading();
       return;
     }
@@ -1608,8 +1628,8 @@
     if (target && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
       // Skip full page loading screen for chat messages, chat forms, and async forms
       if (
-        target.closest('#msgForm, #chatContainer, #chatInputContainer, #chatDrawer, .chat-drawer, #chatMessageForm, .chat-input-bar, .no-loading, [data-no-loading], form.message-form') ||
-        target.matches('#sendBtn, #sendButton, .chat-send-btn, #chatSendBtn, .help-topic-btn, #clearChat') ||
+        target.closest('#msgForm, #chatContainer, #chatInputContainer, #chatDrawer, .chat-drawer, #chatMessageForm, .chat-input-bar, .no-loading, [data-no-loading], form.message-form, #locationSelectForm, .location-modal-card') ||
+        target.matches('#sendBtn, #sendButton, .chat-send-btn, #chatSendBtn, .help-topic-btn, #clearChat, #btnConfirmLocation, .btn-confirm-location') ||
         target.classList.contains('chat-send-btn') ||
         target.classList.contains('no-loading')
       ) {
@@ -1634,7 +1654,7 @@
         if (parentForm && (
           parentForm.classList.contains('no-loading') ||
           parentForm.hasAttribute('data-no-loading') ||
-          parentForm.id === 'chatMessageForm' ||
+          parentForm.id === 'chatMessageForm' || parentForm.id === 'locationSelectForm' ||
           parentForm.classList.contains('chat-input-bar') ||
           parentForm.classList.contains('message-form')
         )) {
@@ -1656,7 +1676,7 @@
   window.addEventListener('pageshow', hideLoading);
   
   // Hide loading if still showing after 3 seconds (failsafe)
-  setTimeout(hideLoading, 3000);
+  setTimeout(hideLoading, 2000);
   </script>
 </body>
 </html>

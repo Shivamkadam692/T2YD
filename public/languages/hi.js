@@ -79,8 +79,9 @@ window.translations.hi = {
     stepAiBtn: "T2YD AI से पूछें",
     stepAiBubble: "कहीं अटके हैं? मैं मदद के लिए तैयार हूँ!",
 
-    // Reels Discovery
-    exploreReels: "रील्स एक्सप्लोर करें",
+    // Explore Discovery
+    explore: "एक्सप्लोर करें",
+    exploreReels: "एक्सप्लोर करें",
     findTrucks: "ट्रक खोजें",
     findLoads: "लोड खोजें"
 };

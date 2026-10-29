@@ -362,31 +362,39 @@
     }
   }
 
-  // Geocoding helper
+  // Fast geocoding helper with 2s timeout
   async function geocode(query) {
     if (!query) return null;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2000);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, { signal: controller.signal });
+      clearTimeout(timer);
       const data = await res.json();
       if (data && data[0]) {
         return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), displayName: data[0].display_name };
       }
     } catch (e) {
-      console.error('Geocode error', e);
+      clearTimeout(timer);
+      console.warn('Geocode error/timeout', e);
     }
     return null;
   }
 
-  // Reverse geocode helper
+  // Fast reverse geocode helper with 2s timeout
   async function reverseGeocode(lat, lng) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2000);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, { signal: controller.signal });
+      clearTimeout(timer);
       const data = await res.json();
       if (data && data.display_name) {
         return data.display_name;
       }
     } catch (e) {
-      console.error('Reverse geocode error', e);
+      clearTimeout(timer);
+      console.warn('Reverse geocode error/timeout', e);
     }
     return '';
   }
@@ -439,16 +447,17 @@
     if (!pickupMarker) {
       pickupMarker = L.marker([lat, lng], { icon: pickupIcon, draggable: true }).addTo(map);
       pickupMarker.bindPopup('<b>📍 Selected Pickup Spot</b><br>Drag to refine');
-      pickupMarker.on('dragend', async function(e) {
+      pickupMarker.on('dragend', function(e) {
         const pos = e.target.getLatLng();
         document.getElementById('formPickupLat').value = pos.lat;
         document.getElementById('formPickupLng').value = pos.lng;
-        const addr = await reverseGeocode(pos.lat, pos.lng);
-        if (addr) {
-          document.getElementById('pickupAddressInput').value = addr;
-          document.getElementById('formPickupAddress').value = addr;
-        }
         updateRoute();
+        reverseGeocode(pos.lat, pos.lng).then(addr => {
+          if (addr) {
+            document.getElementById('pickupAddressInput').value = addr;
+            document.getElementById('formPickupAddress').value = addr;
+          }
+        });
       });
     } else {
       pickupMarker.setLatLng([lat, lng]);
@@ -467,16 +476,17 @@
     if (!dropMarker) {
       dropMarker = L.marker([lat, lng], { icon: dropIcon, draggable: true }).addTo(map);
       dropMarker.bindPopup('<b>📍 Selected Drop Spot</b><br>Drag to refine');
-      dropMarker.on('dragend', async function(e) {
+      dropMarker.on('dragend', function(e) {
         const pos = e.target.getLatLng();
         document.getElementById('formDropLat').value = pos.lat;
         document.getElementById('formDropLng').value = pos.lng;
-        const addr = await reverseGeocode(pos.lat, pos.lng);
-        if (addr) {
-          document.getElementById('dropAddressInput').value = addr;
-          document.getElementById('formDropAddress').value = addr;
-        }
         updateRoute();
+        reverseGeocode(pos.lat, pos.lng).then(addr => {
+          if (addr) {
+            document.getElementById('dropAddressInput').value = addr;
+            document.getElementById('formDropAddress').value = addr;
+          }
+        });
       });
     } else {
       dropMarker.setLatLng([lat, lng]);
@@ -484,19 +494,30 @@
     updateRoute();
   }
 
-  // Map Click Handler
-  map.on('click', async function(e) {
+  // Map Click Handler - Instant pin placement
+  map.on('click', function(e) {
     const { lat, lng } = e.latlng;
-    const addr = await reverseGeocode(lat, lng);
+    const fallbackAddr = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 
     if (activeMode === 'pickup') {
-      setPickupLocation(lat, lng, addr);
-      // Auto switch to drop pin for intuitive flow
+      setPickupLocation(lat, lng, fallbackAddr);
       if (!dropMarker) {
         setMode('drop');
       }
+      reverseGeocode(lat, lng).then(addr => {
+        if (addr) {
+          document.getElementById('pickupAddressInput').value = addr;
+          document.getElementById('formPickupAddress').value = addr;
+        }
+      });
     } else {
-      setDropLocation(lat, lng, addr);
+      setDropLocation(lat, lng, fallbackAddr);
+      reverseGeocode(lat, lng).then(addr => {
+        if (addr) {
+          document.getElementById('dropAddressInput').value = addr;
+          document.getElementById('formDropAddress').value = addr;
+        }
+      });
     }
   });
 
@@ -560,5 +581,15 @@
   }
 
   initMarkers();
+
+  // Instant feedback on Confirm & Save
+  const setLocationsForm = document.getElementById('setLocationsForm');
+  const submitLocationsBtn = document.getElementById('submitLocationsBtn');
+  if (setLocationsForm && submitLocationsBtn) {
+    setLocationsForm.addEventListener('submit', function() {
+      submitLocationsBtn.disabled = true;
+      submitLocationsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Selected Locations...';
+    });
+  }
 })();
 </script>

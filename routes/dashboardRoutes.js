@@ -417,21 +417,17 @@ router.post('/set-locations/:requestId', requireLogin, requireRole('shipper'), a
       console.error('Socket emission error:', sockErr);
     }
 
-    // Send notification to transporter
-    try {
-      await NotificationService.createNotification({
-        recipient: request.transporter._id,
-        sender: request.shipper._id,
-        type: 'locations_updated',
-        title: 'Exact Route Locations Updated',
-        message: `${request.shipper.name} has pinned the exact pickup and drop locations on the map.`,
-        relatedRequest: request._id,
-        relatedDelivery: request.delivery ? request.delivery._id : null,
-        priority: 'high'
-      });
-    } catch (notifErr) {
-      console.error('Notification error:', notifErr);
-    }
+    // Send notification to transporter asynchronously to avoid redirect latency
+    NotificationService.createNotification({
+      recipient: request.transporter._id,
+      sender: request.shipper._id,
+      type: 'locations_updated',
+      title: 'Exact Route Locations Updated',
+      message: `${request.shipper.name} has pinned the exact pickup and drop locations on the map.`,
+      relatedRequest: request._id,
+      relatedDelivery: request.delivery ? request.delivery._id : null,
+      priority: 'high'
+    }).catch(notifErr => console.error('Notification error:', notifErr));
 
     res.redirect('/dashboard/shipper');
   } catch (err) {

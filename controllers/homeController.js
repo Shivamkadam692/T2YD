@@ -1,5 +1,35 @@
 const Lorry = require('../models/Lorry');
 const Delivery = require('../models/Delivery');
+const User = require('../models/User');
+const recommendationService = require('../services/recommendationService');
+const locationService = require('../services/locationService');
+
+/**
+ * Helper to resolve user operating region from query, session, or profile
+ */
+async function resolveUserOperatingRegion(req) {
+  // 1. Explicit query param
+  if (req.query.region || req.query.city) {
+    const raw = req.query.region || req.query.city;
+    return locationService.parseLocation(raw);
+  }
+  // 2. Session preference
+  if (req.session && req.session.exploreLocation) {
+    return req.session.exploreLocation;
+  }
+  // 3. Authenticated user profile preference
+  if (req.session && req.session.userId) {
+    try {
+      const user = await User.findById(req.session.userId).lean();
+      if (user && user.operatingRegion && (user.operatingRegion.city || user.operatingRegion.district)) {
+        return locationService.parseLocation(user.operatingRegion);
+      }
+    } catch (e) {
+      console.warn('Error reading user operatingRegion:', e.message);
+    }
+  }
+  return null;
+}
 
 /**
  * Render home page
@@ -24,35 +54,170 @@ exports.getHome = async (req, res) => {
 };
 
 /**
- * Render Reels-Style Explore & Discovery Feed
+ * Render Explore Transport Opportunities Feed
  */
 exports.getExplore = async (req, res) => {
   try {
-    const isTransporter = req.session?.userId && req.session.userRole === 'transporter';
-    const lorryQuery = isTransporter 
-      ? Lorry.find({ transporter: req.session.userId }).sort({ createdAt: -1 }).lean() 
-      : Lorry.find({ status: { $ne: 'offline' } }).sort({ createdAt: -1 }).lean();
+    const userRole = req.session?.userRole || (res.locals.user ? res.locals.user.role : null);
+    const userId = req.session?.userId || (res.locals.user ? res.locals.user._id : null);
     
-    const [lorries, deliveries] = await Promise.all([
-      lorryQuery,
-      Delivery.find({ status: { $ne: 'cancelled' } }).sort({ createdAt: -1 }).lean()
-    ]);
-
-    const initialTab = (req.query.tab === 'loads' || req.query.tab === 'deliveries') ? 'loads' : 'trucks';
-    const initialView = req.query.view === 'grid' ? 'grid' : 'reels';
+    // Resolve user's operating region
+    const savedRegion = await resolveUserOperatingRegion(req);
+    const hasRegion = Boolean(savedRegion && (savedRegion.city || savedRegion.district));
+    const isStrict = req.query.strict !== undefined ? (req.query.strict === 'true' || req.query.strict === '1') : true;
+    
+    const initialTab = req.query.tab || (userRole === 'transporter' ? 'loads' : 'trucks');
     const initialQuery = (req.query.query || req.query.q || '').trim();
+    const filter = (req.query.filter || 'all').trim();
     
-    res.render('explore', { 
-      lorries: lorries || [], 
-      deliveries: deliveries || [],
-      initialTab,
-      initialView,
+    // Fetch recommendation feed
+    const feed = await recommendationService.getRecommendations({
+      userRole,
+      userId,
+      region: savedRegion,
+      strict: isStrict,
+      tab: initialTab,
+      query: initialQuery,
+      filter,
+      page: 1,
+      limit: 30
+    });
+    
+    res.render('explore', {
+      listings: feed.listings || [],
+      category: feed.targetCategory,
+      totalCount: feed.totalCount,
+      page: feed.page,
+      totalPages: feed.totalPages,
+      hasMore: feed.hasMore,
+      activeRegion: feed.activeRegion || { formatted: 'All Regions' },
+      isStrict: feed.isStrict,
+      hasRegion,
+      needsLocationPrompt: !hasRegion,
+      initialTab: feed.targetCategory,
       initialQuery,
-      title: 'Explore Transport | T2YD Reels Discovery'
+      filter,
+      userRole,
+      title: 'Explore Transport Opportunities | T2YD'
     });
   } catch (error) {
     console.error('Error in getExplore:', error);
     res.status(500).render('error', { message: 'Unable to load explore page' });
+  }
+};
+
+/**
+ * API: Get JSON Explore Feed (for AJAX location changes, filtering, pagination)
+ */
+exports.getExploreFeed = async (req, res) => {
+  try {
+    const userRole = req.session?.userRole || (res.locals.user ? res.locals.user.role : null);
+    const userId = req.session?.userId || (res.locals.user ? res.locals.user._id : null);
+    
+    let region = null;
+    if (req.query.city || req.query.district || req.query.state || req.query.region) {
+      region = locationService.parseLocation({
+        city: req.query.city || req.query.region,
+        district: req.query.district,
+        state: req.query.state,
+        pincode: req.query.pincode,
+        lat: req.query.lat,
+        lng: req.query.lng
+      });
+    } else {
+      region = await resolveUserOperatingRegion(req);
+    }
+    
+    const isStrict = req.query.strict !== undefined ? (req.query.strict === 'true' || req.query.strict === '1') : true;
+    const tab = req.query.tab || (userRole === 'transporter' ? 'loads' : 'trucks');
+    const query = (req.query.query || req.query.q || '').trim();
+    const filter = (req.query.filter || 'all').trim();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    
+    const feed = await recommendationService.getRecommendations({
+      userRole,
+      userId,
+      region,
+      strict: isStrict,
+      tab,
+      query,
+      filter,
+      page,
+      limit
+    });
+    
+    res.json({
+      success: true,
+      category: feed.targetCategory,
+      listings: feed.listings,
+      totalCount: feed.totalCount,
+      page: feed.page,
+      totalPages: feed.totalPages,
+      hasMore: feed.hasMore,
+      activeRegion: feed.activeRegion,
+      isStrict: feed.isStrict,
+      hasRegion: feed.hasRegion,
+      userRole
+    });
+  } catch (error) {
+    console.error('Error in getExploreFeed API:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch explore feed' });
+  }
+};
+
+/**
+ * API: Save Selected Operating Region Preference
+ */
+exports.saveExploreLocation = async (req, res) => {
+  try {
+    const { city, district, state, pincode, lat, lng, address, strict } = req.body;
+    
+    if (!city && !district && !address) {
+      return res.status(400).json({ success: false, error: 'Valid city or region is required' });
+    }
+    
+    const parsed = locationService.parseLocation({
+      city: city || address,
+      district,
+      state,
+      pincode,
+      lat,
+      lng,
+      address
+    });
+    
+    const isStrict = strict !== undefined ? Boolean(strict) : true;
+    parsed.strict = isStrict;
+    
+    // Save to session
+    req.session.exploreLocation = parsed;
+    
+    // If authenticated, persist to User document without overwriting permanent address
+    if (req.session?.userId) {
+      await User.findByIdAndUpdate(req.session.userId, {
+        operatingRegion: {
+          city: parsed.city,
+          district: parsed.district,
+          state: parsed.state,
+          pincode: parsed.pincode,
+          lat: parsed.lat,
+          lng: parsed.lng,
+          address: parsed.formatted,
+          strict: isStrict,
+          updatedAt: new Date()
+        }
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: 'Operating location saved successfully',
+      region: parsed
+    });
+  } catch (error) {
+    console.error('Error in saveExploreLocation:', error);
+    res.status(500).json({ success: false, error: 'Failed to save location' });
   }
 };
 

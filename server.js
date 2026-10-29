@@ -127,6 +127,8 @@ app.use(async (req, res, next) => {
 app.get('/', homeController.getHome);
 app.get('/search', homeController.search);
 app.get('/explore', homeController.getExplore);
+app.get('/explore/feed', homeController.getExploreFeed);
+app.post('/explore/location', homeController.saveExploreLocation);
 app.get('/discover', homeController.getExplore);
 app.get('/reels', homeController.getExplore);
 

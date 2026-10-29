@@ -7,7 +7,19 @@ const userSchema = new mongoose.Schema({
   password: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-  role: { type: String, enum: ['transporter', 'shipper'], required: true }
+  role: { type: String, enum: ['transporter', 'shipper'], required: true },
+  phone: String,
+  operatingRegion: {
+    city: String,
+    district: String,
+    state: String,
+    pincode: String,
+    lat: Number,
+    lng: Number,
+    address: String,
+    strict: { type: Boolean, default: true },
+    updatedAt: { type: Date, default: Date.now }
+  }
 });
 
 userSchema.pre('save', async function (next) {

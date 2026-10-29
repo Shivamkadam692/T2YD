@@ -79,8 +79,9 @@ window.translations.en = {
     stepAiBtn: "Ask T2YD AI",
     stepAiBubble: "Stuck anywhere? I'm here to help!",
 
-    // Reels Discovery
-    exploreReels: "Explore Reels",
+    // Explore Discovery
+    explore: "Explore",
+    exploreReels: "Explore",
     findTrucks: "Find Trucks",
     findLoads: "Find Loads"
 };
